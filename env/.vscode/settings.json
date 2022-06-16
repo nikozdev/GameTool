@@ -1,0 +1,50 @@
+/* schemas */
+{
+    "[c]":
+    {
+        "editor.wordBasedSuggestions": false,
+        "editor.suggest.insertMode": "replace",
+        "editor.semanticHighlighting.enabled": true
+    },
+    "[cpp]":
+    {
+        "editor.wordBasedSuggestions": false,
+        "editor.suggest.insertMode": "replace",
+        "editor.semanticHighlighting.enabled": true
+    },
+    "[csharp]":
+    {
+    },
+    "[java]":
+    {
+        "editor.suggest.snippetsPreventQuickSuggestions": false
+    },
+    "[lua]":
+    {
+    },
+    "[jsonc]":
+    {
+        "editor.quickSuggestions":
+        {
+            "comments": false,
+            "strings": true,
+            "other": true
+        },
+        "editor.suggest.insertMode": "replace"
+    },
+    "[makefile]":
+    {
+        "editor.insertSpaces": false
+    },
+    "[cmake]":
+    {
+    },
+    "[cmake-cache]":
+    {
+    },
+    "[bat]":
+    {
+    },
+    "cmake.sourceDirectory": "${workspaceFolder}/cmake",
+}
+/* endfile */

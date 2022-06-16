@@ -1,0 +1,159 @@
+/* schemas */
+{
+	"version": "2.0.0",
+	"tasks": [
+		/* utils */
+		{
+			"label": "list_folders",
+			"type": "shell",
+			"group": { "kind": "test", "isDefault": true },
+			"command": [
+				"echo workspaceFolder = ${workspaceFolder}",
+				"echo workspaceFolder:root = ${workspaceFolder:root}",
+				"echo workspaceFolder:envi = ${workspaceFolder:envi}",
+				"echo workspaceFolder:libs = ${workspaceFolder:libs}",
+			]
+		},
+		{
+			"label": "show_config",
+			"type": "shell",
+			"group": { "kind": "test", "isDefault": true },
+			"command": [
+				"echo ${config:window.title}",
+				"echo ${config:C_Cpp.default.intelliSenseMode}",
+			]
+		},
+		/* build */
+		/** gmake **/
+		{
+			"label": "gmake",
+			"type": "shell",
+			"group": { "kind": "build", "isDefault": true },
+			"isBackground": false,
+			"command": [ "make ${input:ivar_gmake}" ],
+			"options": { "cwd": "${workspaceFolder:envi}${pathSeparator}gmake" },
+		},
+		{
+			"label": "gmake_print",
+			"type": "shell",
+			"group": { "kind": "build", "isDefault": true },
+			"isBackground": false,
+			"command": [ "make print", ],
+			"options": { "cwd": "${workspaceFolder:envi}${pathSeparator}gmake" },
+		},
+		{
+			"label": "gmake_build",
+			"type": "shell",
+			"group": { "kind": "build", "isDefault": true },
+			"isBackground": false,
+			"command": [ "make build", ],
+			"options": { "cwd": "${workspaceFolder:envi}${pathSeparator}gmake" },
+		},
+		{
+			"label": "gmake_start",
+			"type": "shell",
+			"group": { "kind": "build", "isDefault": true },
+			"isBackground": false,
+			"command": [ "make start", ],
+			"options": { "cwd": "${workspaceFolder:envi}${pathSeparator}gmake" },
+		},
+		{
+			"label": "gmake_again",
+			"type": "shell",
+			"group": { "kind": "build", "isDefault": true },
+			"isBackground": false,
+			"command": [ "make again", ],
+			"options": { "cwd": "${workspaceFolder:envi}${pathSeparator}gmake" },
+		},
+		{
+			"label": "gmake_rerun",
+			"type": "shell",
+			"group": { "kind": "build", "isDefault": true },
+			"isBackground": false,
+			"command": [ "make rerun", ],
+			"options": { "cwd": "${workspaceFolder:envi}${pathSeparator}gmake" },
+		},
+		{
+			"label": "gmake_debug",
+			"type": "shell",
+			"group": { "kind": "build", "isDefault": true },
+			"isBackground": false,
+			"command": [ "make debug", ],
+			"options": { "cwd": "${workspaceFolder:envi}${pathSeparator}gmake" },
+		},
+		{
+			"label": "gmake_clean",
+			"type": "shell",
+			"group": { "kind": "build", "isDefault": true },
+			"isBackground": false,
+			"command": [ "make clean", ],
+			"options": { "cwd": "${workspaceFolder:envi}${pathSeparator}gmake" },
+		},
+		/** cmake **/
+		{
+			"label": "cmake",
+			"type": "shell",
+			"group": { "kind": "build", "isDefault": true },
+			"isBackground": false,
+			"command": [ "cmake ../.." ],
+			"options": { "cwd": "${workspaceFolder:envi}${pathSeparator}cmake" },
+		},
+		/** pmake **/
+		{
+			"label": "pmake",
+			"type": "shell",
+			"group": { "kind": "build", "isDefault": true },
+			"isBackground": false,
+			"command": [ "premake5 --file=core.pmake gmake" ],
+			"options": { "cwd": "${workspaceFolder:envi}${pathSeparator}pmake" },
+		},
+		/** maven **/
+		{
+			"label": "maven",
+			"type": "shell",
+			"group": { "kind": "build", "isDefault": true },
+			"isBackground": false,
+			"command": [ "maven ${input:ivar_maven}", ],
+			"options": { "cwd": "${workspaceFolder:envi}${pathSeparator}maven" },
+		}
+	],
+	"inputs":
+	[
+		{
+			"id": "ivar_exec",
+			"type": "command",
+			"command": "",
+			"args": [],
+		},
+		{
+			"id": "ivar_pick",
+			"type": "pickString",
+		},
+		{
+			"id": "ivar_type",
+			"type": "promptString",
+			"default": "root",
+			"description": "enter the variable name",
+			"password": false
+		},
+		/* build */
+		{
+			"id": "ivar_gmake",
+			"type": "pickString",
+			"default": "build",
+			"description": "choose a makefile target",
+			"options": [ "print", "build", "start", "again", "rerun", "debug", "clean" ]
+		},
+		{
+			"id": "ivar_maven",
+			"type": "pickString",
+			"default": "build",
+			"description": "choose a maven command",
+			"options": [ "print", "build", "start", "rerun", "clean" ]
+		},
+	],
+	"osx": {},
+	"linux": {},
+	"windows": {}
+}
+/* endfile */

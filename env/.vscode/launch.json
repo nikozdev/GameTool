@@ -1,0 +1,71 @@
+{
+    "configurations":[
+        
+        {
+            "name": "launch",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${workspaceFolder:root}/bin/${workspaceFolderBasename:root}.exe",
+            "stopAtEntry": false,
+            "cwd": "${workspaceFolder:root}",
+            "externalConsole": false,
+            "preLaunchTask": "gmake_build",
+            "osx": {
+                "name": "launch_mac",
+                "type": "lldb", /* has to work with "code lldb" extension */
+                "MIMode": "lldb",
+                "miDebuggerPath": "/Library/Developer/CommandLineTools/usr/bin/lldb",
+                "targetArchitecture": "ARM64",
+                "environment": [ { "name": "TERM", "value": "xterm" } ]
+            },
+            "linux": {
+                "name": "launch_gnu",
+                "type": "cppdbg",
+                "MIMode": "gdb",
+                "miDebuggerPath": "/usr/bin/gdb",
+                "targetArchitecture": "x64"
+            },
+            "windows": {
+                "name": "launch_win",
+                "type": "cppdbg",
+                "MIMode": "gdb",
+                /* "miDebuggerPath": "/usr/bin/gdb", */
+                "targetArchitecture": "x64",
+            }
+        },
+
+        {
+            "name": "launch_console",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${workspaceFolder:root}/bin/${workspaceFolderBasename:root}.exe",
+            "stopAtEntry": false,
+            "cwd": "${workspaceFolder:root}",
+            "externalConsole": true,
+            "preLaunchTask": "gmake_build",
+            "osx": {
+                "name": "launch_mac",
+                "type": "lldb", /* has to work with "code lldb" extension */
+                "MIMode": "lldb",
+                "miDebuggerPath": "/Library/Developer/CommandLineTools/usr/bin/lldb",
+                "targetArchitecture": "ARM64",
+                "environment": [ { "name": "TERM", "value": "xterm" } ]
+            },
+            "linux": {
+                "name": "launch_gnu",
+                "type": "cppdbg",
+                "MIMode": "gdb",
+                "miDebuggerPath": "/usr/bin/gdb",
+                "targetArchitecture": "x64"
+            },
+            "windows": {
+                "name": "launch_win",
+                "type": "cppdbg",
+                "MIMode": "gdb",
+                /* "miDebuggerPath": "/usr/bin/gdb", */
+                "targetArchitecture": "x64"
+            }
+        }
+
+    ]
+}

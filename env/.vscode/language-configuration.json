@@ -1,0 +1,19 @@
+/* schemas */
+{
+    "brackets":
+    [
+        [ "(", ")" ],
+        [ "[", "]" ],
+        [ "{", "}" ]
+    ],
+    "comments":
+    {
+        "blockComment":
+        [
+            "/*", "*/",
+            "--[[", "]]--",
+        ],
+        "lineComment": "//",
+    },
+}
+/* endfile */

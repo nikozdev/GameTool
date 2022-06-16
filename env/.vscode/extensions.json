@@ -1,0 +1,20 @@
+/* schemas */
+{
+    "recommendations":
+    [
+        /* util */
+        "VisualStudioExptTeam.vscodeintellicode",
+        "christian-kohler.path-intellisense",
+        /* view */
+        "pkief.material-icon-theme",
+        /* scv */
+        "donjayamanne.githistory",
+        /* clanguage */
+        "ms-vscode.cpptools"
+    ],
+    "unwantedRecommendations":
+    [
+        "arcanis.vscode-zipfs"
+    ]
+}
+/* endfile */
