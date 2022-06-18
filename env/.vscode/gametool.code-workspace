@@ -14,6 +14,10 @@
 			"name": "libs",
 			"path": "../../lib"
 		},
+		{
+			"name": "cdev",
+			"path": "../../.."
+		},
 	],
 	"settings":
 	{

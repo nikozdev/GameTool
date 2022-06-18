@@ -136,36 +136,60 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="src\app.hpp" />
+    <ClInclude Include="src\app\app_engine.hpp" />
+    <ClInclude Include="src\app\app_hotkey.hpp" />
+    <ClInclude Include="src\app\app_state.hpp" />
+    <ClInclude Include="src\cfg.hpp" />
+    <ClInclude Include="src\cfg\cfg_debug.hpp" />
+    <ClInclude Include="src\cfg\cfg_gfx.hpp" />
+    <ClInclude Include="src\cfg\cfg_memory.hpp" />
+    <ClInclude Include="src\cfg\cfg_number.hpp" />
+    <ClInclude Include="src\cfg\cfg_string.hpp" />
+    <ClInclude Include="src\cfg\cfg_tools.hpp" />
+    <ClInclude Include="src\ecs\ecs_engine.hpp" />
+    <ClInclude Include="src\gui\gui_engine.hpp" />
+    <ClInclude Include="src\lib\lib_time.hpp" />
+    <ClInclude Include="src\lib\lib_event.hpp" />
+    <ClInclude Include="src\lib\lib_engine.hpp" />
     <ClInclude Include="src\gametool.hpp" />
     <ClInclude Include="src\gfx.hpp" />
+    <ClInclude Include="src\gfx\gfx_engine.hpp" />
     <ClInclude Include="src\lib.hpp" />
+    <ClInclude Include="src\lib\lib_matrix.hpp" />
+    <ClInclude Include="src\lib\lib_single.hpp" />
+    <ClInclude Include="src\lib\lib_type.hpp" />
+    <ClInclude Include="src\lib\lib_vector.hpp" />
     <ClInclude Include="src\sys.hpp" />
+    <ClInclude Include="src\gui.hpp" />
+    <ClInclude Include="src\ecs.hpp" />
+    <ClInclude Include="src\sys\sys_cursor.hpp" />
+    <ClInclude Include="src\sys\sys_engine.hpp" />
+    <ClInclude Include="src\sys\sys_keybod.hpp" />
+    <ClInclude Include="src\sys\sys_window.hpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\app\app_engine.cpp" />
+    <ClCompile Include="src\app\app_hotkey.cpp" />
+    <ClCompile Include="src\app\app_state.cpp" />
+    <ClCompile Include="src\cfg\cfg_gfx.cpp" />
+    <ClCompile Include="src\ecs\ecs_engine.cpp" />
     <ClCompile Include="src\gametool.cpp">
       <ExternalWarningLevel>Level3</ExternalWarningLevel>
       <ExternalWarningLevel>Level3</ExternalWarningLevel>
       <ExternalWarningLevel>Level3</ExternalWarningLevel>
     </ClCompile>
-    <ClCompile Include="src\gfx.cpp">
-      <ExternalWarningLevel>Level3</ExternalWarningLevel>
-      <ExternalWarningLevel>Level3</ExternalWarningLevel>
-      <ExternalWarningLevel>Level3</ExternalWarningLevel>
-    </ClCompile>
-    <ClCompile Include="src\lib.cpp">
-      <ExternalWarningLevel>Level3</ExternalWarningLevel>
-      <ExternalWarningLevel>Level3</ExternalWarningLevel>
-      <ExternalWarningLevel>Level3</ExternalWarningLevel>
-    </ClCompile>
-    <ClCompile Include="src\sys.cpp">
-      <ExternalWarningLevel>Level3</ExternalWarningLevel>
-      <ExternalWarningLevel>Level3</ExternalWarningLevel>
-      <ExternalWarningLevel>Level3</ExternalWarningLevel>
-    </ClCompile>
+    <ClCompile Include="src\gfx\gfx_engine.cpp" />
+    <ClCompile Include="src\gui\gui_engine.cpp" />
+    <ClCompile Include="src\sys\sys_cursor.cpp" />
+    <ClCompile Include="src\sys\sys_engine.cpp" />
+    <ClCompile Include="src\sys\sys_keybod.cpp" />
+    <ClCompile Include="src\sys\sys_window.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="src\.keep" />
     <None Include="src\app\.keep" />
+    <None Include="src\cfg\.keep" />
     <None Include="src\gfx\.keep" />
     <None Include="src\lib\.keep" />
     <None Include="src\sys\.keep" />

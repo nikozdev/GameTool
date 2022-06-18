@@ -19,8 +19,10 @@
 **/*.out
 **/*.lo
 **/*.slo
-**/*.iobj
+**/*.idb
+**/*.log
 **/*.tlog
+**/*.iobj
 **/*.class
 
 ## precompiled headers

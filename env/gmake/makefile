@@ -20,8 +20,7 @@ DLIB	:=$(ROOT)/lib
 LSRC	:=$(wildcard $(DSRC)/*.cpp $(DSRC)/**/*.cpp)
 LOBJ	:=$(patsubst $(DSRC)/%.cpp,$(DOBJ)/%.obj,$(LSRC))
 LBIN	:=$(DBIN)/$(NAME).$(TYPE)
-LLIB	:=$(notdir $(wildcard $(DLIB)/*))
-LLIB	:=$(filter-out qt6 glm imgui pmake,$(LLIB))
+LLIB	:=glfw glad imgui lua
 
 ## build
 
