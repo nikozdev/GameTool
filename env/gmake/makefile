@@ -21,7 +21,7 @@ LSRC	:=$(wildcard $(DSRC)/*.cpp $(DSRC)/**/*.cpp)
 LOBJ	:=$(patsubst $(DSRC)/%.cpp,$(DOBJ)/%.obj,$(LSRC))
 LBIN	:=$(DBIN)/$(NAME).$(TYPE)
 LLIB	:=$(notdir $(wildcard $(DLIB)/*))
-LLIB	:=$(filter-out qt6 glm imgui,$(LLIB))
+LLIB	:=$(filter-out qt6 glm imgui pmake,$(LLIB))
 
 ## build
 

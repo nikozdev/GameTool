@@ -1,0 +1,60 @@
+﻿cl : command line warning D9025: overriding '/MD' with '/MDd'
+  context.c
+C:\Users\nicko\Projects\gametool\lib\glfw\src\context.c(401,10): warning C4996: 'sscanf': This function or variable may be unsafe. Consider using sscanf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+  egl_context.c
+  init.c
+C:\Users\nicko\Projects\gametool\lib\glfw\src\init.c(178,5): warning C4996: 'strcpy': This function or variable may be unsafe. Consider using strcpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\nicko\Projects\gametool\lib\glfw\src\init.c(284,13): warning C4996: 'strcpy': This function or variable may be unsafe. Consider using strcpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\nicko\Projects\gametool\lib\glfw\src\init.c(286,13): warning C4996: 'strcpy': This function or variable may be unsafe. Consider using strcpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\nicko\Projects\gametool\lib\glfw\src\init.c(288,13): warning C4996: 'strcpy': This function or variable may be unsafe. Consider using strcpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\nicko\Projects\gametool\lib\glfw\src\init.c(290,13): warning C4996: 'strcpy': This function or variable may be unsafe. Consider using strcpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\nicko\Projects\gametool\lib\glfw\src\init.c(292,13): warning C4996: 'strcpy': This function or variable may be unsafe. Consider using strcpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\nicko\Projects\gametool\lib\glfw\src\init.c(294,13): warning C4996: 'strcpy': This function or variable may be unsafe. Consider using strcpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\nicko\Projects\gametool\lib\glfw\src\init.c(296,13): warning C4996: 'strcpy': This function or variable may be unsafe. Consider using strcpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\nicko\Projects\gametool\lib\glfw\src\init.c(298,13): warning C4996: 'strcpy': This function or variable may be unsafe. Consider using strcpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\nicko\Projects\gametool\lib\glfw\src\init.c(300,13): warning C4996: 'strcpy': This function or variable may be unsafe. Consider using strcpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\nicko\Projects\gametool\lib\glfw\src\init.c(302,13): warning C4996: 'strcpy': This function or variable may be unsafe. Consider using strcpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\nicko\Projects\gametool\lib\glfw\src\init.c(304,13): warning C4996: 'strcpy': This function or variable may be unsafe. Consider using strcpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\nicko\Projects\gametool\lib\glfw\src\init.c(306,13): warning C4996: 'strcpy': This function or variable may be unsafe. Consider using strcpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\nicko\Projects\gametool\lib\glfw\src\init.c(308,13): warning C4996: 'strcpy': This function or variable may be unsafe. Consider using strcpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\nicko\Projects\gametool\lib\glfw\src\init.c(310,13): warning C4996: 'strcpy': This function or variable may be unsafe. Consider using strcpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\nicko\Projects\gametool\lib\glfw\src\init.c(312,13): warning C4996: 'strcpy': This function or variable may be unsafe. Consider using strcpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\nicko\Projects\gametool\lib\glfw\src\init.c(332,5): warning C4996: 'strcpy': This function or variable may be unsafe. Consider using strcpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+  input.c
+C:\Users\nicko\Projects\gametool\lib\glfw\src\input.c(461,5): warning C4996: 'strncpy': This function or variable may be unsafe. Consider using strncpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\nicko\Projects\gametool\lib\glfw\src\input.c(462,5): warning C4996: 'strncpy': This function or variable may be unsafe. Consider using strncpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+  monitor.c
+C:\Users\nicko\Projects\gametool\lib\glfw\src\monitor.c(174,5): warning C4996: 'strncpy': This function or variable may be unsafe. Consider using strncpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+  null_init.c
+  null_joystick.c
+  null_monitor.c
+  null_window.c
+  osmesa_context.c
+  platform.c
+  vulkan.c
+  wgl_context.c
+  win32_init.c
+  win32_joystick.c
+C:\Users\nicko\Projects\gametool\lib\glfw\src\win32_joystick.c(455,9): warning C4996: 'sprintf': This function or variable may be unsafe. Consider using sprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\nicko\Projects\gametool\lib\glfw\src\win32_joystick.c(463,9): warning C4996: 'sprintf': This function or variable may be unsafe. Consider using sprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\nicko\Projects\gametool\lib\glfw\src\win32_joystick.c(526,13): warning C4996: 'sprintf': This function or variable may be unsafe. Consider using sprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\nicko\Projects\gametool\lib\glfw\src\win32_joystick.c(753,9): warning C4996: 'strncpy': This function or variable may be unsafe. Consider using strncpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\nicko\Projects\gametool\lib\glfw\src\win32_joystick.c(754,9): warning C4996: 'sprintf': This function or variable may be unsafe. Consider using sprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+  win32_module.c
+  win32_monitor.c
+C:\Users\nicko\Projects\gametool\lib\glfw\src\win32_monitor.c(103,5): warning C4996: 'wcscpy': This function or variable may be unsafe. Consider using wcscpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\nicko\Projects\gametool\lib\glfw\src\win32_monitor.c(112,9): warning C4996: 'wcscpy': This function or variable may be unsafe. Consider using wcscpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+  win32_thread.c
+  win32_time.c
+  win32_window.c
+C:\Users\nicko\Projects\gametool\lib\glfw\src\win32_window.c(555,119): warning C4047: 'function': 'DWORD' differs in levels of indirection from 'void *'
+C:\Users\nicko\Projects\gametool\lib\glfw\src\win32_window.c(555,115): warning C4024: 'AdjustWindowRectEx': different types for formal and actual parameter 4
+C:\Users\nicko\Projects\gametool\lib\glfw\src\win32_window.c(565,17): warning C4013: 'DwmExtendFrameIntoClientArea' undefined; assuming extern returning int
+  Generating Code...
+  Compiling...
+  window.c
+C:\Users\nicko\Projects\gametool\lib\glfw\src\window.c(449,13): warning C4996: 'strncpy': This function or variable may be unsafe. Consider using strncpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\nicko\Projects\gametool\lib\glfw\src\window.c(453,13): warning C4996: 'strncpy': This function or variable may be unsafe. Consider using strncpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\nicko\Projects\gametool\lib\glfw\src\window.c(457,13): warning C4996: 'strncpy': This function or variable may be unsafe. Consider using strncpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+  Generating Code...
+  glfw.vcxproj -> C:\Users\nicko\Projects\gametool\lib\glfw\bin\glfw.lib

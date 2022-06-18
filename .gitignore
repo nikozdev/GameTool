@@ -19,6 +19,8 @@
 **/*.out
 **/*.lo
 **/*.slo
+**/*.iobj
+**/*.tlog
 **/*.class
 
 ## precompiled headers
@@ -61,9 +63,10 @@
 **/env/.vscode/cache/
 **/env/.vscode/*.BROWSE*
 
-**/env/.vscode/*.dat
-**/env/.vscode/cxxdata*
-**/env/.vscode/CXXDATA
+**/.vscode/*.dat
+**/.vscode/cxxdata*
+**/.vscode/CXXDATA
+**/.vscode/CXXDATA*
 
 ## visual studio
 

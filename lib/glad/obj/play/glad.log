@@ -1,0 +1,6 @@
+﻿cl : command line warning D9025: overriding '/MD' with '/MDd'
+  glad.c
+  glad_wgl.c
+  Generating Code...
+gdi32.lib(GDI32.dll) : warning LNK4006: __NULL_IMPORT_DESCRIPTOR already defined in opengl32.lib(OPENGL32.dll); second definition ignored
+  glad.vcxproj -> C:\Users\nicko\Projects\gametool\lib\glad\bin\glad.lib
