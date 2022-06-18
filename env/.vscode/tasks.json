@@ -88,33 +88,6 @@
 			"isBackground": false,
 			"command": [ "make clean", ],
 			"options": { "cwd": "${workspaceFolder:envi}${pathSeparator}gmake" },
-		},
-		/** cmake **/
-		{
-			"label": "cmake",
-			"type": "shell",
-			"group": { "kind": "build", "isDefault": true },
-			"isBackground": false,
-			"command": [ "cmake ../.." ],
-			"options": { "cwd": "${workspaceFolder:envi}${pathSeparator}cmake" },
-		},
-		/** pmake **/
-		{
-			"label": "pmake",
-			"type": "shell",
-			"group": { "kind": "build", "isDefault": true },
-			"isBackground": false,
-			"command": [ "premake5 --file=core.pmake gmake" ],
-			"options": { "cwd": "${workspaceFolder:envi}${pathSeparator}pmake" },
-		},
-		/** maven **/
-		{
-			"label": "maven",
-			"type": "shell",
-			"group": { "kind": "build", "isDefault": true },
-			"isBackground": false,
-			"command": [ "maven ${input:ivar_maven}", ],
-			"options": { "cwd": "${workspaceFolder:envi}${pathSeparator}maven" },
 		}
 	],
 	"inputs":

@@ -1,0 +1,14 @@
+#======#
+# main #
+#======#
+
+# vscode #
+
+./CXXDATA
+./CXXDATA-shm
+./CXXDATA-wal
+./cache/
+
+#======#
+# endf #
+#======#

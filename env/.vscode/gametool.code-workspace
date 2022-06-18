@@ -13,7 +13,7 @@
 		{
 			"name": "libs",
 			"path": "../../lib"
-		}
+		},
 	],
 	"settings":
 	{
@@ -212,11 +212,7 @@
 		},
 		"terminal.integrated.defaultProfile.osx": "zsh",
 		"terminal.integrated.defaultProfile.linux": "bash",
-		"terminal.integrated.defaultProfile.windows": "CommandPrompt",
-		/*** shell ***/
-		"terminal.integrated.automationShell.osx": "zsh",
-		"terminal.integrated.automationShell.linux": "bash",
-		"terminal.integrated.automationShell.windows": "cmd",
+		"terminal.integrated.defaultProfile.windows": "PowerShell",
 		/*** cursor ***/
 		"terminal.integrated.altClickMovesCursor": true,
 		"terminal.integrated.cursorStyle": "underline",
@@ -288,31 +284,6 @@
 		{
 			"pub.name": false
 		},
-		/* file_workers */
-		/** hexeditor **/
-		"hexeditor.maxFileSize": 10,
-		"hexeditor.defaultEndianness": "little",
-		"hexeditor.dataInspector.autoReveal": true,
-		/** drawio **/
-		"hediet.vscode-drawio.offline": true,
-		"hediet.vscode-drawio.online-url": "https://embed.diagrams.net/",
-		"hediet.vscode-drawio.theme": "dark",
-		"hediet.vscode-drawio.codeLinkActivated": false,
-		"hediet.vscode-drawio.plugins": [],
-		"hediet.vscode-drawio.knownPlugins": [],
-		"hediet.vscode-drawio.presetColors": [],
-		/*** custom ***/
-		"hediet.vscode-drawio.customFonts":
-		[ "Inconsolata", "MonoId", "Consolas" ],
-		"hediet.vscode-drawio.customLibraries": [],
-		"hediet.vscode-drawio.customColorSchemes":
-		[
-			[
-				{ "fill": "#0000ff", "stroke": "none", "gradient": "none" },
-				{ "fill": "#00ff00", "stroke": "none", "gradient": "none" },
-				{ "fill": "#ff0000", "stroke": "none", "gradient": "none" },
-			]
-		],
 		/* contribution */
 		/** git **/
 		"git.enabled": true,
@@ -324,7 +295,7 @@
 		/** github **/
 		"github-enterprise.uri": "",
 		/** gitlab **/
-		"gitlab.remoteName": "root",
+		"gitlab.remoteName": "origin",
 		/** liveshare **/
 		"liveshare.allowInvites": "none",
 		/* view */
@@ -428,16 +399,6 @@
 		"vsintellicode.features.python.deepLearning": "enabled",
 		"vsintellicode.modify.editor.suggestSelection": "enabled",
 		/* buildsys */
-		/** bazel **/
-		"bazel.enableCodeLens": false,
-		"bazel.queriesShareServer": false,
-		"bazel.pathsToIgnore": [],
-		/*** commandline ***/
-		"bazel.commandLine.commandArgs": [],
-		"bazel.commandLine.startupOptions": [],
-		/*** buildifier ***/
-		"bazel.buildifierPath": "",
-		"bazel.buildifierFixOnFormat": false,
 		/** gmake **/
 		"makefile.makePath": "make",
 		"makefile.makeDirectory": "env/gmake",
@@ -464,42 +425,6 @@
 				"problemMatchers": []
 			}
 		],
-		/** cmake **/
-		"cmake.cmakePath": "cmake",
-		"cmake.sourceDirectory": "env/cmake",
-		"cmake.cmakeCommunicationMode": "automatic",
-		"cmake.additionalKits": [],
-		"cmake.allowCommentsInPresetsFile": true,
-		"cmake.autoSelectActiveFolder": false,
-		"cmake.cacheInit": "env/cmake/cache",
-		/*** build ***/
-		"cmake.buildArgs": [],
-		"cmake.buildBeforeRun": true,
-		"cmake.buildDirectory": "${workspaceFolder:root}/bin",
-		"cmake.buildEnvironment": {},
-		"cmake.buildTask": false,
-		"cmake.buildToolArgs": [],
-		"cmake.clearOutputBeforeBuild": true,
-		/*** config ***/
-		"cmake.configureArgs": [],
-		"cmake.configureEnvironment": {},
-		"cmake.configureOnEdit": false,
-		"cmake.configureOnOpen": false,
-		"cmake.configureSettings": {},
-		/** maven **/
-		"maven.view": "hierarchical",
-		"maven.showInExplorerContextMenu": true,
-		"maven.excludedFolders": [],
-		/*** executable ***/
-		"maven.executable.preferMavenWrapper": false,
-		"maven.executable.options": "",
-		/*** pomfile ***/
-		"maven.pomfile.autoUpdateEffectivePOM": false,
-		"maven.pomfile.globPattern": "${workspaceFolder:envi}/maven/pom.xml",
-		/*** terminal ***/
-		"maven.terminal.useJavaHome": true,
-		"maven.terminal.customEnv": [],
-		"maven.terminal.favorites": [],
 		/* languages */
 		/** cplusplus **/
 		"C_Cpp.codeFolding": "Enabled",
@@ -544,62 +469,11 @@
 		"C_Cpp.autocomplete": "Default",
 		"C_Cpp.autoAddFileAssociations": false,
 		"C_Cpp.autocompleteAddParentheses": false,
-		/** csharp **/
-		"csharp.format.enable": true,
-		/*** intellisense ***/
-		"csharp.semanticHighlighting.enabled": false,
-		"csharp.showOmnisharpLogOnError": true,
-		"csharp.referencesCodeLens.enabled": true,
-		"csharp.referencesCodeLens.filteredSymbols": [],
-		"csharp.maxProjectFileCountForDiagnosticAnalysis": 100,
-		/*** supress ***/
-		"csharp.suppressDotnetInstallWarning": false,
-		"csharp.suppressBuildAssetsNotification": false,
-		"csharp.suppressDotnetRestoreNotification": false,
-		"csharp.suppressProjectJsonWarning": false,
-		"csharp.suppressHiddenDiagnostics": true,
-		"csharp.testsCodeLens.enabled": true,
-		"csharp.unitTestDebuggingOptions": {},
-		/** java **/
-		"java.autobuild.enabled": true,
-		/*** codegen ***/
-		"java.codeGeneration.generateComments": false,
 		/** lua **/
 		"Lua.color.mode": "Semantic",
 		/*** completion ***/
 		"Lua.completion.autoRequire": true,
 		"Lua.completion.callSnippet": "Disable",
-		/** mongodb **/
-		"mdb.shell": "mongosh",
-		"mdb.confirmRunAll": true,
-		"mdb.defaultLimit": 10,
-		"mdb.sendTelemetry": false,
-		"mdb.useDefaultTemplateForPlayground": true,
-		/*** showings ***/
-		"mdb.showMongoDBPlaygrounds": true,
-		"mdb.showMongoDBHelpExplorer": true,
-		"mdb.showMongoDBConnectionExplorer": true,
-		"mdb.connectionSaving.defaultConnectionSavingLocation": "Global",
-		"mdb.connectionSaving.hideOptionToChooseWhereToSaveNewConnections": true,
-		"mdb.excludeFromPlaygroundsSearch":
-		[
-			"**/.*",
-			"**/_output/**",
-			"**/bower_components/**",
-			"**/build/**",
-			"**/dist/**",
-			"**/node_modules/**",
-			"**/out/**",
-			"**/output/**",
-			"**/release/**",
-			"**/releases/**",
-			"**/static/**",
-			"**/target/**",
-			"**/third_party/**",
-			"**/vendor/**"
-		],
-		"mongodbLanguageServer.maxNumberOfProblems": 100,
-		"mongodbLanguageServer.trace.server": { "format": "json", "verbosity": "verbose" },
 		/** glsl **/
 		"glsl-canvas.useFormatter": true,
 		"glsl-canvas.useCompactFormatter": true,
@@ -637,21 +511,7 @@
 		"hlsl.suggest.basic": true,
 		/* utilities */
 		/** fileutils **/
-		"fileutils.typeahead.enabled": true,
-		/** dashboard **/
-		"dashboard.openOnStartup": "always",
-		"dashboard.displayProjectPath": true,
-		"dashboard.projectTileWidth": 200,
-		"dashboard.showAddProjectButtonTile": true,
-		"dashboard.storeProjectsInSettings": false,
-		/*** colors ***/
-		"dashboard.recentColors": [ "#0000ff" ],
-		"dashboard.recentColorsToRemember": 10,
-		/*** custom ***/
-		"dashboard.customCss": "../src/css/drawio.css",
-		"dashboard.customProjectNameColor": "#ffffff",
-		"dashboard.customProjectPathColor": "#aaaaaa",
-		"dashboard.customProjectCardBackground": "#000000",
+		"fileutils.typeahead.enabled": true
 	}
 }
 /*

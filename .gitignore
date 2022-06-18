@@ -1,0 +1,79 @@
+#======#
+# main #
+#======#
+
+# general #
+
+**/.DS_Store
+
+# binaries #
+
+## debug symbols
+
+**/*.d
+
+## output files
+
+**/*.o
+**/*.obj
+**/*.out
+**/*.lo
+**/*.slo
+**/*.class
+
+## precompiled headers
+
+**/*.gch
+**/*.pch
+**/*.pdb
+
+## dynamic libraries
+
+**/*.so
+**/*.dll
+**/*.dylib
+
+## static libraries
+
+**/*.a
+**/*.la
+**/*.lai
+**/*.lib
+
+## executables
+
+**/*.a
+**/*.app
+**/*.exe
+
+## archive files
+
+**/*.zip
+**/*.jar
+**/*.war
+
+# sources #
+
+# environment #
+
+## visual studio code extensions
+
+**/env/.vscode/cache/
+**/env/.vscode/*.BROWSE*
+
+**/env/.vscode/*.dat
+**/env/.vscode/cxxdata*
+**/env/.vscode/CXXDATA
+
+## visual studio
+
+**/env/.vs
+
+## maven files
+
+**/env/maven/*.target
+**/env/maven/*.project
+
+#======#
+# endf #
+#======#
