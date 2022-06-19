@@ -6,12 +6,17 @@
 
 namespace gt {
 
+    using mptr_t    = void*;
+
     using msize_t   = size_t;
 
-    using mptr_t    = void*;
+    using mbyte_t   = unsigned char;
+    using mdata_t   = mbyte_t*;
     
-    using mdata_t   = char*;
-
+    typedef struct {
+        msize_t msize;
+        mdata_t mdata;
+    } mbufr_t;
 }
 
 #endif /* CFG_MEMORY_HPP */

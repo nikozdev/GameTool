@@ -4,6 +4,8 @@
 
 #   include "string.h"
 
+#   include "cfg_memory.hpp"
+
 #   ifndef GT_NAME_SIZE_USE
 #       define GT_NAME_SIZE_MIN 0x10
 #       define GT_NAME_SIZE_MED 0x40
@@ -14,6 +16,14 @@
 namespace gt {
 
     using cstr_t    = const char*;
+    
+    using sdata_t   = char*;
+
+    typedef struct {
+        msize_t msize;
+        sdata_t sdata;
+    } sbufr_t;
+
 }
 
 #endif /* CFG_STRING_HPP */

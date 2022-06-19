@@ -11,10 +11,7 @@ namespace gt {
 		bool
 			engine_t::init()
 		{
-
-			this->set_flag(true);
-
-			return true;
+			return this->play();
 		}
 		bool
 			engine_t::work()

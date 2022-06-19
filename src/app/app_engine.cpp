@@ -3,7 +3,7 @@
 #   define APP_ENGINE_CPP
 
 #   include "app_engine.hpp"
-#   include "app_state.hpp"
+#   include "app_estate.hpp"
 
 #   include "app_hotkey.hpp"
 
@@ -34,20 +34,20 @@ namespace gt {
                 
                 GT_CHECK(engine->init(), "failed engine init!", {
 
-                    GT_ELOGF("[index]=(%zu)", index);
+                    GT_ELOGF("[index]=(%d)", index);
 
                     return false;
                 });
 
             }
 
-            for (index_t index = 0; index < this->state_array.size(); index++) {
+            for (index_t index = 0; index < this->estate_array.size(); index++) {
 
-                auto state = this->state_array[index];
+                auto estate = this->estate_array[index];
 
-                GT_CHECK(state->init(), "failed state init!", {
+                GT_CHECK(estate->init(), "failed estate init!", {
 
-                    GT_ELOGF("[index]=(%zu)", index);
+                    GT_ELOGF("[index]=(%d)", index);
 
                     return false;
                 });
@@ -56,7 +56,7 @@ namespace gt {
 
             sys::engine_t::get()->get_window()->set_title("gametool");
             
-            return true;
+            return this->play();
         }
         bool
         engine_t::work()
@@ -71,13 +71,13 @@ namespace gt {
 
             }
 
-            for (index_t index = 0; index < this->state_array.size(); index++) {
+            for (index_t index = 0; index < this->estate_array.size(); index++) {
 
-                auto state = this->state_array[index];
+                auto estate = this->estate_array[index];
 
-                GT_CHECK(state->init(), "failed state init!", {
+                GT_CHECK(estate->init(), "failed estate init!", {
 
-                    GT_ELOGF("[index]=(%zu)", index);
+                    GT_ELOGF("[index]=(%d)", index);
 
                     return false;
                 });
@@ -92,7 +92,7 @@ namespace gt {
 
                 GT_CHECK(engine->work(), "failed engine work!", {
                     
-                    GT_ELOGF("[index]=(%zu)", index);
+                    GT_ELOGF("[index]=(%d)", index);
                     
                     return false;
                 });
@@ -102,7 +102,7 @@ namespace gt {
 
             }
             
-            this->set_flag(flag);
+            if (this->get_flag() ^ flag) { this->stop(); }
 
             return true;
         }
@@ -110,14 +110,14 @@ namespace gt {
         engine_t::quit()
         {
             
-            for (index_t count = this->state_array.size(); count > 0; count--) {
+            for (index_t count = this->estate_array.size(); count > 0; count--) {
 
                 index_t index = count - 1;
-                auto state = this->state_array[index];
+                auto estate = this->estate_array[index];
 
-                GT_CHECK(state->quit(), "failed state quit!", {
+                GT_CHECK(estate->quit(), "failed estate quit!", {
 
-                    GT_ELOGF("[index]=(%zu)", index);
+                    GT_ELOGF("[index]=(%d)", index);
 
                     return false;
                 });
@@ -131,7 +131,7 @@ namespace gt {
 
                 GT_CHECK(engine->quit(), "failed engine quit!", {
 
-                    GT_ELOGF("[index]=(%zu)", index);
+                    GT_ELOGF("[index]=(%d)", index);
 
                     return false;
                 });
@@ -153,7 +153,7 @@ namespace gt {
 
                 GT_CHECK(engine->proc(event), "failed engine proc!", {
 
-                    GT_ELOGF("[index]=(%zu)", index);
+                    GT_ELOGF("[index]=(%d)", index);
 
                     return false;
                 });

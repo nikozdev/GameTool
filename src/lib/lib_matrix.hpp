@@ -7,20 +7,10 @@
 
 namespace gt {
 
-	/* signed */
-	using v2s_t = glm::ivec2;
-	using v3s_t = glm::ivec3;
-	using v4s_t = glm::ivec4;
-
-	/* unsigned */
-	using v2u_t = glm::uvec2;
-	using v3u_t = glm::uvec3;
-	using v4u_t = glm::uvec4;
-
 	/* float */
-	using v2f_t = glm::vec2;
-	using v3f_t = glm::vec3;
-	using v4f_t = glm::vec4;
+	using m2f_t = glm::mat2;
+	using m3f_t = glm::mat3;
+	using m4f_t = glm::mat4;
 
 }
 

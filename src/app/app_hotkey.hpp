@@ -20,7 +20,7 @@ namespace gt {
 
             using enum sys::keybod_t::kcode_t;
 
-            using func_t = bool(*)(args_t);
+            using func_t = bool(*)(const args_t&);
             using code_t = sys::keybod_t::kcode_t;
             using mode_t = sys::keybod_t::kcode_t;
 
@@ -33,8 +33,10 @@ namespace gt {
 
         };
     
-        bool
-            stop_work(hotkey_t::args_t args);
+        extern bool
+            stop_work(const hotkey_t::args_t& args);
+        extern bool
+            redo_drawtool(const hotkey_t::args_t& args);
 
         namespace {
 
@@ -44,6 +46,8 @@ namespace gt {
 
                 {   KCODE_LEFT_CONTROL,     KCODE_X,    stop_work,      { 0, "" }       },
                 {   KCODE_RIGHT_CONTROL,    KCODE_X,    stop_work,      { 0, "" }       },
+                {   KCODE_LEFT_CONTROL,     KCODE_R,    redo_drawtool,  { 0, "" }       },
+                {   KCODE_RIGHT_CONTROL,    KCODE_R,    redo_drawtool,  { 0, "" }       },
 
             };
 

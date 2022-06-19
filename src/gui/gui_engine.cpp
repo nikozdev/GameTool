@@ -51,9 +51,7 @@ namespace gt {
 			
 			GT_CHECK(::ImGui_ImplGlfw_InitForOpenGL(glfw_window, true), "failed imgui opengl backend init!", return false);
 
-			this->set_flag(true);
-
-			return true;
+			return this->play();
 		}
 		bool
 			engine_t::work()
@@ -81,9 +79,13 @@ namespace gt {
 
 			if (ImGui::Begin("frame")) {
 				
+				auto fmbuffer = gfx::engine_t::get()->get_fmbuffer();
 				ImVec2 viewport_size = ImGui::GetContentRegionAvail();
-				ImGui::Image(reinterpret_cast<ImTextureID>(1u), viewport_size);
-				gfx::engine_t::get()->set_viewport(0, 0, static_cast<int>(viewport_size[0]), static_cast<int>(viewport_size[1]));
+
+				ImGui::Image(reinterpret_cast<ImTextureID>(fmbuffer->colorbuf.index), viewport_size);
+				if (fmbuffer->viewport[2] != viewport_size[0] || fmbuffer->viewport[3] != viewport_size[1]) {
+					gfx::engine_t::get()->set_viewport(0, 0, static_cast<int>(viewport_size[0]), static_cast<int>(viewport_size[1]));
+				}
 			
 			}
 			ImGui::End();

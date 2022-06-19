@@ -6,9 +6,9 @@
 
 namespace gt {
 
-    using count_t   = uint32_t;
-    using flags_t   = uint64_t;
-    using index_t   = uint64_t;
+    using index_t   = unsigned int;
+    using count_t   = unsigned int;
+    using flags_t   = unsigned long long;
 
     using enum_t    = index_t;
 

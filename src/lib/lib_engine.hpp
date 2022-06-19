@@ -20,15 +20,6 @@ namespace gt {
 
             using flag_t = bool;
 
-        protected:
-
-            inline flag_t
-                set_flag(flag_t flag)
-            {
-                this->flag = flag;
-                return this->flag;
-            }
-
         public:
 
             inline flag_t
@@ -42,12 +33,19 @@ namespace gt {
             inline bool
                 exec()
             {
-                this->flag = true;
-
                 GT_CHECK(this->init(), "engine init error!", return false);
                 while (this->flag) { GT_CHECK(this->work(), "engine work error!", break); }
                 GT_CHECK(this->quit(), "engine quit error!", return false);
 
+                return true;
+            }
+            inline bool
+                play()
+            {
+                GT_CHECK(this->flag == false, "engine cannot play!", return false);
+                
+                this->flag = true;
+                
                 return true;
             }
             inline bool

@@ -31,10 +31,8 @@ namespace gt {
             GT_CHECK(::glfwInit(), "failed glfw init!", return false);
 
             GT_CHECK(this->window.init(), "window init error!", return false);
-            
-            this->set_flag(true);
 
-            return true;
+            return this->play();
         }
         bool
             engine_t::work()

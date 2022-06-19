@@ -4,7 +4,7 @@
 
 #	include "../cfg.hpp"
 
-#	include "app_state.hpp"
+#	include "app_estate.hpp"
 
 #	include "../lib/lib_engine.hpp"
 
@@ -24,10 +24,10 @@ namespace gt {
 
 		public:
 
-			inline state_a_t*
-				get_state(index_t index)
+			inline estate_a_t*
+				get_estate(index_t index)
 			{
-				return this->state_array[index];
+				return this->estate_array[index];
 			}
 
 			inline const lib::timer_t*
@@ -52,7 +52,7 @@ namespace gt {
 
 			lib::timer_t timer;
 
-			std::vector<state_a_t*> state_array;
+			std::vector<estate_a_t*> estate_array;
 
 			std::vector<lib::engine_a_t*> engine_array;
 

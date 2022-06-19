@@ -37,7 +37,7 @@
     <ClInclude Include="src\app.hpp" />
     <ClInclude Include="src\lib\lib_vector.hpp" />
     <ClInclude Include="src\lib\lib_matrix.hpp" />
-    <ClInclude Include="src\app\app_state.hpp" />
+    <ClInclude Include="src\app\app_estate.hpp" />
     <ClInclude Include="src\ecs\ecs_engine.hpp" />
     <ClInclude Include="src\lib\lib_type.hpp" />
     <ClInclude Include="src\gui\gui_engine.hpp" />
@@ -46,6 +46,8 @@
     <ClInclude Include="src\ecs.hpp" />
     <ClInclude Include="src\lib\lib_time.hpp" />
     <ClInclude Include="src\cfg\cfg_gfx.hpp" />
+    <ClInclude Include="src\gfx\gfx_lib.hpp" />
+    <ClInclude Include="src\lib\lib_file.hpp" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\gametool.cpp" />
@@ -55,11 +57,12 @@
     <ClCompile Include="src\sys\sys_keybod.cpp" />
     <ClCompile Include="src\sys\sys_window.cpp" />
     <ClCompile Include="src\app\app_engine.cpp" />
-    <ClCompile Include="src\app\app_state.cpp" />
+    <ClCompile Include="src\app\app_estate.cpp" />
     <ClCompile Include="src\ecs\ecs_engine.cpp" />
     <ClCompile Include="src\gui\gui_engine.cpp" />
     <ClCompile Include="src\app\app_hotkey.cpp" />
     <ClCompile Include="src\cfg\cfg_gfx.cpp" />
+    <ClCompile Include="src\gfx\gfx_lib.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="src\.keep" />
@@ -76,5 +79,10 @@
       <Filter>sys</Filter>
     </None>
     <None Include="src\cfg\.keep" />
+    <None Include="rsc\glsl\sprites_vtx.glsl" />
+    <None Include="rsc\glsl\sprites_pxl.glsl" />
+    <None Include="rsc\glsl\tilemap_vtx.glsl" />
+    <None Include="rsc\glsl\tilemap_pxl.glsl" />
+    <None Include="rsc\glsl\sprites_gmt.glsl" />
   </ItemGroup>
 </Project>

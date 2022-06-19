@@ -4,12 +4,11 @@
 
 #   include "../cfg.hpp"
 
+#   include "gfx_lib.hpp"
+
 #   include "../lib/lib_event.hpp"
 
 #   include "../lib/lib_engine.hpp"
-
-#   include "../lib/lib_vector.hpp"
-#   include "../lib/lib_matrix.hpp"
 
 namespace gt {
 
@@ -26,12 +25,12 @@ namespace gt {
             using contex_t = void*;
             using device_t = void*;
 
-            enum facemode_t : index_t {
-                FACEMODE_LINE,
-                FACEMODE_FILL,
-            };
-
         public:
+
+            bool
+                set_pixel_size(float scale = 1.0f);
+            bool
+                set_lines_size(float scale = 1.0f);
 
             bool
                 set_facemode(facemode_t facemode);
@@ -42,34 +41,63 @@ namespace gt {
             bool
                 set_clear_color(float r, float g, float b, float a);
 
+            inline const fmbuffer_t*
+                get_fmbuffer() const
+            {
+                return &this->fmbuffer;
+            }
+
         public:
 
             virtual bool
                 init() override;
-            bool
+            virtual bool
                 work() override;
-            bool
+            virtual bool
                 quit() override;
 
             virtual bool
                 proc(lib::event_a_t* event) override;
 
+            inline bool
+                redo_fmbuffer()
+            {
+                return this->fmbuffer.index > 0
+                    ? (this->quit_fmbuffer(&this->fmbuffer) ? this->init_fmbuffer(&this->fmbuffer) : false)
+                    : (this->init_fmbuffer(&this->fmbuffer));
+            }
+            inline bool
+                redo_drawtool()
+            {
+                return this->drawtool.ilayout.index > 0 && this->drawtool.materia.index > 0
+                    ? (this->quit_drawtool(&this->drawtool) ? this->init_fmbuffer(&this->fmbuffer) : false)
+                    : (this->init_drawtool(&this->drawtool));
+            }
+
         private:
 
+            bool
+                init_fmbuffer(fmbuffer_t* fmbuffer);
+            bool
+                quit_fmbuffer(fmbuffer_t* fmbuffer);
+
+            bool
+                init_drawtool(drawtool_t* drawtool);
+            bool
+                quit_drawtool(drawtool_t* drawtool);
+
+        private:
+            /* platform specific handles */
             window_t window;
             contex_t contex;
             device_t device;
-
-            struct {
-
-                facemode_t  facemode;
-
-                v4s_t viewport;
-
-                v4f_t clear_color;
-
-            } state;
-
+            /* global state objects */
+            state_t state;
+            /* where to draw */
+            fmbuffer_t fmbuffer;
+            /* what and how to draw */
+            drawtool_t drawtool;
+            /**/
         };
 
     }

@@ -17,9 +17,14 @@ namespace gt {
     namespace app {
         
         bool
-            stop_work(hotkey_t::args_t args)
+            stop_work(const hotkey_t::args_t& args)
         {
             return app::engine_t::get()->stop();
+        }
+
+        bool redo_drawtool(const hotkey_t::args_t& args)
+        {
+            return gfx::engine_t::get()->redo_drawtool();
         }
 
     }

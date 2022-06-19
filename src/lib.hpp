@@ -4,6 +4,7 @@
 
 #   include "lib/lib_time.hpp"
 #   include "lib/lib_type.hpp"
+#   include "lib/lib_file.hpp"
 
 #   include "lib/lib_event.hpp"
 
