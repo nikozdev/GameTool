@@ -15,43 +15,12 @@
 #   include "../../lib/glfw/src/glfw3.h"
 #   include "../../lib/glfw/src/glfw3native.h"
 
-struct vtx_t {
-    /* vertex params */
-    gt::v2f_t vtx_coord;
-    gt::v2f_t vtx_pivot;
-    gt::v2f_t vtx_sizes;
-    /* texture params */
-    gt::v4f_t tex_color;
-    gt::v4f_t tex_coord;
-    gt::v1s_t tex_index;
-};
-
-static vtx_t vbuffer_source[] = {
-    {
-        .vtx_coord = { +0.0f, +0.0f }, .vtx_pivot = { 0.5f, 0.5f }, .vtx_sizes = { 1.0f, 1.0f },
-        .tex_color = { 1.0, 1.0, 1.0, 1.0 }, .tex_coord = { 0.0, 0.0, 1.0, 1.0 }, .tex_index = { 0 }
-    },
-    /*
-    {
-        .vtx_coord = { -1.0f, -1.0f }, .vtx_pivot = { 0.5f, 0.5f }, .vtx_sizes = { 1.0f, 1.0f },
-        .tex_color = { 1.0, 1.0, 1.0, 1.0 }, .tex_coord = { 0.0, 0.0, 1.0, 1.0 }, .tex_index = { 0 }
-    },
-    {
-        .vtx_coord = { +1.0f, +1.0f }, .vtx_pivot = { 0.5f, 0.5f }, .vtx_sizes = { 1.0f, 1.0f },
-        .tex_color = { 1.0, 1.0, 1.0, 1.0 }, .tex_coord = { 0.0, 0.0, 1.0, 1.0 }, .tex_index = { 0 }
-    },
-    */
-};
-static GLuint ibuffer_source[] = {
-    0u, //1u, 2u
-};
-
 namespace gt {
 
     namespace gfx {
 
         bool
-            engine_t::set_pixel_size(float scale)
+            engine_t::set_point_size(float scale)
         {
             ::glPointSize(scale);
 
@@ -104,11 +73,34 @@ namespace gt {
         }
 
         bool
-            engine_t::set_clear_color(float r, float g, float b, float a)
+            engine_t::set_clearcol(float r, float g, float b, float a)
         {
-            this->state.clear_color = { r, g, b, a };
+            this->state.clearcol = { r, g, b, a };
 
             ::glClearColor(r, g, b, a);
+
+            return true;
+        }
+
+        bool
+            engine_t::add_for_draw(const rect_t& rect)
+        {
+            auto vbuffer = &this->drawtool.ilayout.vbuffer;
+
+            msize_t msize_next;
+            
+            msize_next = (vbuffer->mtail - vbuffer->mhead) + sizeof(rect_t);
+            if (vbuffer->mbufr.msize <= msize_next) {
+                
+                GT_CHECK(this->draw(), "failed to draw the current content!", return false);
+            
+            }
+
+            msize_next = vbuffer->mtail - vbuffer->mhead;
+            GT_CHECK(vbuffer->mbufr.msize >= msize_next, "cannot render anything!", return false);
+
+            memcpy(vbuffer->mtail, &rect, sizeof(rect_t));
+            vbuffer->mtail += sizeof(rect_t);
 
             return true;
         }
@@ -139,11 +131,12 @@ namespace gt {
             if constexpr(true) {
 
                 ::glEnable(GL_BLEND);
+                ::glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
                 ::glDisable(GL_DEPTH_TEST);
                 ::glDisable(GL_CULL_FACE);
             
-                this->set_pixel_size(10.0f);
+                this->set_point_size(10.0f);
             }
 
             GT_CHECK(this->init_drawtool(&this->drawtool), "failed sprites init!", return false);
@@ -153,7 +146,7 @@ namespace gt {
 
             this->set_facemode(FACEMODE_FILL);
 
-            this->set_clear_color(0.125,0.250,0.500,1.000);
+            this->set_clearcol(0.125,0.250,0.500,1.000);
             this->set_viewport(this->state.viewport[0], this->state.viewport[1], this->state.viewport[2], this->state.viewport[3]);
 
             return this->play();;
@@ -161,24 +154,30 @@ namespace gt {
         bool
             engine_t::work()
         {
-            ::glBindFramebuffer(GL_FRAMEBUFFER, fmbuffer.index);
-            this->set_clear_color(this->state.clear_color[0], this->state.clear_color[1], this->state.clear_color[2], this->state.clear_color[3]);
-            ::glClear(GL_COLOR_BUFFER_BIT);
+            auto senow = app::engine_t::get()->get_timer()->get_senow();
+            auto sinow = sinf(senow);
+            auto conow = cosf(senow);
 
-            ::glUseProgram(this->drawtool.materia.index);
-            ::glBindVertexArray(this->drawtool.ilayout.index);
+            for (float iterx = -1.0f; iterx < +1.0f; iterx += 0.01f) {
 
-            if (this->drawtool.materia.mapping.count > 0) {
-            
-                auto timer = app::engine_t::get()->get_timer();
-                float senow = timer->get_senow();
-                ::glUniform1f(this->drawtool.materia.mapping.mdata[1].iname, senow);
-            
+                for (float itery = -1.0f; itery < +1.0f; itery += 0.01f) {
+
+                    rect_t rect;
+                    
+                    rect.vtx_coord = { iterx * sinow, itery * conow };
+                    rect.vtx_pivot = { 0.0f, 0.0f };
+                    rect.vtx_scale = { 0.0025f * sinow, 0.0025f * conow };
+                    rect.tex_color = { iterx * sinow, itery * conow, iterx * sinow, itery * conow };
+                    rect.tex_coord = { 0.0, 0.0, 1.0, 1.0 };
+                    rect.tex_index = { 0 };
+                    
+                    this->add_for_draw(rect);
+                }
+
             }
 
-            ::glDrawElements(GL_POINTS, sizeof(ibuffer_source) / sizeof(GLuint), GL_UNSIGNED_INT, nullptr);
-            
-            ::glBindFramebuffer(GL_FRAMEBUFFER, 0u);
+            this->draw();
+
             ::glfwSwapBuffers(reinterpret_cast<::GLFWwindow*>(this->window));
             ::glClear(GL_COLOR_BUFFER_BIT);
             
@@ -212,7 +211,11 @@ namespace gt {
                 float window_w = static_cast<float>(this->state.viewport[2]);
                 float window_h = static_cast<float>(this->state.viewport[3]);
 
-                this->set_clear_color(this->state.clear_color[0], cursor_x / window_w, cursor_y / window_h, this->state.clear_color[3]);
+                this->set_clearcol(
+                    this->state.clearcol[0],
+                    cursor_x / window_w, cursor_y / window_h,
+                    this->state.clearcol[3]
+                );
 
                 return true;
             }
@@ -234,6 +237,39 @@ namespace gt {
 
             return true;
         }
+
+        bool
+            engine_t::draw()
+        {
+            ::glBindFramebuffer(GL_FRAMEBUFFER, fmbuffer.index);
+            ::glClear(GL_COLOR_BUFFER_BIT);
+
+            auto materia = &this->drawtool.ilayout;
+            ::glUseProgram(this->drawtool.materia.index);
+
+            /*
+            if (this->drawtool.materia.mapping.count > 0) {
+
+                auto timer = app::engine_t::get()->get_timer();
+                float senow = timer->get_senow();
+                ::glUniform1f(this->drawtool.materia.mapping.mdata[1].iname, senow);
+
+            }
+            */
+            auto ilayout = &this->drawtool.ilayout;
+            ::glBindVertexArray(this->drawtool.ilayout.index);
+            
+            auto vbuffer = &ilayout->vbuffer;
+            ::glBufferSubData(GL_ARRAY_BUFFER, 0, vbuffer->mbufr.msize, vbuffer->mbufr.mdata);
+            vbuffer->mtail = vbuffer->mhead = vbuffer->mbufr.mdata;
+
+            ::glDrawArrays(GL_POINTS, 0, vbuffer->mbufr.msize / ilayout->mapping.msize);
+
+            ::glBindFramebuffer(GL_FRAMEBUFFER, 0u);
+
+            return true;
+        }
+
 
         bool
             engine_t::init_fmbuffer(fmbuffer_t* fmbuffer)
@@ -380,27 +416,17 @@ namespace gt {
                 ::glGenVertexArrays(1u, &ilayout->index);
                 ::glBindVertexArray(ilayout->index);
 
-                auto ibuffer = &ilayout->ibuffer;
-                do {
-                    ::glGenBuffers(1u, &ibuffer->index);
-                    ::glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibuffer->index);
-
-                    ibuffer->mbufr.msize = sizeof(ibuffer_source);
-                    ibuffer->mbufr.mdata = new mbyte_t[ibuffer->mbufr.msize];
-                    memcpy_s(ibuffer->mbufr.mdata, ibuffer->mbufr.msize, ibuffer_source, sizeof(ibuffer_source));
-                    ::glBufferData(GL_ELEMENT_ARRAY_BUFFER, ibuffer->mbufr.msize, ibuffer->mbufr.mdata, GL_STATIC_DRAW);
-
-                } while (ibuffer->index == 0);
-
                 auto vbuffer = &ilayout->vbuffer;
                 do {
                     ::glGenBuffers(1u, &vbuffer->index);
                     ::glBindBuffer(GL_ARRAY_BUFFER, vbuffer->index);
 
-                    vbuffer->mbufr.msize = sizeof(vbuffer_source);
+                    vbuffer->mbufr.msize = sizeof(rect_t) * GT_GTX_RECT_COUNT_USE;
                     vbuffer->mbufr.mdata = new mbyte_t[vbuffer->mbufr.msize];
-                    memcpy_s(vbuffer->mbufr.mdata, vbuffer->mbufr.msize, vbuffer_source, sizeof(vbuffer_source));
+                    memset(vbuffer->mbufr.mdata, 0, vbuffer->mbufr.msize);
                     ::glBufferData(GL_ARRAY_BUFFER, vbuffer->mbufr.msize, vbuffer->mbufr.mdata, GL_DYNAMIC_DRAW);
+
+                    vbuffer->mhead = vbuffer->mtail = vbuffer->mbufr.mdata;
 
                 } while (vbuffer->index == 0);
 
@@ -528,14 +554,6 @@ namespace gt {
                 if (vbuffer->mbufr.msize > 0ul) { delete[] vbuffer->mbufr.mdata; }
                 vbuffer->mbufr.mdata = nullptr;
                 vbuffer->mbufr.msize = 0ul;
-
-                auto ibuffer = &ilayout->ibuffer;
-                GT_CHECK(ibuffer->index > 0, "cannot delete index buffer!", return false);
-                ::glDeleteBuffers(1u, &ibuffer->index);
-                ibuffer->index = 0;
-                if (ibuffer->mbufr.msize > 0ul) { delete[] ibuffer->mbufr.mdata; }
-                ibuffer->mbufr.mdata = nullptr;
-                ibuffer->mbufr.msize = 0ul;
 
                 auto mapping = &ilayout->mapping;
                 if (mapping->msize > 0ul) { delete[] ilayout->mapping.mdata; }

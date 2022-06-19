@@ -147,9 +147,13 @@
     <ClInclude Include="src\cfg\cfg_number.hpp" />
     <ClInclude Include="src\cfg\cfg_string.hpp" />
     <ClInclude Include="src\cfg\cfg_tools.hpp" />
+    <ClInclude Include="src\ecs\ecs_compon.hpp" />
     <ClInclude Include="src\ecs\ecs_engine.hpp" />
+    <ClInclude Include="src\fsx\fsx_engine.hpp" />
+    <ClInclude Include="src\fsx\fsx_lib.hpp" />
     <ClInclude Include="src\gfx\gfx_lib.hpp" />
     <ClInclude Include="src\gui\gui_engine.hpp" />
+    <ClInclude Include="src\fsx.hpp" />
     <ClInclude Include="src\lib\lib_file.hpp" />
     <ClInclude Include="src\lib\lib_time.hpp" />
     <ClInclude Include="src\lib\lib_event.hpp" />
@@ -176,6 +180,8 @@
     <ClCompile Include="src\app\app_estate.cpp" />
     <ClCompile Include="src\cfg\cfg_gfx.cpp" />
     <ClCompile Include="src\ecs\ecs_engine.cpp" />
+    <ClCompile Include="src\fsx\fsx_engine.cpp" />
+    <ClCompile Include="src\fsx\fsx_lib.cpp" />
     <ClCompile Include="src\gametool.cpp">
       <ExternalWarningLevel>Level3</ExternalWarningLevel>
       <ExternalWarningLevel>Level3</ExternalWarningLevel>
@@ -197,6 +203,7 @@
     <None Include="src\.keep" />
     <None Include="src\app\.keep" />
     <None Include="src\cfg\.keep" />
+    <None Include="src\fsx\.keep" />
     <None Include="src\gfx\.keep" />
     <None Include="src\lib\.keep" />
     <None Include="rsc\glsl\sprites_pxl.glsl" />

@@ -2,18 +2,28 @@
 
 #	define GUI_ENGINE_CPP
 
-#	include "../gfx/gfx_engine.hpp"
+#	include "gui_engine.hpp"
 
+#	include "../app/app_engine.hpp"
+
+#	include "../gfx/gfx_engine.hpp"
 #	include "../sys/sys_engine.hpp"
 #	include "../sys/sys_window.hpp"
 
-#	include "gui_engine.hpp"
+#	include "../ecs/ecs_engine.hpp"
+#	include "../ecs/ecs_compon.hpp"
 
 #	include "../../lib/glfw/src/glfw3.h"
 
 #	include "../../lib/imgui/src/imgui.h"
 #	include "../../lib/imgui/src/imgui_impl_glfw.h"
 #	include "../../lib/imgui/src/imgui_impl_opengl3.h"
+
+#	define IMGUI_TREE_FLAGS (				\
+		ImGuiTreeNodeFlags_Selected |		\
+		ImGuiTreeNodeFlags_OpenOnArrow |	\
+		ImGuiTreeNodeFlags_OpenOnDoubleClick\
+) /* IMGUI_TREE_FLAGS */
 
 namespace gt {
 
@@ -82,11 +92,102 @@ namespace gt {
 				auto fmbuffer = gfx::engine_t::get()->get_fmbuffer();
 				ImVec2 viewport_size = ImGui::GetContentRegionAvail();
 
-				ImGui::Image(reinterpret_cast<ImTextureID>(fmbuffer->colorbuf.index), viewport_size);
+				ImGui::Image(reinterpret_cast<ImTextureID>(fmbuffer->colorbuf.index), viewport_size, {0.0f,1.0f}, {1.0f,0.0f});
 				if (fmbuffer->viewport[2] != viewport_size[0] || fmbuffer->viewport[3] != viewport_size[1]) {
 					gfx::engine_t::get()->set_viewport(0, 0, static_cast<int>(viewport_size[0]), static_cast<int>(viewport_size[1]));
 				}
 			
+			}
+			ImGui::End();
+
+			if (ImGui::Begin("app")) {
+
+			}
+			ImGui::End();
+			if (ImGui::Begin("sys")) {
+
+			}
+			ImGui::End();
+			if (ImGui::Begin("gfx")) {
+
+				auto gfx = gfx::engine_t::get();
+				
+				auto state = gfx->get_state();
+
+				auto viewport = state->viewport;
+				ImGui::Text("[viewport]=([x]%.3f[y]%.3f[w]%.3f[h]%.3f)", viewport[0], viewport[1], viewport[2], viewport[3]);
+				auto clearcol = state->clearcol;
+				ImGui::Text("[clearcol]=([r]%.3f[g]%.3f[b]%.3f[a]%.3f)", clearcol[0], clearcol[1], clearcol[2], clearcol[3]);
+				
+				auto fmbuffer = gfx->get_fmbuffer();
+				
+				static v1f_t point_size = 1.0f;
+				if (ImGui::SliderFloat("point_size", &point_size, 0.0f, 100.0f, "%.3f")) { gfx->set_point_size(point_size); }
+				static v1f_t lines_size = 1.0f;
+				if (ImGui::SliderFloat("lines_size", &lines_size, 0.0f, 100.0f, "%.3f")) { gfx->set_lines_size(lines_size); }
+
+				ImGui::Text("facemode");
+				if (ImGui::Button("fill")) { gfx->set_facemode(gfx::FACEMODE_FILL); }
+				if (ImGui::Button("line")) { gfx->set_facemode(gfx::FACEMODE_LINE); }
+
+				static gfx::rect_t srect;
+				gfx::rect_t drect = srect;
+
+				ImGui::Text("rectangle");
+				if (ImGui::SliderFloat2("vtx_coord", &drect.vtx_coord[0], -1.0f, +1.0f, "%.3f")) { srect.vtx_coord = drect.vtx_coord; }
+				if (ImGui::SliderFloat2("vtx_pivot", &drect.vtx_pivot[0], -1.0f, +1.0f, "%.3f")) { srect.vtx_pivot = drect.vtx_pivot; }
+				if (ImGui::SliderFloat2("vtx_scale", &drect.vtx_scale[0], -1.0f, +1.0f, "%.3f")) { srect.vtx_scale = drect.vtx_scale; }
+				if (ImGui::SliderFloat4("tex_color", &drect.tex_color[0], -1.0f, +1.0f, "%.3f")) { srect.tex_color = drect.tex_color; }
+				if (ImGui::SliderFloat4("tex_coord", &drect.tex_coord[0], -1.0f, +1.0f, "%.3f")) { srect.tex_coord = drect.tex_coord; }
+
+				gfx->add_for_draw(srect);
+
+			}
+			ImGui::End();
+			if (ImGui::Begin("ecs")) {
+
+				auto ecs = ecs::engine_t::get();
+				auto reg = &ecs->reg;
+
+				if (ImGui::BeginPopupContextWindow("actions", ImGuiMouseButton_Right, false)) {
+
+					if (ImGui::MenuItem("create entity")) {
+
+						entt::entity entity_to_create = { };
+						GT_CHECK(ecs->create_entity(&entity_to_create), "failed entity creation from gui!", return false);
+
+					}
+
+					ImGui::EndPopup();
+				}
+
+				entt::entity entity_to_remove = { };
+				auto view = reg->view<ecs::ebase_t>();
+				for (auto [entity, ebase] : view.each()) {
+
+					if (ImGui::TreeNodeEx(&ebase.name[0], IMGUI_TREE_FLAGS)) {
+
+						ImGui::Text("[label]=(%s)", &ebase.name[0]);
+						ImGui::Text("[index]=(%d)", entity);
+
+						ImGui::TreePop();
+					}
+					if (ImGui::BeginPopupContextItem(&ebase.name[0])) {
+
+						if (ImGui::MenuItem("remove")) { entity_to_remove = entity; }
+						if (ImGui::MenuItem("create component")) {
+
+						}
+
+						ImGui::EndPopup();
+					}
+
+					if (reg->valid(entity_to_remove)) {
+						ecs->remove_entity(&entity_to_remove);
+					}
+
+				}
+
 			}
 			ImGui::End();
 

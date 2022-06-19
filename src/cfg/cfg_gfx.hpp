@@ -19,20 +19,12 @@
 #       define GT_GFX_TEXTURE_SIZES_USE GT_GFX_TEXTURE_SIZES_MED
 #   endif /* GT_GFX_TEXTURE_COUNT_USE */
 
-/* vertex pointers for input-layouts|vertex-arrays */
-#   ifndef GT_GFX_VPOINTER_COUNT_USE
-#       define GT_GFX_VPOINTER_COUNT_MIN 0x01
-#       define GT_GFX_VPOINTER_COUNT_MED 0x10
-#       define GT_GFX_VPOINTER_COUNT_MAX 0x20
-#       define GT_GFX_VPOINTER_COUNT_USE GT_GFX_VPOINTER_COUNT_MED
-#   endif /* GT_GFX_VPOINTER_COUNT_USE */
-/* shader pointers for uniforms|constants inside of a shader */
-#   ifndef GT_GFX_SPOINTER_COUNT_USE
-#       define GT_GFX_SPOINTER_COUNT_MIN 0x01
-#       define GT_GFX_SPOINTER_COUNT_MED 0x10
-#       define GT_GFX_SPOINTER_COUNT_MAX 0x20
-#       define GT_GFX_SPOINTER_COUNT_USE GT_GFX_SPOINTER_COUNT_MED
-#   endif /* GT_GFX_SPOINTER_COUNT_USE */
+#   ifndef GT_GFX_RECT_COUNT_USE
+#       define GT_GFX_RECT_COUNT_MIN    0x00f0
+#       define GT_GFX_RECT_COUNT_MIN    0x0f00
+#       define GT_GFX_RECT_COUNT_MAX    0xf000
+#       define GT_GTX_RECT_COUNT_USE    GT_GFX_RECT_COUNT_MAX
+#   endif /* GT_GFX_RECT_COUNT_USE */
 
 namespace gt {
 

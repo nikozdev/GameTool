@@ -28,7 +28,7 @@ namespace gt {
         public:
 
             bool
-                set_pixel_size(float scale = 1.0f);
+                set_point_size(float scale = 1.0f);
             bool
                 set_lines_size(float scale = 1.0f);
 
@@ -39,13 +39,27 @@ namespace gt {
                 set_viewport(int x, int y, int w, int h);
 
             bool
-                set_clear_color(float r, float g, float b, float a);
+                set_clearcol(float r, float g, float b, float a);
 
             inline const fmbuffer_t*
                 get_fmbuffer() const
             {
                 return &this->fmbuffer;
             }
+            inline const drawtool_t*
+                get_drawtool() const
+            {
+                return &this->drawtool;
+            }
+
+            inline const state_t*
+                get_state() const
+            {
+                return &this->state;
+            }
+
+            bool
+                add_for_draw(const rect_t& rect);
 
         public:
 
@@ -58,6 +72,9 @@ namespace gt {
 
             virtual bool
                 proc(lib::event_a_t* event) override;
+            
+            bool
+                draw();
 
             inline bool
                 redo_fmbuffer()
@@ -97,7 +114,6 @@ namespace gt {
             fmbuffer_t fmbuffer;
             /* what and how to draw */
             drawtool_t drawtool;
-            /**/
         };
 
     }
