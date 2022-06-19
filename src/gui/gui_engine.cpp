@@ -63,20 +63,30 @@ namespace gt {
 			if (ImGui::BeginMenuBar()) {
 
 				if (ImGui::BeginMenu("File")) {
-					if (ImGui::MenuItem("New Scene...", "Ctrl+N")) {
+
+					if (ImGui::MenuItem("init...", "Ctrl+N")) {
 					}
-					if (ImGui::MenuItem("Save Scene As...", "Ctrl+S")) {
+					if (ImGui::MenuItem("save...", "Ctrl+S")) {
 					}
-					if (ImGui::MenuItem("Load Scene...", "Ctrl+S")) {
+					if (ImGui::MenuItem("load...", "Ctrl+L")) {
 					}
 					ImGui::EndMenu();
 				}
-				else if (ImGui::BeginMenu("View")) {
+				else if (ImGui::BeginMenu("view")) {
 
 					ImGui::EndMenu();
 				}
 				ImGui::EndMenuBar();
 			}
+
+			if (ImGui::Begin("frame")) {
+				
+				ImVec2 viewport_size = ImGui::GetContentRegionAvail();
+				ImGui::Image(reinterpret_cast<ImTextureID>(1u), viewport_size);
+				gfx::engine_t::get()->set_viewport(0, 0, static_cast<int>(viewport_size[0]), static_cast<int>(viewport_size[1]));
+			
+			}
+			ImGui::End();
 
 			GT_CHECK(this->shut_frame(), "cannot shut the frame!", return false);
 

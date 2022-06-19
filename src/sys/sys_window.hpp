@@ -140,7 +140,7 @@ namespace gt {
 
             v4u_t viewp;
 
-            char title[GT_NAME_SIZE_USE];
+            char title[GT_NAME_SIZE_MAX];
 
             handle_t handle;
 

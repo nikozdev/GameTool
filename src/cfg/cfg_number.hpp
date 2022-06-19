@@ -10,6 +10,8 @@ namespace gt {
     using flags_t   = uint64_t;
     using index_t   = uint64_t;
 
+    using enum_t    = index_t;
+
 }
 
 #endif /* CFG_NUMBER_HPP */

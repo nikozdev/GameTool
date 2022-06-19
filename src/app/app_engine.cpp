@@ -24,7 +24,7 @@ namespace gt {
             this->engine_array = {
                 sys::engine_t::get(),
                 gfx::engine_t::get(),
-                //gui::engine_t::get(),
+                gui::engine_t::get(),
                 ecs::engine_t::get(),
             };
 

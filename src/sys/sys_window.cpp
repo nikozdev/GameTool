@@ -103,6 +103,7 @@ namespace gt {
             ::glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
             ::glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
             ::glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+            ::glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 
             ::GLFWwindow* glfw_window = ::glfwCreateWindow(0x400, 0x300, "gametool", nullptr, nullptr);
             GT_CHECK(glfw_window != nullptr, "failed window creation!", return false);
@@ -118,6 +119,7 @@ namespace gt {
             ::glfwSetWindowCloseCallback(glfw_window, glfw_call_window_close);
             ::glfwSetWindowPosCallback(glfw_window, glfw_call_window_moved);
             ::glfwSetWindowSizeCallback(glfw_window, glfw_call_window_sized);
+            ::glfwSetFramebufferSizeCallback(glfw_window, glfw_call_window_sized);
 
             this->handle = glfw_window;
             
@@ -134,12 +136,14 @@ namespace gt {
             GT_CHECK(this->keybod.work(),"keybod work error!", return false);
             GT_CHECK(this->cursor.work(),"cursor work error!", return false);
 
-            char title_format[GT_NAME_SIZE_USE];
-            sprintf_s(title_format, "[%s]=([delta]=(%.3lf))", this->title, 1.0 / app::engine_t::get()->get_timer()->get_delta());
+            auto timer = app::engine_t::get()->get_timer();
+            auto delta = timer->get_delta();
+
+            char title_format[GT_NAME_SIZE_MAX];
+            sprintf_s(title_format, "[%s]=([delta]=(%.3lf)[fps]=(%.3lf))", this->title, delta, 1.0 / delta);
             ::glfwSetWindowTitle(reinterpret_cast<GLFWwindow*>(this->handle), title_format);
 
             ::glfwPollEvents();
-            //::glfwSwapBuffers(reinterpret_cast<::GLFWwindow*>(this->handle));
 
             return true;
         }

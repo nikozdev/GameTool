@@ -20,6 +20,7 @@
 **/*.lo
 **/*.slo
 **/*.idb
+**/*.ilk
 **/*.log
 **/*.tlog
 **/*.iobj
@@ -67,8 +68,10 @@
 
 **/.vscode/*.dat
 **/.vscode/cxxdata*
-**/.vscode/CXXDATA
 **/.vscode/CXXDATA*
+**/.vscode/CXXDATA
+**/CXXDATA*
+**/CXXDATA
 
 ## visual studio
 

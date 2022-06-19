@@ -45,10 +45,10 @@ namespace gt {
             char* buffer_data = nullptr;
             GLint buffer_size = 0;
 
-            if (itype == GL_CURRENT_PROGRAM) {
+            if (itype == GL_PROGRAM) {
 
                 glGetProgramiv(index, GL_LINK_STATUS, &success);
-                if (success == GL_TRUE) { return GL_FALSE; }
+                if (success == GL_TRUE) { return GL_TRUE; }
 
                 glGetProgramiv(index, GL_INFO_LOG_LENGTH, &buffer_size);
                 buffer_data = new char[buffer_size];
@@ -60,13 +60,12 @@ namespace gt {
 
                 delete[] buffer_data;
 
-                return GL_TRUE;
-
-            }
-            else {
+                return GL_FALSE;
+            
+            } else {
 
                 glGetShaderiv(index, GL_COMPILE_STATUS, &success);
-                if (success == GL_TRUE) { return GL_FALSE; }
+                if (success == GL_TRUE) { return GL_TRUE; }
 
                 glGetShaderiv(index, GL_INFO_LOG_LENGTH, &buffer_size);
                 buffer_data = new char[buffer_size];
@@ -78,11 +77,10 @@ namespace gt {
 
                 delete[] buffer_data;
 
-                return GL_TRUE;
-
+                return GL_FALSE;
             }
 
-            return GL_FALSE;
+            return GL_TRUE;
         }
  
     }

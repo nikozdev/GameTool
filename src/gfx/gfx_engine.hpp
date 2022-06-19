@@ -8,6 +8,9 @@
 
 #   include "../lib/lib_engine.hpp"
 
+#   include "../lib/lib_vector.hpp"
+#   include "../lib/lib_matrix.hpp"
+
 namespace gt {
 
     namespace gfx {
@@ -23,7 +26,15 @@ namespace gt {
             using contex_t = void*;
             using device_t = void*;
 
+            enum facemode_t : index_t {
+                FACEMODE_LINE,
+                FACEMODE_FILL,
+            };
+
         public:
+
+            bool
+                set_facemode(facemode_t facemode);
 
             bool
                 set_viewport(int x, int y, int w, int h);
@@ -51,8 +62,11 @@ namespace gt {
 
             struct {
 
-                struct { int	x, y, w, h; } viewport;
-                struct { float	r, g, b, a; } clear_color;
+                facemode_t  facemode;
+
+                v4s_t viewport;
+
+                v4f_t clear_color;
 
             } state;
 
