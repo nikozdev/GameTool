@@ -12,9 +12,17 @@
 
 namespace gt {
 
+    namespace gui { class tool_sys_t; }
+    
     namespace sys {
 
         class engine_t : public lib::engine_t_t<engine_t> {
+
+        public:
+
+            using this_t = engine_t;
+
+            friend class gui::tool_sys_t;
 
         public:
 

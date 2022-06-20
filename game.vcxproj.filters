@@ -48,10 +48,12 @@
     <ClInclude Include="src\cfg\cfg_gfx.hpp" />
     <ClInclude Include="src\gfx\gfx_lib.hpp" />
     <ClInclude Include="src\lib\lib_file.hpp" />
-    <ClInclude Include="src\ecs\ecs_compon.hpp" />
+    <ClInclude Include="src\ecs\ecs_lib.hpp" />
     <ClInclude Include="src\fsx\fsx_engine.hpp" />
     <ClInclude Include="src\fsx\fsx_lib.hpp" />
     <ClInclude Include="src\fsx.hpp" />
+    <ClInclude Include="src\gfx\gfx_data.hpp" />
+    <ClInclude Include="src\gui\gui_tool.hpp" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\gametool.cpp" />
@@ -69,6 +71,7 @@
     <ClCompile Include="src\gfx\gfx_lib.cpp" />
     <ClCompile Include="src\fsx\fsx_engine.cpp" />
     <ClCompile Include="src\fsx\fsx_lib.cpp" />
+    <ClCompile Include="src\gui\gui_tool.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="src\.keep" />
@@ -87,8 +90,6 @@
     <None Include="src\cfg\.keep" />
     <None Include="rsc\glsl\sprites_vtx.glsl" />
     <None Include="rsc\glsl\sprites_pxl.glsl" />
-    <None Include="rsc\glsl\tilemap_vtx.glsl" />
-    <None Include="rsc\glsl\tilemap_pxl.glsl" />
     <None Include="rsc\glsl\sprites_gmt.glsl" />
     <None Include="src\fsx\.keep" />
   </ItemGroup>

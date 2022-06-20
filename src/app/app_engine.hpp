@@ -14,6 +14,8 @@
 
 namespace gt {
 
+	namespace gui { class tool_app_t; }
+	
 	namespace app {
 
 		class engine_t : public lib::engine_t_t<engine_t> {

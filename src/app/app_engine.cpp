@@ -17,7 +17,7 @@ namespace gt {
     namespace app {
 
         bool
-        engine_t::init()
+            engine_t::init()
         {
             this->timer.init();
 

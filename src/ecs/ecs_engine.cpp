@@ -3,7 +3,7 @@
 #	define ECS_ENGINE_CPP
 
 #	include "ecs_engine.hpp"
-#	include "ecs_compon.hpp"
+#	include "ecs_lib.hpp"
 
 #	include "../app/app_engine.hpp"
 #	include "../gfx/gfx_engine.hpp"
@@ -17,10 +17,10 @@ namespace gt {
 		{
 			*entity = this->reg.create();
 
-			auto ebase = this->reg.emplace<ebase_t>(*entity);
-			ebase.name = "entity" + std::to_string(static_cast<entt::id_type>(*entity));
-
-			auto sprite = this->reg.emplace<ecs::sprite_t>(*entity);
+			ebase_t ebase = {
+				.name = "entity" + std::to_string(static_cast<entt::id_type>(*entity))
+			};
+			this->reg.emplace<ebase_t>(*entity, ebase);
 
 			return true;
 		}
@@ -44,7 +44,17 @@ namespace gt {
 		bool
 			engine_t::work()
 		{
+			auto app = app::engine_t::get();
+			auto gfx = gfx::engine_t::get();
 
+			auto view = this->reg.view<ebase_t>();
+			auto view_gfx = this->reg.view<sprite_t>();
+
+			for (auto [entity, sprite] : view_gfx.each()) {
+
+				gfx->add_for_draw(sprite);
+
+			}
 
 			return true;
 		}

@@ -13,15 +13,15 @@ out vso_t {
     out vec2        vtx_scale;
     out vec4        tex_color;
     out vec4        tex_coord;
-    out flat int    tex_index;
+    out int         tex_index;
 
 } vso;
 
 void main() {
     
     gl_Position = vec4(
-        vsi_vtx_coord.x - vsi_vtx_pivot.x,
-        vsi_vtx_coord.y - vsi_vtx_pivot.y,
+        vsi_vtx_coord.x - vsi_vtx_pivot.x * vsi_vtx_scale.y,
+        vsi_vtx_coord.y - vsi_vtx_pivot.y * vsi_vtx_scale.y,
         0.0, 1.0
     );
     

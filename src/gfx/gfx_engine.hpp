@@ -12,6 +12,8 @@
 
 namespace gt {
 
+    namespace gui { class tool_gfx_t; class tool_frame_t;  }
+
     namespace gfx {
 
         class engine_t : public lib::engine_t_t<engine_t> {
@@ -24,6 +26,9 @@ namespace gt {
             using window_t = void*;
             using contex_t = void*;
             using device_t = void*;
+
+            friend class gui::tool_gfx_t;
+            friend class gui::tool_frame_t;
 
         public:
 

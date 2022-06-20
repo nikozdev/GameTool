@@ -4,25 +4,25 @@
 
 #	include "../cfg.hpp"
 
-#	include "../lib/lib_engine.hpp"
+#	include "ecs_lib.hpp"
 
-#	include "../gui/gui_engine.hpp"
+#	include "../lib/lib_engine.hpp"
 
 #	include "../../lib/entt/src/entt.hpp"
 
 namespace gt {
 
-	namespace ecs {
+	namespace gui { class tool_ecs_t; }
 
+	namespace ecs {
+		
 		class engine_t : public lib::engine_t_t<engine_t> {
 			
 		public:
 
 			using this_t = engine_t;
 			
-			using entity_t = entt::entity;
-
-			friend class gui::engine_t;
+			friend class gui::tool_ecs_t;
 
 		public:
 
@@ -30,6 +30,21 @@ namespace gt {
 				create_entity(entity_t* entity);
 			bool
 				remove_entity(entity_t* entity);
+
+			template<typename compon_t, typename ... args_t> bool
+				create_compon(entity_t* entity, args_t&& ... args)
+			{
+				this->reg.emplace<compon_t>(*entity, std::forward<args_t>(args)...);
+				
+				return true;
+			}
+			template<typename compon_t> bool
+				remove_compon(entity_t* entity)
+			{
+				this->reg.remove(*entity);
+
+				return true;
+			}
 
 		public:
 

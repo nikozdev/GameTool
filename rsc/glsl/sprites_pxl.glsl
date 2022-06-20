@@ -10,13 +10,13 @@ in gso_t {
 
 } psi;
 
-#define TEX_COUNT   0x20
+#define TEX_COUNT   0x10
 
-uniform sampler2D   uni_tex_index_array[TEX_COUNT];
+uniform sampler2D   uni_tex_index[TEX_COUNT];
 
 void main() {
     
-    vec4 tex_pixel = texture(uni_tex_index_array[psi.tex_index], psi.tex_coord);
+    vec4 tex_pixel = texture(uni_tex_index[psi.tex_index], psi.tex_coord);
 
     pso_color = tex_pixel * psi.tex_color;
     

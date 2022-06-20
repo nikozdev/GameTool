@@ -8,7 +8,7 @@ in vso_t {
     vec2        vtx_scale;
     vec4        tex_color;
     vec4        tex_coord;
-    flat int    tex_index;
+    int         tex_index;
 
 } gsi[];
 
@@ -37,7 +37,7 @@ void main() {
 void makev(int index) {
     
     if (index % 2 == 0)         { signs.x = -1.0; } else { signs.x = +1.0; }
-    if ((index / 2) % 2 == 0)   { signs.y = -1.0; } else { signs.y = +1.0; }
+    if ((index / 2) % 2 == 0)   { signs.y = +1.0; } else { signs.y = -1.0; }
 
     coord.x = signs.x * gsi[0].vtx_scale.x;
     coord.y = signs.y * gsi[0].vtx_scale.y;

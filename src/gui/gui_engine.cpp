@@ -7,11 +7,11 @@
 #	include "../app/app_engine.hpp"
 
 #	include "../gfx/gfx_engine.hpp"
+
 #	include "../sys/sys_engine.hpp"
 #	include "../sys/sys_window.hpp"
 
 #	include "../ecs/ecs_engine.hpp"
-#	include "../ecs/ecs_compon.hpp"
 
 #	include "../../lib/glfw/src/glfw3.h"
 
@@ -32,7 +32,6 @@ namespace gt {
 		bool
 			engine_t::init()
 		{
-
 			IMGUI_CHECKVERSION();
 			ImGui::CreateContext();
 
@@ -61,6 +60,28 @@ namespace gt {
 			
 			GT_CHECK(::ImGui_ImplGlfw_InitForOpenGL(glfw_window, true), "failed imgui opengl backend init!", return false);
 
+			/* engines */
+			this->tool_array.push_back(new tool_app_t());
+			this->tool_array.push_back(new tool_sys_t());
+			this->tool_array.push_back(new tool_gfx_t());
+			this->tool_array.push_back(new tool_fsx_t());
+			this->tool_array.push_back(new tool_ecs_t());
+			/* others */
+			this->tool_array.push_back(new tool_frame_t());
+			/* done */
+
+			for (index_t index = 0; index < this->tool_array.size(); index++) {
+				
+				auto tool = this->tool_array[index];
+				GT_CHECK(tool->init(), "failed gui tool init!", {
+
+					GT_ELOGF("[index]=(%u)", index);
+
+					return false;
+					});
+
+			}
+
 			return this->play();
 		}
 		bool
@@ -80,201 +101,41 @@ namespace gt {
 					}
 					ImGui::EndMenu();
 				}
-				else if (ImGui::BeginMenu("view")) {
+				if (ImGui::BeginMenu("view")) {
+
+					for (index_t index = 0; index < this->tool_array.size(); index++) {
+
+						auto tool = this->tool_array[index];
+
+						if (ImGui::Checkbox(&tool->name[0], &tool->flag)) { }
+
+					}
 
 					ImGui::EndMenu();
 				}
 				ImGui::EndMenuBar();
 			}
 
-			if (ImGui::Begin("frame")) {
-				
-				auto fmbuffer = gfx::engine_t::get()->get_fmbuffer();
-				ImVec2 viewport_size = ImGui::GetContentRegionAvail();
+			for (index_t index = 0; index < this->tool_array.size(); index++) {
 
-				ImGui::Image(reinterpret_cast<ImTextureID>(fmbuffer->colorbuf.index), viewport_size, {0.0f,1.0f}, {1.0f,0.0f});
-				if (fmbuffer->viewport[2] != viewport_size[0] || fmbuffer->viewport[3] != viewport_size[1]) {
-					gfx::engine_t::get()->set_viewport(0, 0, static_cast<int>(viewport_size[0]), static_cast<int>(viewport_size[1]));
-				}
-			
-			}
-			ImGui::End();
+				auto tool = this->tool_array[index];
 
-			if (ImGui::Begin("app")) {
+				if (tool->flag == false) { continue; }
 
-			}
-			ImGui::End();
-			if (ImGui::Begin("sys")) {
+				if (ImGui::Begin(&tool->name[0], &tool->flag)) {
 
-			}
-			ImGui::End();
-			if (ImGui::Begin("gfx")) {
 
-				auto gfx = gfx::engine_t::get();
-				
-				auto state = gfx->get_state();
+					GT_CHECK(tool->work(), "failed gui tool work!", {
 
-				auto viewport = state->viewport;
-				ImGui::Text("[viewport]=([x]%.3f[y]%.3f[w]%.3f[h]%.3f)", viewport[0], viewport[1], viewport[2], viewport[3]);
-				auto clearcol = state->clearcol;
-				ImGui::Text("[clearcol]=([r]%.3f[g]%.3f[b]%.3f[a]%.3f)", clearcol[0], clearcol[1], clearcol[2], clearcol[3]);
-				
-				auto fmbuffer = gfx->get_fmbuffer();
-				
-				static v1f_t point_size = 1.0f;
-				if (ImGui::SliderFloat("point_size", &point_size, 0.1f, 50.0f, "%.3f")) { gfx->set_point_size(point_size); }
-				static v1f_t lines_size = 1.0f;
-				if (ImGui::SliderFloat("lines_size", &lines_size, 0.1f, 50.0f, "%.3f")) { gfx->set_lines_size(lines_size); }
+						GT_ELOGF("[index]=(%u)", index);
 
-				ImGui::Text("facemode");
-				if (ImGui::Button("fill")) { gfx->set_facemode(gfx::FACEMODE_FILL); }
-				if (ImGui::Button("line")) { gfx->set_facemode(gfx::FACEMODE_LINE); }
-
-				ImGui::Separator();
-				
-				auto ginfo = gfx->get_ginfo();
-				ImGui::Text("performance");
-				
-				ImGui::Text("[draw call count]=(%u)", ginfo->drawcall.count);
-
-				ImGui::Text("[rectangle count]=(%u/%u)", ginfo->drawable.drawn_count, ginfo->drawable.store_count);
-				
-				ImGui::Text("[texture count]=(%u/%u)", ginfo->texture.taken_count, ginfo->texture.store_count);
-
-				ImGui::Text("[vertex memory size]=(%zu)", ginfo->vbuffer.vsize);
-				ImGui::Text("[vertex data memory]=(%zu/%zu)", ginfo->vbuffer.taken_bytes, ginfo->vbuffer.store_bytes);
-
-#if false
-				ImGui::Separator();
-
-				if (ImGui::TreeNodeEx("[drawtool]", IMGUI_TREE_FLAGS)) {
-					
-					auto drawtool = gfx->get_drawtool();
-					
-					if (ImGui::TreeNodeEx("[ilayout]", IMGUI_TREE_FLAGS)) {
-						
-						auto ilayout = &drawtool->ilayout;
-						
-						if (ImGui::TreeNodeEx("[ilayout mapping]"), IMGUI_TREE_FLAGS) {
-
-							auto mapping = &ilayout->mapping;
-							ImGui::Text("[msize]=%d", mapping->msize);
-							ImGui::Text("[count of elements]=%d", mapping->count);
-
-							for (index_t index = 0; index < mapping->count; index++) {
-
-								auto element = &mapping->mdata[index];
-
-								ImGui::Separator();
-								ImGui::Text("[start]=%d", element->start);
-								ImGui::Text("[iname]=%d", element->iname);
-								ImGui::Text("[sname]=%d", element->sname);
-								ImGui::Text("[count]=%d", element->count);
-								ImGui::Text("[msize]=%zu", element->msize);
-
-							}
-						
-							ImGui::TreePop();
-						}
-
-						ImGui::TreePop();
-					}
-					if (ImGui::TreeNodeEx("[materia]"), IMGUI_TREE_FLAGS) {
-					
-						auto materia = &drawtool->materia;
-						
-						if (ImGui::TreeNodeEx("[materia mapping]"), IMGUI_TREE_FLAGS) {
-							
-							auto mapping = &materia->mapping;
-							ImGui::Text("[msize]=%d", mapping->msize);
-							ImGui::Text("[count of elements]=%d", mapping->count);
-							
-							for (index_t index = 0; index < mapping->count; index++) {
-
-								auto element = &mapping->mdata[index];
-								
-								ImGui::Separator();
-								ImGui::Text("[start]=%d", element->start);
-								ImGui::Text("[iname]=%d", element->iname);
-								ImGui::Text("[sname]=%d", element->sname);
-								ImGui::Text("[count]=%d", element->count);
-								ImGui::Text("[msize]=%zu", element->msize);
-
-							}
-
-							ImGui::TreePop();
-						}
-
-						ImGui::TreePop();
-					}
-
-					ImGui::TreePop();
-				}
-
-#endif // false
-				ImGui::Separator();
-				
-				static gfx::rect_t srect;
-				gfx::rect_t drect = srect;
-
-				ImGui::Text("rectangle");
-				if (ImGui::SliderFloat2("vtx_coord", &drect.vtx_coord[0], -1.0f, +1.0f, "%.3f")) { srect.vtx_coord = drect.vtx_coord; }
-				if (ImGui::SliderFloat2("vtx_pivot", &drect.vtx_pivot[0], -1.0f, +1.0f, "%.3f")) { srect.vtx_pivot = drect.vtx_pivot; }
-				if (ImGui::SliderFloat2("vtx_scale", &drect.vtx_scale[0], 0.1f, 1.0f, "%.3f")) { srect.vtx_scale = drect.vtx_scale; }
-				if (ImGui::SliderFloat4("tex_color", &drect.tex_color[0], 0.0f, 1.0f, "%.3f")) { srect.tex_color = drect.tex_color; }
-				if (ImGui::SliderFloat4("tex_coord", &drect.tex_coord[0], 0.0f, 1.0f, "%.3f")) { srect.tex_coord = drect.tex_coord; }
-
-				gfx->add_for_draw(srect);
-				
-				ImGui::Separator();
-
-			}
-			ImGui::End();
-			if (ImGui::Begin("ecs")) {
-
-				auto ecs = ecs::engine_t::get();
-				auto reg = &ecs->reg;
-
-				if (ImGui::BeginPopupContextWindow("actions", ImGuiMouseButton_Right, false)) {
-
-					if (ImGui::MenuItem("create entity")) {
-
-						entt::entity entity_to_create = { };
-						GT_CHECK(ecs->create_entity(&entity_to_create), "failed entity creation from gui!", return false);
-
-					}
-
-					ImGui::EndPopup();
-				}
-
-				entt::entity entity_to_remove = { };
-				auto view = reg->view<ecs::ebase_t>();
-				for (auto [entity, ebase] : view.each()) {
-
-					if (ImGui::TreeNodeEx(&ebase.name[0], IMGUI_TREE_FLAGS)) {
-
-						ImGui::Text("[label]=(%s)", &ebase.name[0]);
-						ImGui::Text("[index]=(%d)", entity);
-
-						ImGui::TreePop();
-					}
-					if (ImGui::BeginPopupContextItem(&ebase.name[0])) {
-
-						if (ImGui::MenuItem("remove")) { entity_to_remove = entity; }
-						if (ImGui::MenuItem("create component")) { }
-						if (ImGui::MenuItem("remove component")) { }
-
-						ImGui::EndPopup();
-					}
-
-					if (reg->valid(entity_to_remove)) {
-						ecs->remove_entity(&entity_to_remove);
-					}
+						return false;
+						});
 
 				}
+				ImGui::End();
 
 			}
-			ImGui::End();
 
 			GT_CHECK(this->shut_frame(), "cannot shut the frame!", return false);
 
@@ -283,6 +144,20 @@ namespace gt {
 		bool
 			engine_t::quit()
 		{
+
+			for (index_t index = 0; index < this->tool_array.size(); index++) {
+
+				auto tool = this->tool_array[index];
+				GT_CHECK(tool->quit(), "failed gui tool quit!", {
+
+					GT_ELOGF("[index]=(%u)", index);
+
+					return false;
+					});
+
+				delete tool;
+			}
+			this->tool_array.clear();
 
 			::ImGui_ImplOpenGL3_Shutdown();
 			::ImGui_ImplGlfw_Shutdown();

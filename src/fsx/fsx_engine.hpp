@@ -12,6 +12,8 @@
 
 namespace gt {
 
+    namespace gui { class tool_fsx_t; }
+
     namespace fsx {
 
         class engine_t : public lib::engine_t_t<engine_t> {
@@ -20,6 +22,8 @@ namespace gt {
 
             using this_t = engine_t;
             using base_t = lib::engine_t_t<this_t>;
+
+            friend class gui::tool_fsx_t;
 
         public:
 

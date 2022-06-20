@@ -107,7 +107,7 @@ namespace gt {
             /* graphics api handle */
             index_t     index;
             /* vertex, pixel, geometry shader */
-            shader_t    vshader, pshader, gshader;
+            shader_t    vshader, gshader, pshader;
             /* shader uniforms(constants) */
             mapping_t   mapping;
             /* textures + samplers */
@@ -124,7 +124,7 @@ namespace gt {
         } drawtool_t;
 
         /* framebuffer for off-screen rendering */
-        typedef struct {
+        typedef struct fmbuffer_t {
             /* graphics api handle */
             index_t     index;
             /* some parameters */
@@ -186,7 +186,7 @@ namespace gt {
             /* texture params */
             gt::v4f_t tex_color = { 1.0, 1.0, 1.0, 1.0 };
             gt::v4f_t tex_coord = { 0.0, 0.0, 1.0, 1.0 };
-            gt::v1s_t tex_index = { 0 };
+            gt::v1f_t tex_index = { 0 };
             /**/
         } rect_t;
 

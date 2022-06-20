@@ -3,6 +3,7 @@
 #   define GFX_ENGINE_CPP
 
 #   include "gfx_engine.hpp"
+#   include "gfx_data.hpp"
 
 #   include "../app/app_engine.hpp"
 #   include "../sys/sys_engine.hpp"
@@ -14,7 +15,6 @@
 #   define GLFW_EXPOSE_NATIVE_WIN32
 #   include "../../lib/glfw/src/glfw3.h"
 #   include "../../lib/glfw/src/glfw3native.h"
-
 
 namespace gt {
 
@@ -245,7 +245,14 @@ namespace gt {
                 index_array[index] = texture->index;
 
             }
-            ::glUniform1iv(1, binding->count, index_array);
+            auto mapping = &materia->mapping;
+            for (index_t index = 0; index < mapping->count; index++) {
+                auto element = &mapping->mdata[index];
+                if (strcmp(element->sname.sdata, "uni_tex_array[0]") == 0) {
+                    ::glUniform1iv(element->iname, element->count, index_array);
+                    break;
+                }
+            }
 
             auto ilayout = &this->drawtool.ilayout;
             ::glBindVertexArray(ilayout->index);
@@ -465,18 +472,18 @@ namespace gt {
                 mapping->mdata = new element_t[mapping->count];
                 memset(mapping->mdata, 0, mapping->count * sizeof(element_t));
             }
-
             for (index_t index = 0; index < mapping->count; index += 1) {
 
                 auto element = &mapping->mdata[index];
 
-                GLint   count;
                 GLenum  dtype;
+                GLint   count;
+
+                GLchar* name_data;
                 GLsizei name_size_max;
                 GLsizei name_size_use;
-                GLchar* name_data;
 
-                ::glGetProgramiv(materia->index, GL_ACTIVE_ATTRIBUTE_MAX_LENGTH, &name_size_max);
+                ::glGetProgramiv(materia->index, GL_ACTIVE_UNIFORM_MAX_LENGTH, &name_size_max);
                 name_data = new GLchar[name_size_max];
 
                 ::glGetActiveUniform(materia->index, index, name_size_max, &name_size_use, &count, &dtype, name_data);
@@ -486,13 +493,31 @@ namespace gt {
                 ::strcpy_s(element->sname.sdata, element->sname.msize, name_data);
                 delete[] name_data;
 
-                element->iname = index;
+                element->iname = ::glGetUniformLocation(this->drawtool.materia.index, element->sname.sdata);
                 element->count = get_dtype_count_item(dtype) * count;
                 element->msize = get_dtype_msize(dtype);
                 element->dtype = get_dtype_item(dtype);
-                element->start += mapping->msize;
 
-                mapping->msize += element->msize;
+            }
+            for (index_t ihead = 0, itail = 0; ihead < mapping->count; itail += 1) {
+
+                auto element = &mapping->mdata[itail];
+
+                if (element->iname == ihead) {
+
+                    element_t temp = mapping->mdata[ihead];
+                    mapping->mdata[ihead] = *element;
+                    mapping->mdata[itail] = temp;
+                    element = &mapping->mdata[ihead];
+
+                    element->start += mapping->msize;
+                    mapping->msize += element->msize;
+
+                    itail = ihead;
+                    ihead += 1;
+
+                }
+
             }
 
             auto binding = &materia->binding;
@@ -532,6 +557,8 @@ namespace gt {
             ::glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
             ::glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
 
+            ::glGenerateMipmap(GL_TEXTURE_2D);
+
             if (texture->mbufr.msize == 0) {
 
                 unsigned char pixel_data[] = {
@@ -564,27 +591,36 @@ namespace gt {
         {
             GT_CHECK(shader->index == 0, "cannot create the shader!", return false);
 
+            const char* source = nullptr;
+
             if (shtype == SHTYPE_VERTEX) {
 
                 shader->index = ::glCreateShader(GL_VERTEX_SHADER);
-                
+                /*
                 GT_CHECK(lib::load("../rsc/glsl/sprites_vtx.glsl", shader), "failed vertex shader load!", return false);
-
+                */
+                source = vshader_source;
             }
             if (shtype == SHTYPE_GEOMETRY) {
 
                 shader->index = ::glCreateShader(GL_GEOMETRY_SHADER);
-
+                /*
                 GT_CHECK(lib::load("../rsc/glsl/sprites_gmt.glsl", shader), "failed vertex shader load!", return false);
-
+                */
+                source = gshader_source;
             }
             if (shtype == SHTYPE_PIXEL) {
 
                 shader->index = ::glCreateShader(GL_FRAGMENT_SHADER);
-
+                /*
                 GT_CHECK(lib::load("../rsc/glsl/sprites_pxl.glsl", shader), "failed vertex shader load!", return false);
-
+                */
+                source = pshader_source;
             }
+            GT_CHECK(source != nullptr, "could not load shader source! check the type");
+            shader->sbufr.msize = strlen(source) + 1u;
+            shader->sbufr.sdata = new char[shader->sbufr.msize];
+            strcpy_s(shader->sbufr.sdata, shader->sbufr.msize, source);
 
             const GLchar* shader_sdata = shader->sbufr.sdata;
             ::glShaderSource(shader->index, 1u, &shader_sdata, nullptr);
