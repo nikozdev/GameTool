@@ -15,7 +15,18 @@ namespace gt {
         typedef enum {
             FACEMODE_LINE,
             FACEMODE_FILL,
-        } facemode_t;
+        } facemode_e;
+        /* types of the shaders supported */
+        typedef enum {
+            SHTYPE_VERTEX,
+            SHTYPE_PIXEL,
+            SHTYPE_GEOMETRY,
+        } shtype_e;
+        /* mapping type */
+        typedef enum {
+            MATYPE_MATERIA,
+            MATYPE_ILAYOUT,
+        } matype_e;
         /**/
     }
 
@@ -37,7 +48,7 @@ namespace gt {
         typedef struct {
             count_t     count;
             msize_t     msize;
-            element_t*  mdata;
+            element_t* mdata;
         } mapping_t;
         /* input layout (vertex array) */
         typedef struct {
@@ -65,9 +76,26 @@ namespace gt {
             /* pixel data */
             mbufr_t mbufr;
             /* image properties */
+            v2u_t   sizes;
             count_t pixel_bytes;
             /**/
         } texture_t;
+        /* samplers for texture configurations */
+        typedef struct {
+            /* graphics api handle */
+            index_t index;
+            /* pixel data */
+            mbufr_t mbufr;
+            /* image properties */
+            count_t pixel_bytes;
+            /**/
+        } sampler_t;
+        /* just a dynamic array of textures and their samplers */
+        typedef struct {
+            count_t     count;
+            texture_t*  texture_array;
+            sampler_t*  sampler_array;
+        } binding_t;
         typedef struct {
             /* graphics api handle */
             index_t index;
@@ -82,6 +110,8 @@ namespace gt {
             shader_t    vshader, pshader, gshader;
             /* shader uniforms(constants) */
             mapping_t   mapping;
+            /* textures + samplers */
+            binding_t   binding;
             /**/
         } materia_t;
         /* structure of structures for drawing */
@@ -102,18 +132,48 @@ namespace gt {
             /* color attachment where pixels are rendered */
             texture_t   colorbuf;
         } fmbuffer_t;
-
+        /**/
+    }
+    
+    namespace gfx {
         /* graphics context state with needed variables and settings */
         typedef struct {
             /* how to draw plane faces */
-            facemode_t  facemode;
+            facemode_e  facemode;
             /* coordinates and size of the canvas */
             v4s_t       viewport;
             /* default framebuffer color */
             v4f_t       clearcol;
             /**/
         } state_t;
-
+        /* additional information */
+        typedef struct ginfo_t {
+            /* render submission info */
+            struct {
+                count_t count;
+            } drawcall;
+            /* primities drawn */
+            struct {
+                count_t drawn_count;
+                count_t store_count;
+            } drawable;
+            /* vertex buffer:
+                - how much bytes does a single vertex contain
+                - how many vertices do we have
+            */
+            struct {
+                msize_t vsize;
+                msize_t taken_bytes;
+                msize_t store_bytes;
+            } vbuffer;
+            /* texture atlas */
+            struct {
+                count_t taken_count;
+                count_t store_count;
+            } texture;
+            /**/
+        };
+        /**/
     }
 
     namespace gfx {

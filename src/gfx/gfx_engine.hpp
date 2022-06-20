@@ -6,9 +6,9 @@
 
 #   include "gfx_lib.hpp"
 
-#   include "../lib/lib_event.hpp"
-
 #   include "../lib/lib_engine.hpp"
+#   include "../lib/lib_event.hpp"
+#   include "../lib/lib_file.hpp"
 
 namespace gt {
 
@@ -33,7 +33,7 @@ namespace gt {
                 set_lines_size(float scale = 1.0f);
 
             bool
-                set_facemode(facemode_t facemode);
+                set_facemode(facemode_e facemode);
 
             bool
                 set_viewport(int x, int y, int w, int h);
@@ -56,6 +56,11 @@ namespace gt {
                 get_state() const
             {
                 return &this->state;
+            }
+            inline const ginfo_t*
+                get_ginfo() const
+            {
+                return &this->ginfo;
             }
 
             bool
@@ -87,21 +92,52 @@ namespace gt {
                 redo_drawtool()
             {
                 return this->drawtool.ilayout.index > 0 && this->drawtool.materia.index > 0
-                    ? (this->quit_drawtool(&this->drawtool) ? this->init_fmbuffer(&this->fmbuffer) : false)
+                    ? (this->quit_drawtool(&this->drawtool) ? this->init_drawtool(&this->drawtool) : false)
                     : (this->init_drawtool(&this->drawtool));
             }
+
+            bool
+                load_texture(lib::fpath_t fpath, index_t index);
 
         private:
 
             bool
                 init_fmbuffer(fmbuffer_t* fmbuffer);
-            bool
-                quit_fmbuffer(fmbuffer_t* fmbuffer);
-
+            
             bool
                 init_drawtool(drawtool_t* drawtool);
+            
             bool
+                init_ilayout(ilayout_t* ilayout);
+            bool
+                init_buffer(buffer_t* buffer);
+            
+            bool
+                init_materia(materia_t* materia);
+            bool
+                init_texture(texture_t* texture);
+            bool
+                init_shader(shader_t* shader, shtype_e shtype);
+
+        private:
+
+            inline bool
+                quit_fmbuffer(fmbuffer_t* fmbuffer);
+            
+            inline bool
                 quit_drawtool(drawtool_t* drawtool);
+
+            inline bool
+                quit_ilayout(ilayout_t* ilayout);
+            inline bool
+                quit_buffer(buffer_t* buffer);
+
+            inline bool
+                quit_materia(materia_t* materia);
+            inline bool
+                quit_texture(texture_t* texture);
+            inline bool
+                quit_shader(shader_t* shader, shtype_e shtype);
 
         private:
             /* platform specific handles */
@@ -110,6 +146,7 @@ namespace gt {
             device_t device;
             /* global state objects */
             state_t state;
+            ginfo_t ginfo;
             /* where to draw */
             fmbuffer_t fmbuffer;
             /* what and how to draw */

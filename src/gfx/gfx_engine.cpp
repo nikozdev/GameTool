@@ -15,6 +15,7 @@
 #   include "../../lib/glfw/src/glfw3.h"
 #   include "../../lib/glfw/src/glfw3native.h"
 
+
 namespace gt {
 
     namespace gfx {
@@ -35,7 +36,7 @@ namespace gt {
         }
 
         bool
-            engine_t::set_facemode(facemode_t facemode)
+            engine_t::set_facemode(facemode_e facemode)
         {
             this->state.facemode = facemode;
 
@@ -93,7 +94,6 @@ namespace gt {
             if (vbuffer->mbufr.msize <= msize_next) {
                 
                 GT_CHECK(this->draw(), "failed to draw the current content!", return false);
-            
             }
 
             msize_next = vbuffer->mtail - vbuffer->mhead;
@@ -101,6 +101,8 @@ namespace gt {
 
             memcpy(vbuffer->mtail, &rect, sizeof(rect_t));
             vbuffer->mtail += sizeof(rect_t);
+            
+            this->ginfo.drawable.drawn_count += 1;
 
             return true;
         }
@@ -154,29 +156,9 @@ namespace gt {
         bool
             engine_t::work()
         {
-            auto senow = app::engine_t::get()->get_timer()->get_senow();
-            auto sinow = sinf(senow);
-            auto conow = cosf(senow);
-
-            for (float iterx = -1.0f; iterx < +1.0f; iterx += 0.01f) {
-
-                for (float itery = -1.0f; itery < +1.0f; itery += 0.01f) {
-
-                    rect_t rect;
-                    
-                    rect.vtx_coord = { iterx * sinow, itery * conow };
-                    rect.vtx_pivot = { 0.0f, 0.0f };
-                    rect.vtx_scale = { 0.0025f * sinow, 0.0025f * conow };
-                    rect.tex_color = { iterx * sinow, itery * conow, iterx * sinow, itery * conow };
-                    rect.tex_coord = { 0.0, 0.0, 1.0, 1.0 };
-                    rect.tex_index = { 0 };
-                    
-                    this->add_for_draw(rect);
-                }
-
-            }
-
-            this->draw();
+            ::memset(&this->ginfo, 0, sizeof(ginfo_t));
+            
+            GT_CHECK(this->draw(), "failed graphics engine drawing!", return false);
 
             ::glfwSwapBuffers(reinterpret_cast<::GLFWwindow*>(this->window));
             ::glClear(GL_COLOR_BUFFER_BIT);
@@ -241,23 +223,32 @@ namespace gt {
         bool
             engine_t::draw()
         {
+            this->ginfo.texture.taken_count = 1u;
+            this->ginfo.vbuffer.taken_bytes += static_cast<msize_t>(this->drawtool.ilayout.vbuffer.mtail - this->drawtool.ilayout.vbuffer.mhead);
+            this->ginfo.drawcall.count += 1;
+
             ::glBindFramebuffer(GL_FRAMEBUFFER, fmbuffer.index);
             ::glClear(GL_COLOR_BUFFER_BIT);
 
-            auto materia = &this->drawtool.ilayout;
-            ::glUseProgram(this->drawtool.materia.index);
+            auto materia = &this->drawtool.materia;
+            ::glUseProgram(materia->index);
+            
+            auto binding = &materia->binding;
+            GLint index_array[GT_GFX_TEXTURE_COUNT_USE];
+            for (index_t index = 0; index < binding->count; index++) {
+                
+                auto texture = &binding->texture_array[index];
 
-            /*
-            if (this->drawtool.materia.mapping.count > 0) {
-
-                auto timer = app::engine_t::get()->get_timer();
-                float senow = timer->get_senow();
-                ::glUniform1f(this->drawtool.materia.mapping.mdata[1].iname, senow);
+                ::glActiveTexture(GL_TEXTURE0 + index);
+                ::glBindTexture(GL_TEXTURE_2D, texture->index);
+                
+                index_array[index] = texture->index;
 
             }
-            */
+            ::glUniform1iv(1, binding->count, index_array);
+
             auto ilayout = &this->drawtool.ilayout;
-            ::glBindVertexArray(this->drawtool.ilayout.index);
+            ::glBindVertexArray(ilayout->index);
             
             auto vbuffer = &ilayout->vbuffer;
             ::glBufferSubData(GL_ARRAY_BUFFER, 0, vbuffer->mbufr.msize, vbuffer->mbufr.mdata);
@@ -270,6 +261,21 @@ namespace gt {
             return true;
         }
 
+        bool
+            engine_t::load_texture(lib::fpath_t fpath, index_t index)
+        {
+            auto materia = &this->drawtool.materia;
+            auto binding = &materia->binding;
+            
+            GT_CHECK(index < binding->count, "the index is too high!", return false);
+            
+            auto texture = &binding->texture_array[index];
+            GT_CHECK(lib::load(fpath, texture), "failed texture load!", return false);
+
+            if (texture->index > 0) { ::glDeleteTextures(1, &texture->index); texture->index = 0;  }
+            
+            return this->init_texture(texture);
+        }
 
         bool
             engine_t::init_fmbuffer(fmbuffer_t* fmbuffer)
@@ -287,7 +293,7 @@ namespace gt {
 
                 ::glBindTexture(GL_TEXTURE_2D, colorbuf->index);
 
-                ::glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, fmbuffer->viewport[2], fmbuffer->viewport[3], 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
+                ::glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, fmbuffer->viewport[2], fmbuffer->viewport[3], 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
 
                 ::glTextureParameteri(colorbuf->index, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
                 ::glTextureParameteri(colorbuf->index, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
@@ -327,242 +333,376 @@ namespace gt {
         bool
             engine_t::init_drawtool(drawtool_t* drawtool)
         {
-            auto materia = &drawtool->materia;
-            do {
-                materia->index = ::glCreateProgram();
 
-                auto vshader = &materia->vshader;
-                vshader->index = ::glCreateShader(GL_VERTEX_SHADER);
-                
-                GT_CHECK(lib::load("../rsc/glsl/sprites_vtx.glsl", vshader), "failed vertex shader load!", return false);
-                const GLchar* vshader_sdata = vshader->sbufr.sdata;
-                ::glShaderSource(vshader->index, 1u, &vshader_sdata, nullptr);
+            GT_CHECK(this->init_materia(&drawtool->materia), "failed materia construction!", return false);
+            GT_CHECK(this->init_ilayout(&drawtool->ilayout), "failed ilayout construction!", return false);
 
-                ::glCompileShader(vshader->index);
-                GT_CHECK(check_shader(GL_VERTEX_SHADER, vshader->index), "default vertex shader is not compiled!", return false);
-                ::glAttachShader(materia->index, vshader->index);
+            return true;
+        }
 
-                auto gshader = &materia->gshader;
-                gshader->index = ::glCreateShader(GL_GEOMETRY_SHADER);
+        bool
+            engine_t::init_ilayout(ilayout_t* ilayout)
+        {
+            GT_CHECK(ilayout->index == 0, "cannot create ilayout!", return false);
 
-                GT_CHECK(lib::load("../rsc/glsl/sprites_gmt.glsl", gshader), "failed geometry shader load!", return false);
-                const GLchar* gshader_sdata = gshader->sbufr.sdata;
-                ::glShaderSource(gshader->index, 1u, &gshader_sdata, nullptr);
+            GT_CHECK(this->init_buffer(&ilayout->vbuffer), "cannot create ilayout!", return false);
 
-                ::glCompileShader(gshader->index);
-                GT_CHECK(check_shader(GL_GEOMETRY_SHADER, gshader->index), "default geometry shader is not compiled!", return false);
-                ::glAttachShader(materia->index, gshader->index);
+            ::glGenVertexArrays(1u, &ilayout->index);
+            ::glBindVertexArray(ilayout->index);
 
-                auto pshader = &materia->pshader;
-                pshader->index = ::glCreateShader(GL_FRAGMENT_SHADER);
-                
-                GT_CHECK(lib::load("../rsc/glsl/sprites_pxl.glsl", pshader), "failed pixel shader load!", return false);
-                const GLchar* pshader_sdata = pshader->sbufr.sdata;
-                ::glShaderSource(pshader->index, 1u, &pshader_sdata, nullptr);
+            auto mapping = &ilayout->mapping;
+            GLint count = 0;
+            ::glGetProgramiv(this->drawtool.materia.index, GL_ACTIVE_ATTRIBUTES, &count);
 
-                ::glCompileShader(pshader->index);
-                GT_CHECK(check_shader(GL_FRAGMENT_SHADER, pshader->index), "default pixel shader is not compiled!", return false);
-                ::glAttachShader(materia->index, pshader->index);
+            if (count > 0) {
+                mapping->count = static_cast<count_t>(count);
+                mapping->mdata = new element_t[mapping->count];
+                memset(mapping->mdata, 0, mapping->count * sizeof(element_t));
+            }
 
-                ::glLinkProgram(materia->index);
-                GT_CHECK(check_shader(GL_PROGRAM, materia->index), "default materia is not linked!", return false);
-                ::glUseProgram(materia->index);
+            for (index_t index = 0; index < mapping->count; index += 1) {
 
-                auto mapping = &materia->mapping;
-                do {
-                    GLint count = 0;
-                    ::glGetProgramiv(materia->index, GL_ACTIVE_UNIFORMS, &count);
-                    if (count == 0) { break; }
+                auto element = &mapping->mdata[index];
 
-                    mapping->count = static_cast<count_t>(count);
-                    mapping->mdata = new element_t[mapping->count];
-                    memset(mapping->mdata, 0, mapping->count * sizeof(element_t));
+                GLenum  dtype;
+                GLint   count;
 
-                    for (index_t index = 0; index < mapping->count; index += 1) {
+                GLchar* name_data;
+                GLsizei name_size_max;
+                GLsizei name_size_use;
 
-                        auto element = &mapping->mdata[index];
+                ::glGetProgramiv(this->drawtool.materia.index, GL_ACTIVE_ATTRIBUTE_MAX_LENGTH, &name_size_max);
+                name_data = new GLchar[name_size_max];
 
-                        GLint   count;
-                        GLenum  dtype;
-                        GLsizei name_size_max;
-                        GLsizei name_size_use;
-                        GLchar* name_data;
+                ::glGetActiveAttrib(this->drawtool.materia.index, index, name_size_max, &name_size_use, &count, &dtype, name_data);
 
-                        ::glGetProgramiv(materia->index, GL_ACTIVE_ATTRIBUTE_MAX_LENGTH, &name_size_max);
-                        name_data = new GLchar[name_size_max];
+                element->sname.msize = ++name_size_use;
+                element->sname.sdata = new char[element->sname.msize];
+                ::strcpy_s(element->sname.sdata, element->sname.msize, name_data);
+                delete[] name_data;
 
-                        ::glGetActiveUniform(materia->index, index, name_size_max, &name_size_use, &count, &dtype, name_data);
+                element->iname = ::glGetAttribLocation(this->drawtool.materia.index, element->sname.sdata);
+                element->count = get_dtype_count_item(dtype) * count;
+                element->msize = get_dtype_msize(dtype);
+                element->dtype = get_dtype_item(dtype);
 
-                        element->sname.msize = ++name_size_use;
-                        element->sname.sdata = new char[element->sname.msize];
-                        ::strcpy_s(element->sname.sdata, element->sname.msize, name_data);
-                        delete[] name_data;
+            }
+            for (index_t ihead = 0, itail = 0; ihead < mapping->count; itail += 1) {
 
-                        element->iname = index;
-                        element->count = get_dtype_count_item(dtype) * count;
-                        element->msize = get_dtype_msize(dtype);
-                        element->dtype = get_dtype_item(dtype);
-                        element->start += mapping->msize;
+                auto element = &mapping->mdata[itail];
 
-                        mapping->msize += element->msize;
-                    }
+                if (element->iname == ihead) {
 
-                } while (false);
+                    element_t temp = mapping->mdata[ihead];
+                    mapping->mdata[ihead] = *element;
+                    mapping->mdata[itail] = temp;
+                    element = &mapping->mdata[ihead];
 
-            } while (materia->index == 0);
+                    element->start += mapping->msize;
+                    mapping->msize += element->msize;
 
-            auto ilayout = &drawtool->ilayout;
-            do {
-                ::glGenVertexArrays(1u, &ilayout->index);
-                ::glBindVertexArray(ilayout->index);
+                    itail = ihead;
+                    ihead += 1;
 
-                auto vbuffer = &ilayout->vbuffer;
-                do {
-                    ::glGenBuffers(1u, &vbuffer->index);
-                    ::glBindBuffer(GL_ARRAY_BUFFER, vbuffer->index);
+                }
 
-                    vbuffer->mbufr.msize = sizeof(rect_t) * GT_GTX_RECT_COUNT_USE;
-                    vbuffer->mbufr.mdata = new mbyte_t[vbuffer->mbufr.msize];
-                    memset(vbuffer->mbufr.mdata, 0, vbuffer->mbufr.msize);
-                    ::glBufferData(GL_ARRAY_BUFFER, vbuffer->mbufr.msize, vbuffer->mbufr.mdata, GL_DYNAMIC_DRAW);
+            }
+            for (index_t index = 0; index < mapping->count; index += 1) {
 
-                    vbuffer->mhead = vbuffer->mtail = vbuffer->mbufr.mdata;
+                auto element = &mapping->mdata[index];
 
-                } while (vbuffer->index == 0);
+                ::glVertexAttribPointer(
+                    element->iname,
+                    element->count, element->dtype, GL_FALSE,
+                    mapping->msize, (const GLvoid*)(element->start)
+                );
+                ::glEnableVertexAttribArray(element->iname);
 
-                auto mapping = &ilayout->mapping;
-                do {
-                    GLint count = 0;
-                    ::glGetProgramiv(materia->index, GL_ACTIVE_ATTRIBUTES, &count);
-                    if (count == 0) { break; }
-
-                    mapping->count = static_cast<count_t>(count);
-                    mapping->mdata = new element_t[mapping->count];
-                    memset(mapping->mdata, 0, mapping->count * sizeof(element_t));
-
-                    for (index_t index = 0; index < mapping->count; index += 1) {
-
-                        auto element = &mapping->mdata[index];
-
-                        GLenum  dtype;
-                        GLint   count;
-
-                        GLchar* name_data;
-                        GLsizei name_size_max;
-                        GLsizei name_size_use;
-
-                        ::glGetProgramiv(materia->index, GL_ACTIVE_ATTRIBUTE_MAX_LENGTH, &name_size_max);
-                        name_data = new GLchar[name_size_max];
-
-                        ::glGetActiveAttrib(materia->index, index, name_size_max, &name_size_use, &count, &dtype, name_data);
-
-                        element->sname.msize = ++name_size_use;
-                        element->sname.sdata = new char[element->sname.msize];
-                        ::strcpy_s(element->sname.sdata, element->sname.msize, name_data);
-                        delete[] name_data;
-
-                        element->iname = ::glGetAttribLocation(materia->index, element->sname.sdata);
-                        element->count = get_dtype_count_item(dtype) * count;
-                        element->msize = get_dtype_msize(dtype);
-                        element->dtype = get_dtype_item(dtype);
-                        /*element->start += mapping->msize; */
-
-                        /* mapping->msize += element->msize; */
-                    }
-                    for (index_t ihead = 0, itail = 0; ihead < mapping->count; itail += 1) {
-                        
-                        auto element = &mapping->mdata[itail];
-                        
-                        if (element->iname == ihead) {
-                            
-                            element_t temp = mapping->mdata[ihead];
-                            mapping->mdata[ihead] = *element;
-                            mapping->mdata[itail] = temp;
-                            element = &mapping->mdata[ihead];
-
-                            element->start += mapping->msize;
-                            mapping->msize += element->msize;
-
-                            itail = ihead;
-                            ihead += 1;
-
-                        }
-                    
-                    }
-                    for (index_t index = 0; index < mapping->count; index += 1) {
-
-                        auto element = &mapping->mdata[index];
-
-                        ::glVertexAttribPointer(
-                            element->iname,
-                            element->count, element->dtype, GL_FALSE,
-                            mapping->msize, (const GLvoid*)(element->start)
-                        );
-                        ::glEnableVertexAttribArray(element->iname);
-
-                    }
-
-                } while (false);
-
-            } while (ilayout->index == 0);
+            }
 
             return true;
         }
         bool
+            engine_t::init_buffer(buffer_t* buffer)
+        {
+            GT_CHECK(buffer->index == 0, "cannot create the buffer!", return false);
+            
+            ::glGenBuffers(1u, &buffer->index);
+            ::glBindBuffer(GL_ARRAY_BUFFER, buffer->index);
+
+            buffer->mbufr.msize = sizeof(rect_t) * GT_GTX_RECT_COUNT_USE;
+            buffer->mbufr.mdata = new mbyte_t[buffer->mbufr.msize];
+            memset(buffer->mbufr.mdata, 0, buffer->mbufr.msize);
+            ::glBufferData(GL_ARRAY_BUFFER, buffer->mbufr.msize, buffer->mbufr.mdata, GL_DYNAMIC_DRAW);
+
+            buffer->mhead = buffer->mtail = buffer->mbufr.mdata;
+
+            this->ginfo.vbuffer.store_bytes = this->drawtool.ilayout.vbuffer.mbufr.msize;
+            this->ginfo.vbuffer.vsize = sizeof(rect_t);
+            this->ginfo.drawable.drawn_count = this->ginfo.vbuffer.store_bytes / this->ginfo.vbuffer.vsize;
+
+            return true;
+        }
+
+        bool
+            engine_t::init_materia(materia_t* materia)
+        {
+            materia->index = ::glCreateProgram();
+
+            GT_CHECK(this->init_shader(&materia->vshader, SHTYPE_VERTEX), "failed vertex shader construction!", return false);
+            GT_CHECK(this->init_shader(&materia->gshader, SHTYPE_GEOMETRY), "failed geometry shader construction!", return false);
+            GT_CHECK(this->init_shader(&materia->pshader, SHTYPE_PIXEL), "failed pixel shader construction!", return false);
+
+            ::glLinkProgram(materia->index);
+            GT_CHECK(check_shader(materia->index), "default materia is not linked!", return false);
+            ::glUseProgram(materia->index);
+
+            auto mapping = &materia->mapping;
+            GLint count = 0;
+            ::glGetProgramiv(materia->index, GL_ACTIVE_UNIFORMS, &count);
+            if (count > 0) {
+                mapping->count = static_cast<count_t>(count);
+                mapping->mdata = new element_t[mapping->count];
+                memset(mapping->mdata, 0, mapping->count * sizeof(element_t));
+            }
+
+            for (index_t index = 0; index < mapping->count; index += 1) {
+
+                auto element = &mapping->mdata[index];
+
+                GLint   count;
+                GLenum  dtype;
+                GLsizei name_size_max;
+                GLsizei name_size_use;
+                GLchar* name_data;
+
+                ::glGetProgramiv(materia->index, GL_ACTIVE_ATTRIBUTE_MAX_LENGTH, &name_size_max);
+                name_data = new GLchar[name_size_max];
+
+                ::glGetActiveUniform(materia->index, index, name_size_max, &name_size_use, &count, &dtype, name_data);
+
+                element->sname.msize = ++name_size_use;
+                element->sname.sdata = new char[element->sname.msize];
+                ::strcpy_s(element->sname.sdata, element->sname.msize, name_data);
+                delete[] name_data;
+
+                element->iname = index;
+                element->count = get_dtype_count_item(dtype) * count;
+                element->msize = get_dtype_msize(dtype);
+                element->dtype = get_dtype_item(dtype);
+                element->start += mapping->msize;
+
+                mapping->msize += element->msize;
+            }
+
+            auto binding = &materia->binding;
+
+            binding->count = GT_GFX_TEXTURE_COUNT_USE;
+
+            binding->texture_array = new texture_t[binding->count];
+            ::memset(binding->texture_array, 0, sizeof(texture_t) * binding->count);
+                
+            binding->sampler_array = new sampler_t[binding->count];
+            ::memset(binding->texture_array, 0, sizeof(sampler_t) * binding->count);
+            
+            for (index_t index = 0; index < binding->count; index++) {
+                
+                GT_CHECK(this->init_texture(&binding->texture_array[index]), "failed texture creation!", return false);
+                /*
+                GT_CHECK(this->init_sampler(&binding->sampler_array[index]), "failed sampler creation!", return false);
+                */
+            
+            }
+
+            this->ginfo.texture.store_count = materia->binding.count;
+
+            return true;
+        }
+        bool
+            engine_t::init_texture(texture_t* texture)
+        {
+            GT_CHECK(texture->index == 0, "cannot create a texture!", return false);
+
+            ::glGenTextures(1u, &texture->index);
+
+            ::glBindTexture(GL_TEXTURE_2D, texture->index);
+
+            ::glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+            ::glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+            ::glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
+            ::glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
+
+            if (texture->mbufr.msize == 0) {
+
+                unsigned char pixel_data[] = {
+                    0x00,   0x00,   0x77,   0xff,
+                    0x00,   0x77,   0x00,   0xff,
+                    0x77,   0x00,   0x77,   0xff,
+                    0x77,   0x77,   0x00,   0xff,
+                };
+
+                texture->mbufr.msize = sizeof(pixel_data);
+                texture->mbufr.mdata = new mbyte_t[texture->mbufr.msize];
+                texture->sizes = { 2u, 2u };
+                memcpy(texture->mbufr.mdata, pixel_data, texture->mbufr.msize);
+            
+            }
+            
+            ::glTexImage2D(
+                GL_TEXTURE_2D, 0,
+                texture->pixel_bytes == 3 ? GL_RGB : GL_RGBA,
+                texture->sizes[0], texture->sizes[1], 0,
+                texture->pixel_bytes == 3 ? GL_RGB : GL_RGBA,
+                GL_UNSIGNED_BYTE,
+                texture->mbufr.mdata
+            );
+
+            return true;
+        }
+        bool
+            engine_t::init_shader(shader_t* shader, shtype_e shtype)
+        {
+            GT_CHECK(shader->index == 0, "cannot create the shader!", return false);
+
+            if (shtype == SHTYPE_VERTEX) {
+
+                shader->index = ::glCreateShader(GL_VERTEX_SHADER);
+                
+                GT_CHECK(lib::load("../rsc/glsl/sprites_vtx.glsl", shader), "failed vertex shader load!", return false);
+
+            }
+            if (shtype == SHTYPE_GEOMETRY) {
+
+                shader->index = ::glCreateShader(GL_GEOMETRY_SHADER);
+
+                GT_CHECK(lib::load("../rsc/glsl/sprites_gmt.glsl", shader), "failed vertex shader load!", return false);
+
+            }
+            if (shtype == SHTYPE_PIXEL) {
+
+                shader->index = ::glCreateShader(GL_FRAGMENT_SHADER);
+
+                GT_CHECK(lib::load("../rsc/glsl/sprites_pxl.glsl", shader), "failed vertex shader load!", return false);
+
+            }
+
+            const GLchar* shader_sdata = shader->sbufr.sdata;
+            ::glShaderSource(shader->index, 1u, &shader_sdata, nullptr);
+
+            ::glCompileShader(shader->index);
+            GT_CHECK(check_shader(shader->index), "default shader is not compiled!", return false);
+            ::glAttachShader(this->drawtool.materia.index, shader->index);
+
+            return true;
+        }
+        
+        bool
             engine_t::quit_drawtool(drawtool_t* drawtool)
         {
-            auto materia = &drawtool->materia;
-            do {
-                GT_CHECK(materia->index > 0, "cannot delete material!", return false);
-                ::glDeleteProgram(materia->index);
-                materia->index = 0;
+            GT_CHECK(this->quit_materia(&drawtool->materia), "failed materia destruction!", return false);
+            GT_CHECK(this->quit_ilayout(&drawtool->ilayout), "failed ilayout destruction!", return false);
+            
+            return true;
+        }
 
-                auto vshader = &materia->vshader;
-                GT_CHECK(vshader->index > 0, "cannot delete vertex shader!", return false);
-                ::glDeleteShader(drawtool->materia.vshader.index);
-                vshader->index = 0;
-                if (vshader->sbufr.msize > 0ul) { delete[] vshader->sbufr.sdata; }
-                vshader->sbufr.sdata = nullptr;
-                vshader->sbufr.msize = 0ul;
+        bool
+            engine_t::quit_ilayout(ilayout_t* ilayout)
+        {
+            GT_CHECK(ilayout->index > 0, "cannot delete input layout!", return false);
+            ::glDeleteVertexArrays(1u, &ilayout->index);
+            ilayout->index = 0;
 
-                auto pshader = &materia->pshader;
-                GT_CHECK(pshader->index > 0, "cannot delete pixel shader!", return false);
-                ::glDeleteShader(pshader->index);
-                pshader->index = 0;
-                if (pshader->sbufr.msize > 0ul) { delete[] pshader->sbufr.sdata; }
-                pshader->sbufr.sdata = nullptr;
-                pshader->sbufr.msize = 0ul;
+            GT_CHECK(this->quit_buffer(&ilayout->vbuffer), "failed vertex buffer destruction!", return false);
+            
+            auto mapping = &ilayout->mapping;
+            if (mapping->msize > 0ul) { delete[] ilayout->mapping.mdata; }
+            mapping->mdata = nullptr;
+            mapping->count = 0ul;
+            mapping->msize = 0ul;
 
-                auto mapping = &materia->mapping;
-                if (mapping->msize > 0ul) { delete[] mapping->mdata; }
-                mapping->mdata = nullptr;
-                mapping->count = 0ul;
-                mapping->msize = 0ul;
+            return true;
+        }
+        bool
+            engine_t::quit_buffer(buffer_t* buffer)
+        {
+            GT_CHECK(buffer->index != 0, "cannot delete the buffer!", return false);
+            
+            GT_CHECK(buffer->index > 0, "cannot delete vertex buffer!", return false);
+            ::glDeleteBuffers(1u, &buffer->index);
+            buffer->index = 0;
+            if (buffer->mbufr.msize > 0ul) { delete[] buffer->mbufr.mdata; }
+            buffer->mbufr.mdata = nullptr;
+            buffer->mbufr.msize = 0ul;
 
-            } while (materia->index > 0);
+            this->ginfo.vbuffer.taken_bytes = 0ul;
+            this->ginfo.vbuffer.store_bytes = 0ul;
 
-            auto ilayout = &drawtool->ilayout;
-            do {
-                GT_CHECK(ilayout->index > 0, "cannot delete input layout!", return false);
-                ::glDeleteVertexArrays(1u, &ilayout->index);
-                ilayout->index = 0;
+            return true;
+        }
 
-                auto vbuffer = &ilayout->vbuffer;
-                GT_CHECK(vbuffer->index > 0, "cannot delete vertex buffer!", return false);
-                ::glDeleteBuffers(1u, &vbuffer->index);
-                vbuffer->index = 0;
-                if (vbuffer->mbufr.msize > 0ul) { delete[] vbuffer->mbufr.mdata; }
-                vbuffer->mbufr.mdata = nullptr;
-                vbuffer->mbufr.msize = 0ul;
+        bool
+            engine_t::quit_materia(materia_t* materia)
+        {
+            GT_CHECK(materia->index > 0, "cannot delete material!", return false);
+            ::glDeleteProgram(materia->index);
+            materia->index = 0;
 
-                auto mapping = &ilayout->mapping;
-                if (mapping->msize > 0ul) { delete[] ilayout->mapping.mdata; }
-                mapping->mdata = nullptr;
-                mapping->count = 0ul;
-                mapping->msize = 0ul;
+            GT_CHECK(this->quit_shader(&materia->vshader, SHTYPE_VERTEX), "failed vertex shader destruction", return false);
+            GT_CHECK(this->quit_shader(&materia->pshader, SHTYPE_PIXEL), "failed pixel shader destruction", return false);
+            GT_CHECK(this->quit_shader(&materia->gshader, SHTYPE_GEOMETRY), "failed geometry shader destruction", return false);
 
-            } while (ilayout->index > 0);
+            auto mapping = &materia->mapping;
+            if (mapping->count > 0ul) { delete[] mapping->mdata; }
+            mapping->mdata = nullptr;
+            mapping->count = 0ul;
+            mapping->msize = 0ul;
 
+            auto binding = &materia->binding;
+
+            for (index_t index = 0; index < binding->count; index++) {
+
+                GT_CHECK(this->quit_texture(&binding->texture_array[index]), "failed texture destruction!", return false);
+                /*
+                GT_CHECK(this->quit_sampler(&binding->sampler_array[index]), "failed sampler destruction!", return false);
+                */
+
+            }
+
+            if (binding->count > 0) { delete[] binding->texture_array; delete[] binding->sampler_array; }
+            binding->texture_array = nullptr;
+            binding->sampler_array = nullptr;
+            binding->count = 0ul;
+
+            return true;
+        }
+        bool
+            engine_t::quit_texture(texture_t* texture)
+        {
+            GT_CHECK(texture->index != 0, "cannot destroy the texture!", return false);
+
+            ::glDeleteTextures(1u, &texture->index);
+            texture->index = 0u;
+
+            if (texture->mbufr.msize > 0ul) { delete[] texture->mbufr.mdata;  }
+            texture->mbufr.mdata = nullptr;
+            texture->mbufr.msize = 0ul;
+            
+            texture->sizes = { 0, 0 };
+
+            texture->pixel_bytes = 0ul;
+
+            return true;
+        }
+        bool
+            engine_t::quit_shader(shader_t* shader, shtype_e shtype)
+        {
+            GT_CHECK(shader->index != 0, "cannot delete the shader!", return false);
+
+            ::glDeleteShader(shader->index);
+            shader->index = 0;
+            if (shader->sbufr.msize > 0ul) { delete[] shader->sbufr.sdata; }
+            shader->sbufr.sdata = nullptr;
+            shader->sbufr.msize = 0ul;
 
             return true;
         }

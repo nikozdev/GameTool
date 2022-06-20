@@ -20,24 +20,25 @@
 #   endif /* GT_GFX_TEXTURE_COUNT_USE */
 
 #   ifndef GT_GFX_RECT_COUNT_USE
-#       define GT_GFX_RECT_COUNT_MIN    0x00f0
-#       define GT_GFX_RECT_COUNT_MIN    0x0f00
-#       define GT_GFX_RECT_COUNT_MAX    0xf000
+#       define GT_GFX_RECT_COUNT_MIN    0x00100
+#       define GT_GFX_RECT_COUNT_MIN    0x01000
+#       define GT_GFX_RECT_COUNT_MAX    0x10000
 #       define GT_GTX_RECT_COUNT_USE    GT_GFX_RECT_COUNT_MAX
 #   endif /* GT_GFX_RECT_COUNT_USE */
 
 namespace gt {
 
     namespace gfx {
-
+        /* remove all errors from the global log */
         extern void
             clear_error();
+        /* check if any error is on the top of the global log */
         extern bool
             check_error();
-
+        /* check if a shader or a shader-program is compiler or linked successfully */
         extern bool
-            check_shader(index_t itype, index_t index);
-    
+            check_shader(index_t index);
+        /**/
     }
 
 }

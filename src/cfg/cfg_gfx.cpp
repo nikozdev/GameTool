@@ -37,7 +37,7 @@ namespace gt {
         }
 
         bool
-            check_shader(index_t itype, index_t index) {
+            check_shader(index_t index) {
 
             GT_CHECK(index > 0, "invalid shader index!", return GL_FALSE);
 
@@ -45,7 +45,7 @@ namespace gt {
             char* buffer_data = nullptr;
             GLint buffer_size = 0;
 
-            if (itype == GL_PROGRAM) {
+            if (::glIsProgram(index)) {
 
                 glGetProgramiv(index, GL_LINK_STATUS, &success);
                 if (success == GL_TRUE) { return GL_TRUE; }
@@ -62,7 +62,7 @@ namespace gt {
 
                 return GL_FALSE;
             
-            } else {
+            } else if(::glIsShader(index)) {
 
                 glGetShaderiv(index, GL_COMPILE_STATUS, &success);
                 if (success == GL_TRUE) { return GL_TRUE; }
@@ -78,6 +78,8 @@ namespace gt {
                 delete[] buffer_data;
 
                 return GL_FALSE;
+            } else {
+                GT_ERROR("the passed value is not a shader nor a shader-program handle!", return GL_FALSE);
             }
 
             return GL_TRUE;

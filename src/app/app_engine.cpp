@@ -41,6 +41,10 @@ namespace gt {
 
             }
 
+            this->estate_array = {
+                new estate_game_t()
+            };
+
             for (index_t index = 0; index < this->estate_array.size(); index++) {
 
                 auto estate = this->estate_array[index];
@@ -75,7 +79,7 @@ namespace gt {
 
                 auto estate = this->estate_array[index];
 
-                GT_CHECK(estate->init(), "failed estate init!", {
+                GT_CHECK(estate->work(), "failed estate work!", {
 
                     GT_ELOGF("[index]=(%d)", index);
 
@@ -122,6 +126,7 @@ namespace gt {
                     return false;
                 });
 
+                delete estate;
             }
 
             for (index_t count = this->engine_array.size(); count > 0; count--) {

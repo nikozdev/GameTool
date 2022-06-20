@@ -122,25 +122,111 @@ namespace gt {
 				auto fmbuffer = gfx->get_fmbuffer();
 				
 				static v1f_t point_size = 1.0f;
-				if (ImGui::SliderFloat("point_size", &point_size, 0.0f, 100.0f, "%.3f")) { gfx->set_point_size(point_size); }
+				if (ImGui::SliderFloat("point_size", &point_size, 0.1f, 50.0f, "%.3f")) { gfx->set_point_size(point_size); }
 				static v1f_t lines_size = 1.0f;
-				if (ImGui::SliderFloat("lines_size", &lines_size, 0.0f, 100.0f, "%.3f")) { gfx->set_lines_size(lines_size); }
+				if (ImGui::SliderFloat("lines_size", &lines_size, 0.1f, 50.0f, "%.3f")) { gfx->set_lines_size(lines_size); }
 
 				ImGui::Text("facemode");
 				if (ImGui::Button("fill")) { gfx->set_facemode(gfx::FACEMODE_FILL); }
 				if (ImGui::Button("line")) { gfx->set_facemode(gfx::FACEMODE_LINE); }
 
+				ImGui::Separator();
+				
+				auto ginfo = gfx->get_ginfo();
+				ImGui::Text("performance");
+				
+				ImGui::Text("[draw call count]=(%u)", ginfo->drawcall.count);
+
+				ImGui::Text("[rectangle count]=(%u/%u)", ginfo->drawable.drawn_count, ginfo->drawable.store_count);
+				
+				ImGui::Text("[texture count]=(%u/%u)", ginfo->texture.taken_count, ginfo->texture.store_count);
+
+				ImGui::Text("[vertex memory size]=(%zu)", ginfo->vbuffer.vsize);
+				ImGui::Text("[vertex data memory]=(%zu/%zu)", ginfo->vbuffer.taken_bytes, ginfo->vbuffer.store_bytes);
+
+#if false
+				ImGui::Separator();
+
+				if (ImGui::TreeNodeEx("[drawtool]", IMGUI_TREE_FLAGS)) {
+					
+					auto drawtool = gfx->get_drawtool();
+					
+					if (ImGui::TreeNodeEx("[ilayout]", IMGUI_TREE_FLAGS)) {
+						
+						auto ilayout = &drawtool->ilayout;
+						
+						if (ImGui::TreeNodeEx("[ilayout mapping]"), IMGUI_TREE_FLAGS) {
+
+							auto mapping = &ilayout->mapping;
+							ImGui::Text("[msize]=%d", mapping->msize);
+							ImGui::Text("[count of elements]=%d", mapping->count);
+
+							for (index_t index = 0; index < mapping->count; index++) {
+
+								auto element = &mapping->mdata[index];
+
+								ImGui::Separator();
+								ImGui::Text("[start]=%d", element->start);
+								ImGui::Text("[iname]=%d", element->iname);
+								ImGui::Text("[sname]=%d", element->sname);
+								ImGui::Text("[count]=%d", element->count);
+								ImGui::Text("[msize]=%zu", element->msize);
+
+							}
+						
+							ImGui::TreePop();
+						}
+
+						ImGui::TreePop();
+					}
+					if (ImGui::TreeNodeEx("[materia]"), IMGUI_TREE_FLAGS) {
+					
+						auto materia = &drawtool->materia;
+						
+						if (ImGui::TreeNodeEx("[materia mapping]"), IMGUI_TREE_FLAGS) {
+							
+							auto mapping = &materia->mapping;
+							ImGui::Text("[msize]=%d", mapping->msize);
+							ImGui::Text("[count of elements]=%d", mapping->count);
+							
+							for (index_t index = 0; index < mapping->count; index++) {
+
+								auto element = &mapping->mdata[index];
+								
+								ImGui::Separator();
+								ImGui::Text("[start]=%d", element->start);
+								ImGui::Text("[iname]=%d", element->iname);
+								ImGui::Text("[sname]=%d", element->sname);
+								ImGui::Text("[count]=%d", element->count);
+								ImGui::Text("[msize]=%zu", element->msize);
+
+							}
+
+							ImGui::TreePop();
+						}
+
+						ImGui::TreePop();
+					}
+
+					ImGui::TreePop();
+				}
+
+#endif // false
+				ImGui::Separator();
+				
 				static gfx::rect_t srect;
 				gfx::rect_t drect = srect;
 
 				ImGui::Text("rectangle");
 				if (ImGui::SliderFloat2("vtx_coord", &drect.vtx_coord[0], -1.0f, +1.0f, "%.3f")) { srect.vtx_coord = drect.vtx_coord; }
 				if (ImGui::SliderFloat2("vtx_pivot", &drect.vtx_pivot[0], -1.0f, +1.0f, "%.3f")) { srect.vtx_pivot = drect.vtx_pivot; }
-				if (ImGui::SliderFloat2("vtx_scale", &drect.vtx_scale[0], -1.0f, +1.0f, "%.3f")) { srect.vtx_scale = drect.vtx_scale; }
-				if (ImGui::SliderFloat4("tex_color", &drect.tex_color[0], -1.0f, +1.0f, "%.3f")) { srect.tex_color = drect.tex_color; }
-				if (ImGui::SliderFloat4("tex_coord", &drect.tex_coord[0], -1.0f, +1.0f, "%.3f")) { srect.tex_coord = drect.tex_coord; }
+				if (ImGui::SliderFloat2("vtx_scale", &drect.vtx_scale[0], 0.1f, 1.0f, "%.3f")) { srect.vtx_scale = drect.vtx_scale; }
+				if (ImGui::SliderFloat4("tex_color", &drect.tex_color[0], 0.0f, 1.0f, "%.3f")) { srect.tex_color = drect.tex_color; }
+				if (ImGui::SliderFloat4("tex_coord", &drect.tex_coord[0], 0.0f, 1.0f, "%.3f")) { srect.tex_coord = drect.tex_coord; }
 
 				gfx->add_for_draw(srect);
+				
+				ImGui::Separator();
 
 			}
 			ImGui::End();
@@ -175,9 +261,8 @@ namespace gt {
 					if (ImGui::BeginPopupContextItem(&ebase.name[0])) {
 
 						if (ImGui::MenuItem("remove")) { entity_to_remove = entity; }
-						if (ImGui::MenuItem("create component")) {
-
-						}
+						if (ImGui::MenuItem("create component")) { }
+						if (ImGui::MenuItem("remove component")) { }
 
 						ImGui::EndPopup();
 					}

@@ -8,6 +8,9 @@
 
 #	include "../../lib/glad/src/glad.h"
 
+#	define STB_IMAGE_IMPLEMENTATION
+#	include "../../lib/stb/src/stb_image.h"
+
 namespace gt {
 
 	namespace gfx {
@@ -170,8 +173,20 @@ namespace gt {
 		template<> bool
 			load(const fpath_t& fpath, gfx::texture_t* texture)
 		{
-			return false;
+			int x, y, comp;
+			auto path = fpath.string();
+			auto data = stbi_load(&path[0], &x, &y, &comp, STBI_default);
+			GT_CHECK(data != nullptr, "failed stbi load!", return false);
+
+			texture->mbufr.msize = x * y * comp;
+			texture->mbufr.mdata = data;
+			
+			texture->pixel_bytes = comp;
+			texture->sizes = { x, y };
+
+			return true;
 		}
+		/**/
 	}
 
 }
