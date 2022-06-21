@@ -5,6 +5,7 @@
 #   include "../cfg.hpp"
 
 #   include "../lib/lib_vector.hpp"
+#   include "../lib/lib_matrix.hpp"
 
 namespace gt {
     
@@ -36,10 +37,14 @@ namespace gt {
             /* index and string names */
             sbufr_t sname;
             index_t iname;
-            /* data type and count and memory size (float, 3, sizeof(float)*3 for a vector with 3 floats) */
+            /*
+            data type, count, memory size, memory alignment
+            (float, 3, sizeof(float)*3 for a vector with 3 floats)
+            */
             dtype_t dtype;
             count_t count;
             msize_t msize;
+            msize_t malig;
             /* data offset - depends on the mapping containing this element */
             msize_t start;
             /**/
@@ -65,8 +70,8 @@ namespace gt {
             index_t index;
             /* input layout (vertex array) attributes */
             mapping_t mapping;
-            /* vertex, index, shader buffers */
-            buffer_t vbuffer, ibuffer, sbuffer;
+            /* vertex buffer */
+            buffer_t vbuffer;
             /**/
         } ilayout_t;
         /* texture for sprite per-pixel colors and framebuffers */
@@ -84,10 +89,6 @@ namespace gt {
         typedef struct {
             /* graphics api handle */
             index_t index;
-            /* pixel data */
-            mbufr_t mbufr;
-            /* image properties */
-            count_t pixel_bytes;
             /**/
         } sampler_t;
         /* just a dynamic array of textures and their samplers */
@@ -112,6 +113,8 @@ namespace gt {
             mapping_t   mapping;
             /* textures + samplers */
             binding_t   binding;
+            /* shader buffer for uniforms (or constants) */
+            buffer_t    sbuffer;
             /**/
         } materia_t;
         /* structure of structures for drawing */
@@ -120,7 +123,7 @@ namespace gt {
             ilayout_t ilayout;
             /* how to draw */
             materia_t materia;
-            /**/
+            /* */
         } drawtool_t;
 
         /* framebuffer for off-screen rendering */
@@ -132,7 +135,6 @@ namespace gt {
             /* color attachment where pixels are rendered */
             texture_t   colorbuf;
         } fmbuffer_t;
-        /**/
     }
     
     namespace gfx {
@@ -144,7 +146,9 @@ namespace gt {
             v4s_t       viewport;
             /* default framebuffer color */
             v4f_t       clearcol;
-            /**/
+            /* */
+            v1f_t point_size;
+            v1f_t lines_size;
         } state_t;
         /* additional information */
         typedef struct ginfo_t {
@@ -163,13 +167,12 @@ namespace gt {
             */
             struct {
                 msize_t vsize;
-                msize_t taken_bytes;
+                msize_t drawn_bytes;
                 msize_t store_bytes;
             } vbuffer;
             /* texture atlas */
             struct {
-                count_t taken_count;
-                count_t store_count;
+                count_t count;
             } texture;
             /**/
         };
@@ -180,22 +183,36 @@ namespace gt {
 
         typedef struct rect_t {
             /* vertex params */
-            gt::v2f_t vtx_coord = { 0.0f, 0.0f };
-            gt::v2f_t vtx_pivot = { 0.0f, 0.0f };
-            gt::v2f_t vtx_scale = { 0.5f, 0.5f };
+            v2f_t vtx_coord = { 0.0f, 0.0f };
+            v2f_t vtx_pivot = { 0.0f, 0.0f };
+            v2f_t vtx_scale = { 0.5f, 0.5f };
             /* texture params */
-            gt::v4f_t tex_color = { 1.0, 1.0, 1.0, 1.0 };
-            gt::v4f_t tex_coord = { 0.0, 0.0, 1.0, 1.0 };
-            gt::v1f_t tex_index = { 0 };
+            v4f_t tex_color = { 1.0, 1.0, 1.0, 1.0 };
+            v4f_t tex_coord = { 0.0, 0.0, 1.0, 1.0 };
+            v1f_t tex_index = { 0 };
             /**/
         } rect_t;
 
+        typedef struct camera_t {
+            /* orientation */
+            v2f_t coord;
+            v1f_t rotat;
+            /* viewpoint */
+            v1f_t scale;
+            v1f_t ratio;
+        };
     }
 
     namespace gfx {
         /* get the memory size in bytes out of an enum type */
         extern msize_t
             get_dtype_msize(dtype_t dtype);
+        /* get the aligned memory size in bytes out of an enum type */
+        extern msize_t
+            get_dtype_msize_align(dtype_t dtype);
+        /* get the memory alignment in bytes out of an enum type */
+        extern msize_t
+            get_dtype_malig(dtype_t dtype);
         /* get the data type out of an enum type for a single element (like 1 float from v3f) */
         extern dtype_t
             get_dtype_item(dtype_t dtype);

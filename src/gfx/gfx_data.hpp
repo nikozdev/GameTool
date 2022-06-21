@@ -6,15 +6,15 @@ namespace gt {
 
     namespace gfx {
 
-        extern const char* vshader_source;
-        extern const char* gshader_source;
-        extern const char* pshader_source;
+        extern std::string vshader_source;
+        extern std::string gshader_source;
+        extern std::string pshader_source;
 
     }
 
 }
 
-const char* gt::gfx::vshader_source = R"(
+static inline std::string gt::gfx::vshader_source = std::string(R"(
 #version 330 core
 
 layout(location=0) in vec2  vsi_vtx_coord;
@@ -34,13 +34,53 @@ out vso_t {
 
 } vso;
 
+uniform vec2    uni_cam_coord;
+uniform float   uni_cam_rotat;
+uniform float   uni_cam_scale;
+uniform float   uni_cam_ratio;
+
 void main() {
-    
-    gl_Position = vec4(
-        vsi_vtx_coord.x - vsi_vtx_pivot.x * vsi_vtx_scale.y,
-        vsi_vtx_coord.y - vsi_vtx_pivot.y * vsi_vtx_scale.y,
+    /*
+    v1f_t scale = this->camera.scale;
+    v1f_t ratio = this->camera.ratio;
+                    
+    v1f_t lside = -scale * ratio / 2.0f;
+    v1f_t rside = +scale * ratio / 2.0f;
+    v1f_t bside = -scale / 2.0f;
+    v1f_t tside = +scale / 2.0f;
+    v1f_t nside = -10.0f;
+    v1f_t fside = +10.0f;
+    m4f_t ortho(0.0);
+
+    ortho[0][0] = +2.0f / (rside - lside);
+    ortho[1][1] = +2.0f / (tside - bside);
+    ortho[2][2] = -2.0f / (fside - nside);
+
+    ortho[3][0] = - (rside + lside) / (lside - rside);
+    ortho[3][1] = - (tside + bside) / (bside - tside);
+    ortho[3][2] = - (fside + nside) / (fside - nside);
+
+    ortho[3][3] = 1.0f;
+    */                
+    vec4 coord = vec4(
+        vsi_vtx_coord.x - (vsi_vtx_pivot.x * vsi_vtx_scale.y),
+        vsi_vtx_coord.y - (vsi_vtx_pivot.y * vsi_vtx_scale.y),
         0.0, 1.0
     );
+    
+    coord.x -= uni_cam_coord.x;
+    coord.y -= uni_cam_coord.y;
+    
+    float rotat_cos = cos(radians(-uni_cam_rotat));
+    float rotat_sin = sin(radians(-uni_cam_rotat));
+
+    coord.x = coord.x * rotat_cos - coord.y * rotat_sin;
+    coord.y = coord.x * rotat_sin + coord.y * rotat_cos;
+    
+    coord.x = coord.x / uni_cam_scale / uni_cam_ratio;
+    coord.y = coord.y / uni_cam_scale;
+
+    gl_Position = coord;
     
     vso.vtx_scale = vsi_vtx_scale;
     vso.tex_color = vsi_tex_color;
@@ -49,8 +89,8 @@ void main() {
 
 }
 /* vertex */
-)";
-const char* gt::gfx::gshader_source = R"(
+)");
+static inline std::string gt::gfx::gshader_source = std::string(R"(
 #version 330 core
 
 layout(points) in;
@@ -73,6 +113,11 @@ out gso_t {
 
 } gso;
 
+uniform vec2    uni_cam_coord;
+uniform float   uni_cam_rotat;
+uniform float   uni_cam_scale;
+uniform float   uni_cam_ratio;
+
 vec2 coord, signs;
 
 void makev(int index);
@@ -92,10 +137,19 @@ void makev(int index) {
     if (index % 2 == 0)         { signs.x = -1.0; } else { signs.x = +1.0; }
     if ((index / 2) % 2 == 0)   { signs.y = +1.0; } else { signs.y = -1.0; }
 
-    coord.x = signs.x * gsi[0].vtx_scale.x;
+    coord.x = signs.x * gsi[0].vtx_scale.x / uni_cam_ratio;
     coord.y = signs.y * gsi[0].vtx_scale.y;
+    
+    float rotat_cos = cos(radians(-uni_cam_rotat));
+    float rotat_sin = sin(radians(-uni_cam_rotat));
+    
+    coord.x = coord.x * rotat_cos - coord.y * rotat_sin;
+    coord.y = coord.x * rotat_sin + coord.y * rotat_cos;
 
-    gl_Position = gl_in[0].gl_Position + vec4(coord.x, coord.y, 0.0, 0.0);
+    coord.x = coord.x / uni_cam_scale;
+    coord.y = coord.y / uni_cam_scale;
+    
+    gl_Position = (gl_in[0].gl_Position + vec4(coord.x, coord.y, 0.0, 0.0));
 
     if (index % 2 == 0)         { coord.x = gsi[0].tex_coord.x; } else { coord.x = gsi[0].tex_coord.z; }
     if ((index / 2) % 2 == 0)   { coord.y = gsi[0].tex_coord.y; } else { coord.y = gsi[0].tex_coord.w; }
@@ -107,8 +161,8 @@ void makev(int index) {
     EmitVertex();
 }
 /* geometry */
-)";
-const char* gt::gfx::pshader_source = R"(
+)");
+static inline std::string gt::gfx::pshader_source = std::string(R"(
 #version 330 core
 
 out vec4 pso_color;
@@ -121,7 +175,7 @@ in gso_t {
 
 } psi;
 
-#define TEX_COUNT   0x10
+#define TEX_COUNT )") + std::to_string(0x10) + std::string(R"(
 
 uniform sampler2D   uni_tex_array[TEX_COUNT];
 
@@ -135,6 +189,6 @@ void main() {
     
 }
 /* pixel */
-)";
+)");
 
 #endif /* GFX_DATA_HPP */

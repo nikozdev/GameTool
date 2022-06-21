@@ -46,6 +46,68 @@ namespace gt {
 			}
 			return 0ul;
 		}
+		msize_t
+			get_dtype_msize_align(dtype_t dtype)
+		{
+			switch (dtype)
+			{
+			case GL_BYTE: { return sizeof(GLint) * 1u; }
+			case GL_SHORT: { return sizeof(GLint) * 1u; }
+			case GL_INT: { return sizeof(GLint) * 1u; }
+			case GL_INT_VEC2: { return sizeof(GLint) * 2u; }
+			case GL_INT_VEC3: { return sizeof(GLint) * 4u; }
+			case GL_INT_VEC4: { return sizeof(GLint) * 4u; }
+			case GL_UNSIGNED_BYTE: { return sizeof(GLuint) * 1u; }
+			case GL_UNSIGNED_SHORT: { return sizeof(GLuint) * 1u; }
+			case GL_UNSIGNED_INT: { return sizeof(GLuint) * 1u; }
+			case GL_UNSIGNED_INT_VEC2: { return sizeof(GLuint) * 2u; }
+			case GL_UNSIGNED_INT_VEC3: { return sizeof(GLuint) * 4u; }
+			case GL_UNSIGNED_INT_VEC4: { return sizeof(GLuint) * 4u; }
+			case GL_FLOAT: { return sizeof(GLfloat) * 1u; }
+			case GL_FLOAT_VEC2: { return sizeof(GLfloat) * 2u; }
+			case GL_FLOAT_VEC3: { return sizeof(GLfloat) * 3u; }
+			case GL_FLOAT_VEC4: { return sizeof(GLfloat) * 4u; }
+			case GL_FLOAT_MAT2: { return sizeof(GLfloat) * 2u * 2u; }
+			case GL_FLOAT_MAT3: { return sizeof(GLfloat) * 4u * 4u; }
+			case GL_FLOAT_MAT4: { return sizeof(GLfloat) * 4u * 4u; }
+			case GL_SAMPLER_1D: { return sizeof(GLint) * 1u; }
+			case GL_SAMPLER_2D: { return sizeof(GLint) * 1u; }
+			case GL_SAMPLER_3D: { return sizeof(GLint) * 1u; }
+			default: { GT_ERROR("unknown dtype!", return 0ul); }
+			}
+			return 0ul;
+		}
+		msize_t
+			get_dtype_malig(dtype_t dtype)
+		{
+			switch (dtype)
+			{
+			case GL_BYTE: { return sizeof(GLint) * 1u; }
+			case GL_SHORT: { return sizeof(GLint) * 1u; }
+			case GL_INT: { return sizeof(GLint) * 1u; }
+			case GL_INT_VEC2: { return sizeof(GLint) * 2u; }
+			case GL_INT_VEC3: { return sizeof(GLint) * 4u; }
+			case GL_INT_VEC4: { return sizeof(GLint) * 4u; }
+			case GL_UNSIGNED_BYTE: { return sizeof(GLuint) * 1u; }
+			case GL_UNSIGNED_SHORT: { return sizeof(GLuint) * 1u; }
+			case GL_UNSIGNED_INT: { return sizeof(GLuint) * 1u; }
+			case GL_UNSIGNED_INT_VEC2: { return sizeof(GLuint) * 2u; }
+			case GL_UNSIGNED_INT_VEC3: { return sizeof(GLuint) * 4u; }
+			case GL_UNSIGNED_INT_VEC4: { return sizeof(GLuint) * 4u; }
+			case GL_FLOAT: { return sizeof(GLfloat) * 1u; }
+			case GL_FLOAT_VEC2: { return sizeof(GLfloat) * 2u; }
+			case GL_FLOAT_VEC3: { return sizeof(GLfloat) * 4u; }
+			case GL_FLOAT_VEC4: { return sizeof(GLfloat) * 4u; }
+			case GL_FLOAT_MAT2: { return sizeof(GLfloat) * 2u * 2u; }
+			case GL_FLOAT_MAT3: { return sizeof(GLfloat) * 4u * 4u; }
+			case GL_FLOAT_MAT4: { return sizeof(GLfloat) * 4u * 4u; }
+			case GL_SAMPLER_1D: { return sizeof(GLint) * 1u; }
+			case GL_SAMPLER_2D: { return sizeof(GLint) * 1u; }
+			case GL_SAMPLER_3D: { return sizeof(GLint) * 1u; }
+			default: { GT_ERROR("unknown dtype!", return 0ul); }
+			}
+			return 0ul;
+		}
 		/**/
 		dtype_t
 			get_dtype_item(dtype_t dtype)

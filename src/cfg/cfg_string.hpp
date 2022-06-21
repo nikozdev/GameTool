@@ -13,6 +13,8 @@
 #       define GT_NAME_SIZE_USE GT_NAME_SIZE_MED
 #   endif /* GT_NAME_SIZE_USE */
 
+#   define GT_STRING(text) #text
+
 namespace gt {
 
     using cstr_t    = const char*;

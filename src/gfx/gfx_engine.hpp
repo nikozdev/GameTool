@@ -56,6 +56,11 @@ namespace gt {
             {
                 return &this->drawtool;
             }
+            inline const camera_t*
+                get_camera() const
+            {
+                return &this->camera;
+            }
 
             inline const state_t*
                 get_state() const
@@ -115,7 +120,7 @@ namespace gt {
             bool
                 init_ilayout(ilayout_t* ilayout);
             bool
-                init_buffer(buffer_t* buffer);
+                init_vbuffer(buffer_t* vbuffer);
             
             bool
                 init_materia(materia_t* materia);
@@ -126,36 +131,37 @@ namespace gt {
 
         private:
 
-            inline bool
+            bool
                 quit_fmbuffer(fmbuffer_t* fmbuffer);
             
-            inline bool
+            bool
                 quit_drawtool(drawtool_t* drawtool);
 
-            inline bool
+            bool
                 quit_ilayout(ilayout_t* ilayout);
-            inline bool
-                quit_buffer(buffer_t* buffer);
+            bool
+                quit_vbuffer(buffer_t* vbuffer);
 
-            inline bool
+            bool
                 quit_materia(materia_t* materia);
-            inline bool
+            bool
                 quit_texture(texture_t* texture);
-            inline bool
+            bool
                 quit_shader(shader_t* shader, shtype_e shtype);
 
         private:
             /* platform specific handles */
-            window_t window;
-            contex_t contex;
-            device_t device;
+            window_t    window;
+            contex_t    contex;
+            device_t    device;
             /* global state objects */
-            state_t state;
-            ginfo_t ginfo;
+            state_t     state;
+            ginfo_t     ginfo;
             /* where to draw */
-            fmbuffer_t fmbuffer;
+            fmbuffer_t  fmbuffer;
             /* what and how to draw */
-            drawtool_t drawtool;
+            drawtool_t  drawtool;
+            camera_t    camera;
         };
 
     }

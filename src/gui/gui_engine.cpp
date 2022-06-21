@@ -91,7 +91,7 @@ namespace gt {
 
 			if (ImGui::BeginMenuBar()) {
 
-				if (ImGui::BeginMenu("File")) {
+				if (ImGui::BeginMenu("file")) {
 
 					if (ImGui::MenuItem("init...", "Ctrl+N")) {
 					}
@@ -110,6 +110,10 @@ namespace gt {
 						if (ImGui::Checkbox(&tool->name[0], &tool->flag)) { }
 
 					}
+
+					ImGui::EndMenu();
+				}
+				if (ImGui::BeginMenu("edit")) {
 
 					ImGui::EndMenu();
 				}

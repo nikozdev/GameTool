@@ -43,14 +43,14 @@ namespace gt {
 			}
 
 			int index = 0;
-			for (float iterx = -1.0f; iterx < +1.0f; iterx += 0.5f) {
+			for (float iterx = -1.0f; iterx <= +1.0f; iterx += 0.5f) {
 
-				for (float itery = -1.0f; itery < +1.0f; itery += 0.5f, index++) {
+				for (float itery = -1.0f; itery <= +1.0f; itery += 0.5f, index++) {
 
 					ecs::sprite_t sprite;
 
 					sprite.vtx_coord = { iterx, itery };
-					sprite.vtx_pivot = { -1.0f, -1.0f };
+					sprite.vtx_pivot = { 0.0f, 0.0f };
 					sprite.vtx_scale = { 0.25f, 0.25f };
 					sprite.tex_color = { 1.0f, 1.0f, 1.0f, 1.0f };
 					sprite.tex_coord = { 0.0f, 0.0f, 1.0f, 1.0f };

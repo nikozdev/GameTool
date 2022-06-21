@@ -6,6 +6,8 @@
 
 #	include "../lib/lib_vector.hpp"
 
+#	include "../ecs/ecs_lib.hpp"
+
 namespace gt {
 
 	namespace app { class engine_t; }
@@ -26,7 +28,7 @@ namespace gt {
 
 		public:
 
-			tool_a_t(const char* name) :
+			tool_a_t(const char* name, const char* keys) :
 				name(name), flag(false)
 			{
 			}
@@ -55,6 +57,7 @@ namespace gt {
 
 			bool flag;
 			const char* name;
+			const char* keys;
 
 		};
 
@@ -68,7 +71,7 @@ namespace gt {
 
 		public:
 
-			tool_t_t(const char* name) : tool_a_t(name) {}
+			tool_t_t(const char* name, const char* keys) : tool_a_t(name, keys) {}
 		
 			virtual bool
 				init() = 0;
@@ -92,7 +95,11 @@ namespace gt {
 
 		public:
 
-			tool_app_t() : base_t("app"), app(nullptr) {}
+			tool_app_t() :
+				base_t("app", "ctrl+a"),
+				app(nullptr)
+			{
+			}
 
 			virtual bool
 				init() override;
@@ -116,7 +123,11 @@ namespace gt {
 
 		public:
 
-			tool_sys_t() : base_t("sys"), sys(nullptr) {}
+			tool_sys_t() :
+				base_t("sys","ctrl+y"),
+				sys(nullptr)
+			{
+			}
 
 			virtual bool
 				init() override;
@@ -140,7 +151,11 @@ namespace gt {
 
 		public:
 
-			tool_gfx_t() : base_t("gfx") {}
+			tool_gfx_t() :
+				base_t("gfx", "ctrl+g"),
+				gfx(nullptr)
+			{
+			}
 
 			virtual bool
 				init() override;
@@ -152,6 +167,9 @@ namespace gt {
 		private:
 
 			gfx::engine_t* gfx;
+			gfx::state_t state;
+
+			bool grid_flag;
 
 		};
 
@@ -164,7 +182,11 @@ namespace gt {
 
 		public:
 
-			tool_fsx_t() : base_t("fsx") {}
+			tool_fsx_t() :
+				base_t("fsx", "ctrl+f"),
+				fsx(nullptr)
+			{
+			}
 
 			virtual bool
 				init() override;
@@ -188,7 +210,11 @@ namespace gt {
 
 		public:
 
-			tool_ecs_t() : base_t("ecs") {}
+			tool_ecs_t() :
+				base_t("ecs", "ctrl+e"),
+				ecs(nullptr)
+			{
+			}
 
 			virtual bool
 				init() override;
@@ -198,15 +224,18 @@ namespace gt {
 				quit() override;
 
 		private:
-			/*
+
 			inline bool
 				draw(const ecs::entity_t& entity);
 			template<typename type_t> inline bool
 				draw(const ecs::entity_t& entity);
-			*/
+
 		private:
 
 			ecs::engine_t* ecs;
+			entt::registry* reg;
+			
+			ecs::entity_t entity_to_remove;
 
 		};
 
@@ -223,7 +252,7 @@ namespace gt {
 
 		public:
 
-			tool_frame_t() : base_t("frame") {}
+			tool_frame_t() : base_t("frame", "ctrl+b") {}
 
 			virtual bool
 				init() override;

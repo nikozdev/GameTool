@@ -13,19 +13,6 @@ examples/*/Debug/*
 examples/*/Release/*
 examples/*/x64/*
 
-## Visual Studio artifacts
-.vs
-ipch
-*.opensdf
-*.log
-*.pdb
-*.ilk
-*.user
-*.sdf
-*.suo
-*.VC.db
-*.VC.VC.opendb
-
 ## Commonly used CMake directories
 /build*/
 
@@ -58,8 +45,8 @@ bin/
 bin-int/
 
  # Files
-Makefile 
+Makefile
 
 # Visual Studio files and folder
-*.sln
-*.vcxproj*
+#*.sln
+#*.vcxproj*

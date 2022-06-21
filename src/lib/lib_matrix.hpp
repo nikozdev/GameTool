@@ -3,7 +3,7 @@
 #	define LIB_MATRIX_HPP
 
 #	include "../../lib/glm/src/matrix.hpp"
-#	include "../../lib/glm/src/ext/matrix_transform.hpp"
+#	include "../../lib/glm/src/gtc/matrix_transform.hpp"
 
 namespace gt {
 

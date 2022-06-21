@@ -56,6 +56,7 @@ namespace gt {
             engine_t::set_viewport(int x, int y, int w, int h)
         {
             this->state.viewport = { x, y, w, h };
+            this->camera.ratio = { static_cast<v1f_t>(w) / static_cast<v1f_t>(h) };
             
             ::glViewport(x, y, w, h);
 
@@ -101,8 +102,6 @@ namespace gt {
 
             memcpy(vbuffer->mtail, &rect, sizeof(rect_t));
             vbuffer->mtail += sizeof(rect_t);
-            
-            this->ginfo.drawable.drawn_count += 1;
 
             return true;
         }
@@ -151,13 +150,20 @@ namespace gt {
             this->set_clearcol(0.125,0.250,0.500,1.000);
             this->set_viewport(this->state.viewport[0], this->state.viewport[1], this->state.viewport[2], this->state.viewport[3]);
 
+            this->camera.coord = { 0.0f, 0.0f };
+            this->camera.rotat = { 0.0f };
+            this->camera.ratio = this->state.viewport[2] / this->state.viewport[3];
+            this->camera.scale = 1.0f;
+
             return this->play();;
         }
         bool
             engine_t::work()
         {
-            ::memset(&this->ginfo, 0, sizeof(ginfo_t));
-            
+            this->ginfo.drawcall.count = 0;
+            this->ginfo.drawable.drawn_count = 0;
+            this->ginfo.vbuffer.drawn_bytes = 0;
+
             GT_CHECK(this->draw(), "failed graphics engine drawing!", return false);
 
             ::glfwSwapBuffers(reinterpret_cast<::GLFWwindow*>(this->window));
@@ -223,17 +229,14 @@ namespace gt {
         bool
             engine_t::draw()
         {
-            this->ginfo.texture.taken_count = 1u;
-            this->ginfo.vbuffer.taken_bytes += static_cast<msize_t>(this->drawtool.ilayout.vbuffer.mtail - this->drawtool.ilayout.vbuffer.mhead);
-            this->ginfo.drawcall.count += 1;
-
             ::glBindFramebuffer(GL_FRAMEBUFFER, fmbuffer.index);
             ::glClear(GL_COLOR_BUFFER_BIT);
 
             auto materia = &this->drawtool.materia;
             ::glUseProgram(materia->index);
-            
+
             auto binding = &materia->binding;
+            /* textures */
             GLint index_array[GT_GFX_TEXTURE_COUNT_USE];
             for (index_t index = 0; index < binding->count; index++) {
                 
@@ -245,12 +248,39 @@ namespace gt {
                 index_array[index] = texture->index;
 
             }
+            /* uniforms */
             auto mapping = &materia->mapping;
             for (index_t index = 0; index < mapping->count; index++) {
                 auto element = &mapping->mdata[index];
                 if (strcmp(element->sname.sdata, "uni_tex_array[0]") == 0) {
+                    
                     ::glUniform1iv(element->iname, element->count, index_array);
-                    break;
+                    
+                    continue;
+                }
+                if (strcmp(element->sname.sdata, "uni_cam_coord") == 0) {
+
+                    ::glUniform2f(element->iname, this->camera.coord[0], this->camera.coord[1]);
+
+                    continue;
+                }
+                if (strcmp(element->sname.sdata, "uni_cam_rotat") == 0) {
+                    
+                    ::glUniform1f(element->iname, this->camera.rotat);
+                    
+                    continue;
+                }
+                if (strcmp(element->sname.sdata, "uni_cam_scale") == 0) {
+
+                    ::glUniform1f(element->iname, this->camera.scale);
+
+                    continue;
+                }
+                if (strcmp(element->sname.sdata, "uni_cam_ratio") == 0) {
+                    
+                    ::glUniform1f(element->iname, this->camera.ratio);
+                    
+                    continue;
                 }
             }
 
@@ -258,13 +288,21 @@ namespace gt {
             ::glBindVertexArray(ilayout->index);
             
             auto vbuffer = &ilayout->vbuffer;
-            ::glBufferSubData(GL_ARRAY_BUFFER, 0, vbuffer->mbufr.msize, vbuffer->mbufr.mdata);
+            ::glBindBuffer(GL_ARRAY_BUFFER, vbuffer->index);
+            
+            msize_t drawn_bytes = vbuffer->mtail - vbuffer->mhead;
+            
+            ::glBufferSubData(GL_ARRAY_BUFFER, 0, drawn_bytes, vbuffer->mbufr.mdata);
+            
+            ::glDrawArrays(GL_POINTS, 0, drawn_bytes / ilayout->mapping.msize);
+            
+            this->ginfo.drawcall.count += 1;
+            this->ginfo.vbuffer.drawn_bytes += drawn_bytes;
+            this->ginfo.drawable.drawn_count = this->ginfo.vbuffer.drawn_bytes / this->ginfo.vbuffer.vsize;
             vbuffer->mtail = vbuffer->mhead = vbuffer->mbufr.mdata;
-
-            ::glDrawArrays(GL_POINTS, 0, vbuffer->mbufr.msize / ilayout->mapping.msize);
-
+            
             ::glBindFramebuffer(GL_FRAMEBUFFER, 0u);
-
+            
             return true;
         }
 
@@ -352,7 +390,7 @@ namespace gt {
         {
             GT_CHECK(ilayout->index == 0, "cannot create ilayout!", return false);
 
-            GT_CHECK(this->init_buffer(&ilayout->vbuffer), "cannot create ilayout!", return false);
+            GT_CHECK(this->init_vbuffer(&ilayout->vbuffer), "cannot vertex buffer!", return false);
 
             ::glGenVertexArrays(1u, &ilayout->index);
             ::glBindVertexArray(ilayout->index);
@@ -387,9 +425,11 @@ namespace gt {
                 element->sname.sdata = new char[element->sname.msize];
                 ::strcpy_s(element->sname.sdata, element->sname.msize, name_data);
                 delete[] name_data;
-
-                element->iname = ::glGetAttribLocation(this->drawtool.materia.index, element->sname.sdata);
+                
+                GLint iname = ::glGetAttribLocation(this->drawtool.materia.index, element->sname.sdata);
+                element->iname = iname == -1 ? index : iname;
                 element->count = get_dtype_count_item(dtype) * count;
+                element->malig = get_dtype_malig(dtype);
                 element->msize = get_dtype_msize(dtype);
                 element->dtype = get_dtype_item(dtype);
 
@@ -430,23 +470,23 @@ namespace gt {
             return true;
         }
         bool
-            engine_t::init_buffer(buffer_t* buffer)
+            engine_t::init_vbuffer(buffer_t* vbuffer)
         {
-            GT_CHECK(buffer->index == 0, "cannot create the buffer!", return false);
+            GT_CHECK(vbuffer->index == 0, "cannot create the buffer!", return false);
             
-            ::glGenBuffers(1u, &buffer->index);
-            ::glBindBuffer(GL_ARRAY_BUFFER, buffer->index);
+            ::glGenBuffers(1u, &vbuffer->index);
+            ::glBindBuffer(GL_ARRAY_BUFFER, vbuffer->index);
 
-            buffer->mbufr.msize = sizeof(rect_t) * GT_GTX_RECT_COUNT_USE;
-            buffer->mbufr.mdata = new mbyte_t[buffer->mbufr.msize];
-            memset(buffer->mbufr.mdata, 0, buffer->mbufr.msize);
-            ::glBufferData(GL_ARRAY_BUFFER, buffer->mbufr.msize, buffer->mbufr.mdata, GL_DYNAMIC_DRAW);
+            vbuffer->mbufr.msize = sizeof(rect_t) * GT_GTX_RECT_COUNT_USE;
+            vbuffer->mbufr.mdata = new mbyte_t[vbuffer->mbufr.msize];
+            ::memset(vbuffer->mbufr.mdata, 0, vbuffer->mbufr.msize);
+            ::glBufferData(GL_ARRAY_BUFFER, vbuffer->mbufr.msize, vbuffer->mbufr.mdata, GL_DYNAMIC_DRAW);
 
-            buffer->mhead = buffer->mtail = buffer->mbufr.mdata;
+            vbuffer->mhead = vbuffer->mtail = vbuffer->mbufr.mdata;
 
-            this->ginfo.vbuffer.store_bytes = this->drawtool.ilayout.vbuffer.mbufr.msize;
             this->ginfo.vbuffer.vsize = sizeof(rect_t);
-            this->ginfo.drawable.drawn_count = this->ginfo.vbuffer.store_bytes / this->ginfo.vbuffer.vsize;
+            this->ginfo.vbuffer.store_bytes = this->drawtool.ilayout.vbuffer.mbufr.msize;
+            this->ginfo.drawable.store_count = this->ginfo.vbuffer.store_bytes / this->ginfo.vbuffer.vsize;
 
             return true;
         }
@@ -493,9 +533,12 @@ namespace gt {
                 ::strcpy_s(element->sname.sdata, element->sname.msize, name_data);
                 delete[] name_data;
 
-                element->iname = ::glGetUniformLocation(this->drawtool.materia.index, element->sname.sdata);
+                GLint iname = ::glGetUniformLocation(this->drawtool.materia.index, element->sname.sdata);
+                element->iname = iname == -1 ? index : iname;
+
                 element->count = get_dtype_count_item(dtype) * count;
-                element->msize = get_dtype_msize(dtype);
+                element->malig = get_dtype_malig(dtype);
+                element->msize = get_dtype_msize_align(dtype);
                 element->dtype = get_dtype_item(dtype);
 
             }
@@ -539,7 +582,7 @@ namespace gt {
             
             }
 
-            this->ginfo.texture.store_count = materia->binding.count;
+            this->ginfo.texture.count = materia->binding.count;
 
             return true;
         }
@@ -599,7 +642,7 @@ namespace gt {
                 /*
                 GT_CHECK(lib::load("../rsc/glsl/sprites_vtx.glsl", shader), "failed vertex shader load!", return false);
                 */
-                source = vshader_source;
+                source = &vshader_source[0];
             }
             if (shtype == SHTYPE_GEOMETRY) {
 
@@ -607,7 +650,7 @@ namespace gt {
                 /*
                 GT_CHECK(lib::load("../rsc/glsl/sprites_gmt.glsl", shader), "failed vertex shader load!", return false);
                 */
-                source = gshader_source;
+                source = &gshader_source[0];
             }
             if (shtype == SHTYPE_PIXEL) {
 
@@ -615,7 +658,7 @@ namespace gt {
                 /*
                 GT_CHECK(lib::load("../rsc/glsl/sprites_pxl.glsl", shader), "failed vertex shader load!", return false);
                 */
-                source = pshader_source;
+                source = &pshader_source[0];
             }
             GT_CHECK(source != nullptr, "could not load shader source! check the type");
             shader->sbufr.msize = strlen(source) + 1u;
@@ -648,7 +691,7 @@ namespace gt {
             ::glDeleteVertexArrays(1u, &ilayout->index);
             ilayout->index = 0;
 
-            GT_CHECK(this->quit_buffer(&ilayout->vbuffer), "failed vertex buffer destruction!", return false);
+            GT_CHECK(this->quit_vbuffer(&ilayout->vbuffer), "failed vertex buffer destruction!", return false);
             
             auto mapping = &ilayout->mapping;
             if (mapping->msize > 0ul) { delete[] ilayout->mapping.mdata; }
@@ -659,18 +702,18 @@ namespace gt {
             return true;
         }
         bool
-            engine_t::quit_buffer(buffer_t* buffer)
+            engine_t::quit_vbuffer(buffer_t* vbuffer)
         {
-            GT_CHECK(buffer->index != 0, "cannot delete the buffer!", return false);
+            GT_CHECK(vbuffer->index != 0, "cannot delete the buffer!", return false);
             
-            GT_CHECK(buffer->index > 0, "cannot delete vertex buffer!", return false);
-            ::glDeleteBuffers(1u, &buffer->index);
-            buffer->index = 0;
-            if (buffer->mbufr.msize > 0ul) { delete[] buffer->mbufr.mdata; }
-            buffer->mbufr.mdata = nullptr;
-            buffer->mbufr.msize = 0ul;
+            GT_CHECK(vbuffer->index > 0, "cannot delete vertex buffer!", return false);
+            ::glDeleteBuffers(1u, &vbuffer->index);
+            vbuffer->index = 0;
+            if (vbuffer->mbufr.msize > 0ul) { delete[] vbuffer->mbufr.mdata; }
+            vbuffer->mbufr.mdata = nullptr;
+            vbuffer->mbufr.msize = 0ul;
 
-            this->ginfo.vbuffer.taken_bytes = 0ul;
+            this->ginfo.vbuffer.drawn_bytes = 0ul;
             this->ginfo.vbuffer.store_bytes = 0ul;
 
             return true;
@@ -686,7 +729,7 @@ namespace gt {
             GT_CHECK(this->quit_shader(&materia->vshader, SHTYPE_VERTEX), "failed vertex shader destruction", return false);
             GT_CHECK(this->quit_shader(&materia->pshader, SHTYPE_PIXEL), "failed pixel shader destruction", return false);
             GT_CHECK(this->quit_shader(&materia->gshader, SHTYPE_GEOMETRY), "failed geometry shader destruction", return false);
-
+            
             auto mapping = &materia->mapping;
             if (mapping->count > 0ul) { delete[] mapping->mdata; }
             mapping->mdata = nullptr;
