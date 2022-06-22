@@ -64,7 +64,6 @@ namespace gt {
 			this->tool_array.push_back(new tool_app_t());
 			this->tool_array.push_back(new tool_sys_t());
 			this->tool_array.push_back(new tool_gfx_t());
-			this->tool_array.push_back(new tool_fsx_t());
 			this->tool_array.push_back(new tool_ecs_t());
 			/* others */
 			this->tool_array.push_back(new tool_frame_t());

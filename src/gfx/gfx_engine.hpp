@@ -75,6 +75,25 @@ namespace gt {
 
             bool
                 add_for_draw(const rect_t& rect);
+            bool
+                add_for_draw(const line_t& line);
+            inline bool
+                add_for_draw(const grid_t& grid)
+            {
+                return this->add_for_draw(grid.scale, grid.texid, grid.texuv, grid.color, grid.tiles);
+            }
+
+            bool
+                add_for_draw(
+                    const v2f_t& pivot, const v2f_t& scale, const v2f_t& coord,
+                    v1f_t texid, const v4f_t& texuv, const v4f_t& color
+                );
+            bool
+                add_for_draw(
+                    const v2f_t& scale,
+                    v1f_t texid, const v4f_t& texuv, const v4f_t& color,
+                    const tiles_t& tiles
+                );
 
         public:
 
@@ -118,17 +137,18 @@ namespace gt {
                 init_drawtool(drawtool_t* drawtool);
             
             bool
-                init_ilayout(ilayout_t* ilayout);
+                init_ilayout(drawtool_t* drawtool, ilayout_t* ilayout);
             bool
-                init_vbuffer(buffer_t* vbuffer);
+                init_vbuffer(ilayout_t* ilayout, buffer_t* vbuffer);
             
             bool
-                init_materia(materia_t* materia);
+                init_materia(drawtool_t* drawtool, materia_t* materia);
+            bool
+                init_shader(materia_t* materia, shader_t* shader, shtype_e shtype);
+
             bool
                 init_texture(texture_t* texture);
-            bool
-                init_shader(shader_t* shader, shtype_e shtype);
-
+        
         private:
 
             bool
@@ -138,16 +158,17 @@ namespace gt {
                 quit_drawtool(drawtool_t* drawtool);
 
             bool
-                quit_ilayout(ilayout_t* ilayout);
+                quit_ilayout(drawtool_t* drawtool, ilayout_t* ilayout);
             bool
-                quit_vbuffer(buffer_t* vbuffer);
+                quit_vbuffer(ilayout_t* ilayout, buffer_t* vbuffer);
 
             bool
-                quit_materia(materia_t* materia);
+                quit_materia(drawtool_t* drawtool, materia_t* materia);
+            bool
+                quit_shader(materia_t* materia, shader_t* shader, shtype_e shtype);
+            
             bool
                 quit_texture(texture_t* texture);
-            bool
-                quit_shader(shader_t* shader, shtype_e shtype);
 
         private:
             /* platform specific handles */

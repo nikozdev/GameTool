@@ -12,8 +12,9 @@ workspace               (name)
 	rtti                ("off")
 	characterset        ("ascii")
 	removeflags         ("excludefrombuild")
+    warnings            ("off")
     --[=[compile]=]--
-    buildoptions        {"/permissive","/MDd"}
+    buildoptions        {"/permissive","/MDd","/w"}
     --[=[filters]=]--
 	filter              ("system:windows")
 		systemversion   ("latest")

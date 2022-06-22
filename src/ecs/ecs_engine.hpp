@@ -34,6 +34,7 @@ namespace gt {
 			template<typename compon_t, typename ... args_t> bool
 				create_compon(entity_t* entity, args_t&& ... args)
 			{
+				if (this->reg.any_of<compon_t>(*entity) == true) { return false; }
 				this->reg.emplace<compon_t>(*entity, std::forward<args_t>(args)...);
 				
 				return true;
@@ -41,7 +42,8 @@ namespace gt {
 			template<typename compon_t> bool
 				remove_compon(entity_t* entity)
 			{
-				this->reg.remove(*entity);
+				if (this->reg.any_of<compon_t>(*entity) == false) { return false; }
+				this->reg.remove<compon_t>(*entity);
 
 				return true;
 			}

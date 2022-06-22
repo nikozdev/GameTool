@@ -4,8 +4,17 @@
     <Filter Include="app">
       <UniqueIdentifier>{665E880B-D267-887C-5BE3-9E7CC7EB937C}</UniqueIdentifier>
     </Filter>
+    <Filter Include="cfg">
+      <UniqueIdentifier>{9565880B-016F-887C-8AEA-9E7CF6F2937C}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ecs">
+      <UniqueIdentifier>{C06D880B-2C77-887C-B5F2-9E7C21FB937C}</UniqueIdentifier>
+    </Filter>
     <Filter Include="gfx">
       <UniqueIdentifier>{AA76880B-1680-887C-9FFB-9E7C0B04947C}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="gui">
+      <UniqueIdentifier>{8A78880B-F681-887C-7FFD-9E7CEB05947C}</UniqueIdentifier>
     </Filter>
     <Filter Include="lib">
       <UniqueIdentifier>{3C8C880B-A895-887C-3111-9F7C9D19947C}</UniqueIdentifier>
@@ -15,68 +24,160 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\app.hpp" />
+    <ClInclude Include="src\app\app_engine.hpp">
+      <Filter>app</Filter>
+    </ClInclude>
+    <ClInclude Include="src\app\app_estate.hpp">
+      <Filter>app</Filter>
+    </ClInclude>
+    <ClInclude Include="src\app\app_hotkey.hpp">
+      <Filter>app</Filter>
+    </ClInclude>
+    <ClInclude Include="src\cfg.hpp" />
+    <ClInclude Include="src\cfg\cfg_debug.hpp">
+      <Filter>cfg</Filter>
+    </ClInclude>
+    <ClInclude Include="src\cfg\cfg_gfx.hpp">
+      <Filter>cfg</Filter>
+    </ClInclude>
+    <ClInclude Include="src\cfg\cfg_memory.hpp">
+      <Filter>cfg</Filter>
+    </ClInclude>
+    <ClInclude Include="src\cfg\cfg_number.hpp">
+      <Filter>cfg</Filter>
+    </ClInclude>
+    <ClInclude Include="src\cfg\cfg_string.hpp">
+      <Filter>cfg</Filter>
+    </ClInclude>
+    <ClInclude Include="src\cfg\cfg_tools.hpp">
+      <Filter>cfg</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ecs.hpp" />
+    <ClInclude Include="src\ecs\ecs_engine.hpp">
+      <Filter>ecs</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ecs\ecs_fsx.hpp">
+      <Filter>ecs</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ecs\ecs_gfx.hpp">
+      <Filter>ecs</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ecs\ecs_lib.hpp">
+      <Filter>ecs</Filter>
+    </ClInclude>
     <ClInclude Include="src\gametool.hpp" />
     <ClInclude Include="src\gfx.hpp" />
-    <ClInclude Include="src\lib.hpp" />
-    <ClInclude Include="src\sys.hpp" />
-    <ClInclude Include="src\gfx\gfx_engine.hpp" />
-    <ClInclude Include="src\lib\lib_engine.hpp" />
-    <ClInclude Include="src\lib\lib_single.hpp" />
-    <ClInclude Include="src\lib\lib_event.hpp" />
-    <ClInclude Include="src\cfg.hpp" />
-    <ClInclude Include="src\cfg\cfg_debug.hpp" />
-    <ClInclude Include="src\cfg\cfg_memory.hpp" />
-    <ClInclude Include="src\cfg\cfg_number.hpp" />
-    <ClInclude Include="src\cfg\cfg_string.hpp" />
-    <ClInclude Include="src\cfg\cfg_tools.hpp" />
-    <ClInclude Include="src\sys\sys_cursor.hpp" />
-    <ClInclude Include="src\sys\sys_engine.hpp" />
-    <ClInclude Include="src\sys\sys_keybod.hpp" />
-    <ClInclude Include="src\sys\sys_window.hpp" />
-    <ClInclude Include="src\app\app_engine.hpp" />
-    <ClInclude Include="src\app.hpp" />
-    <ClInclude Include="src\lib\lib_vector.hpp" />
-    <ClInclude Include="src\lib\lib_matrix.hpp" />
-    <ClInclude Include="src\app\app_estate.hpp" />
-    <ClInclude Include="src\ecs\ecs_engine.hpp" />
-    <ClInclude Include="src\lib\lib_type.hpp" />
-    <ClInclude Include="src\gui\gui_engine.hpp" />
+    <ClInclude Include="src\gfx\gfx_data.hpp">
+      <Filter>gfx</Filter>
+    </ClInclude>
+    <ClInclude Include="src\gfx\gfx_drawtool.hpp">
+      <Filter>gfx</Filter>
+    </ClInclude>
+    <ClInclude Include="src\gfx\gfx_engine.hpp">
+      <Filter>gfx</Filter>
+    </ClInclude>
+    <ClInclude Include="src\gfx\gfx_lib.hpp">
+      <Filter>gfx</Filter>
+    </ClInclude>
     <ClInclude Include="src\gui.hpp" />
-    <ClInclude Include="src\app\app_hotkey.hpp" />
-    <ClInclude Include="src\ecs.hpp" />
-    <ClInclude Include="src\lib\lib_time.hpp" />
-    <ClInclude Include="src\cfg\cfg_gfx.hpp" />
-    <ClInclude Include="src\gfx\gfx_lib.hpp" />
-    <ClInclude Include="src\lib\lib_file.hpp" />
-    <ClInclude Include="src\ecs\ecs_lib.hpp" />
-    <ClInclude Include="src\fsx\fsx_engine.hpp" />
-    <ClInclude Include="src\fsx\fsx_lib.hpp" />
-    <ClInclude Include="src\fsx.hpp" />
-    <ClInclude Include="src\gfx\gfx_data.hpp" />
-    <ClInclude Include="src\gui\gui_tool.hpp" />
+    <ClInclude Include="src\gui\gui_engine.hpp">
+      <Filter>gui</Filter>
+    </ClInclude>
+    <ClInclude Include="src\gui\gui_tool.hpp">
+      <Filter>gui</Filter>
+    </ClInclude>
+    <ClInclude Include="src\lib.hpp" />
+    <ClInclude Include="src\lib\lib_engine.hpp">
+      <Filter>lib</Filter>
+    </ClInclude>
+    <ClInclude Include="src\lib\lib_event.hpp">
+      <Filter>lib</Filter>
+    </ClInclude>
+    <ClInclude Include="src\lib\lib_file.hpp">
+      <Filter>lib</Filter>
+    </ClInclude>
+    <ClInclude Include="src\lib\lib_matrix.hpp">
+      <Filter>lib</Filter>
+    </ClInclude>
+    <ClInclude Include="src\lib\lib_single.hpp">
+      <Filter>lib</Filter>
+    </ClInclude>
+    <ClInclude Include="src\lib\lib_time.hpp">
+      <Filter>lib</Filter>
+    </ClInclude>
+    <ClInclude Include="src\lib\lib_type.hpp">
+      <Filter>lib</Filter>
+    </ClInclude>
+    <ClInclude Include="src\lib\lib_vector.hpp">
+      <Filter>lib</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sys.hpp" />
+    <ClInclude Include="src\sys\sys_cursor.hpp">
+      <Filter>sys</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sys\sys_engine.hpp">
+      <Filter>sys</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sys\sys_keybod.hpp">
+      <Filter>sys</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sys\sys_window.hpp">
+      <Filter>sys</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\app\app_engine.cpp">
+      <Filter>app</Filter>
+    </ClCompile>
+    <ClCompile Include="src\app\app_estate.cpp">
+      <Filter>app</Filter>
+    </ClCompile>
+    <ClCompile Include="src\app\app_hotkey.cpp">
+      <Filter>app</Filter>
+    </ClCompile>
+    <ClCompile Include="src\cfg\cfg_gfx.cpp">
+      <Filter>cfg</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ecs\ecs_engine.cpp">
+      <Filter>ecs</Filter>
+    </ClCompile>
     <ClCompile Include="src\gametool.cpp" />
-    <ClCompile Include="src\gfx\gfx_engine.cpp" />
-    <ClCompile Include="src\sys\sys_cursor.cpp" />
-    <ClCompile Include="src\sys\sys_engine.cpp" />
-    <ClCompile Include="src\sys\sys_keybod.cpp" />
-    <ClCompile Include="src\sys\sys_window.cpp" />
-    <ClCompile Include="src\app\app_engine.cpp" />
-    <ClCompile Include="src\app\app_estate.cpp" />
-    <ClCompile Include="src\ecs\ecs_engine.cpp" />
-    <ClCompile Include="src\gui\gui_engine.cpp" />
-    <ClCompile Include="src\app\app_hotkey.cpp" />
-    <ClCompile Include="src\cfg\cfg_gfx.cpp" />
-    <ClCompile Include="src\gfx\gfx_lib.cpp" />
-    <ClCompile Include="src\fsx\fsx_engine.cpp" />
-    <ClCompile Include="src\fsx\fsx_lib.cpp" />
-    <ClCompile Include="src\gui\gui_tool.cpp" />
+    <ClCompile Include="src\gfx\gfx_drawtool.cpp">
+      <Filter>gfx</Filter>
+    </ClCompile>
+    <ClCompile Include="src\gfx\gfx_engine.cpp">
+      <Filter>gfx</Filter>
+    </ClCompile>
+    <ClCompile Include="src\gfx\gfx_lib.cpp">
+      <Filter>gfx</Filter>
+    </ClCompile>
+    <ClCompile Include="src\gui\gui_engine.cpp">
+      <Filter>gui</Filter>
+    </ClCompile>
+    <ClCompile Include="src\gui\gui_tool.cpp">
+      <Filter>gui</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sys\sys_cursor.cpp">
+      <Filter>sys</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sys\sys_engine.cpp">
+      <Filter>sys</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sys\sys_keybod.cpp">
+      <Filter>sys</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sys\sys_window.cpp">
+      <Filter>sys</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="src\.keep" />
     <None Include="src\app\.keep">
       <Filter>app</Filter>
+    </None>
+    <None Include="src\cfg\.keep">
+      <Filter>cfg</Filter>
     </None>
     <None Include="src\gfx\.keep">
       <Filter>gfx</Filter>
@@ -87,10 +188,5 @@
     <None Include="src\sys\.keep">
       <Filter>sys</Filter>
     </None>
-    <None Include="src\cfg\.keep" />
-    <None Include="rsc\glsl\sprites_vtx.glsl" />
-    <None Include="rsc\glsl\sprites_pxl.glsl" />
-    <None Include="rsc\glsl\sprites_gmt.glsl" />
-    <None Include="src\fsx\.keep" />
   </ItemGroup>
 </Project>

@@ -7,6 +7,8 @@
 #   include "../lib/lib_vector.hpp"
 #   include "../lib/lib_matrix.hpp"
 
+#   include "vector"
+
 namespace gt {
     
     using dtype_t = enum_t;
@@ -181,22 +183,52 @@ namespace gt {
 
     namespace gfx {
 
+        typedef struct line_t {
+            
+            struct {
+                /* vertex params */
+                v2f_t coord = { 0.0f, 0.0f };
+                v4f_t color = { 1.0, 1.0, 1.0, 1.0 };
+            } from, into;
+            /* texture params */
+            /**/
+        } line_t;
+
         typedef struct rect_t {
             /* vertex params */
-            v2f_t vtx_coord = { 0.0f, 0.0f };
-            v2f_t vtx_pivot = { 0.0f, 0.0f };
-            v2f_t vtx_scale = { 0.5f, 0.5f };
+            v2f_t pivot = { 0.0f, 0.0f };
+            v2f_t scale = { 0.5f, 0.5f };
+            v2f_t coord = { 0.0f, 0.0f };
             /* texture params */
-            v4f_t tex_color = { 1.0, 1.0, 1.0, 1.0 };
-            v4f_t tex_coord = { 0.0, 0.0, 1.0, 1.0 };
-            v1f_t tex_index = { 0 };
+            v4f_t color = { 1.0f, 1.0f, 1.0f, 1.0f };
+            v4f_t texuv = { 0.0f, 0.0f, 1.0f, 1.0f };
+            v1f_t texid = { 0.0f };
             /**/
         } rect_t;
+
+        typedef struct tile_t {
+
+            v2s_t mapid;
+            v2s_t texid;
+
+        };
+        typedef std::vector<tile_t> tiles_t;
+
+        typedef struct grid_t {
+            /* general setup */
+            v1s_t   texid = { 0 };
+            v4f_t   texuv = { 0.0f, 0.0f, 0.125f, 0.125f };
+            v4f_t   color = { 1.0f, 1.0f, 1.0f, 1.0f };
+            /* tilemap */
+            v2f_t   scale = { 1.0f, 1.0f };
+            tiles_t tiles = {};
+            /**/
+        } grid_t;
 
         typedef struct camera_t {
             /* orientation */
             v2f_t coord;
-            v1f_t rotat;
+            v1f_t angle;
             /* viewpoint */
             v1f_t scale;
             v1f_t ratio;

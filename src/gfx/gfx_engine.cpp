@@ -56,7 +56,7 @@ namespace gt {
             engine_t::set_viewport(int x, int y, int w, int h)
         {
             this->state.viewport = { x, y, w, h };
-            this->camera.ratio = { static_cast<v1f_t>(w) / static_cast<v1f_t>(h) };
+            this->camera.ratio = { static_cast<float>(w) / static_cast<float>(h) };
             
             ::glViewport(x, y, w, h);
 
@@ -85,23 +85,95 @@ namespace gt {
         }
 
         bool
+            add_for_draw(const line_t& line)
+        {
+            rect_t rect;
+
+            rect.texid = 0;
+
+            rect.color = line.from.color;
+            rect.coord = line.from.coord;
+
+            return false;
+        }
+        bool
             engine_t::add_for_draw(const rect_t& rect)
         {
             auto vbuffer = &this->drawtool.ilayout.vbuffer;
 
             msize_t msize_next;
-            
+
             msize_next = (vbuffer->mtail - vbuffer->mhead) + sizeof(rect_t);
-            if (vbuffer->mbufr.msize <= msize_next) {
-                
-                GT_CHECK(this->draw(), "failed to draw the current content!", return false);
-            }
+            GT_CHECK(vbuffer->mbufr.msize > msize_next, "not enough memory to draw!", return false);
 
-            msize_next = vbuffer->mtail - vbuffer->mhead;
-            GT_CHECK(vbuffer->mbufr.msize >= msize_next, "cannot render anything!", return false);
-
-            memcpy(vbuffer->mtail, &rect, sizeof(rect_t));
+            ::memcpy(vbuffer->mtail, &rect, sizeof(rect_t));
             vbuffer->mtail += sizeof(rect_t);
+
+            return true;
+        }
+
+        bool
+            engine_t::add_for_draw(
+                const v2f_t& pivot, const v2f_t& scale, const v2f_t& coord,
+                v1f_t texid, const v4f_t& texuv, const v4f_t& color
+            ) {
+            auto vbuffer = &this->drawtool.ilayout.vbuffer;
+
+            msize_t msize_next;
+
+            msize_next = (vbuffer->mtail - vbuffer->mhead) + sizeof(rect_t);
+            GT_CHECK(vbuffer->mbufr.msize > msize_next, "not enough memory to draw!", return false);
+
+            ::memcpy(vbuffer->mtail, &pivot, sizeof(v2f_t));
+            vbuffer->mtail += sizeof(v2f_t);
+            ::memcpy(vbuffer->mtail, &scale, sizeof(v2f_t));
+            vbuffer->mtail += sizeof(v2f_t);
+            ::memcpy(vbuffer->mtail, &coord, sizeof(v2f_t));
+            vbuffer->mtail += sizeof(v2f_t);
+
+            ::memcpy(vbuffer->mtail, &texuv, sizeof(v4f_t));
+            vbuffer->mtail += sizeof(v4f_t);
+            ::memcpy(vbuffer->mtail, &color, sizeof(v4f_t));
+            vbuffer->mtail += sizeof(v4f_t);
+            ::memcpy(vbuffer->mtail, &texid, sizeof(v1f_t));
+            vbuffer->mtail += sizeof(v1f_t);
+
+            return true;
+        }
+
+        bool
+            engine_t::add_for_draw(
+                const v2f_t& scale,
+                v1f_t texid, const v4f_t& texuv, const v4f_t& color,
+                const tiles_t& tiles
+            ) {
+
+            auto binding = &this->drawtool.materia.binding;
+            auto texture = &binding->texture_array[static_cast<int>(texid) % binding->count];
+
+            rect_t rect;
+
+            rect.pivot = { 0.0f, 0.0f };
+            rect.scale = scale;
+
+            rect.color = color;
+            rect.texid = texture->index;
+
+            for (index_t index = 0; index < tiles.size(); index++) {
+
+                auto tile = &tiles[index];
+
+                rect.coord[0] = static_cast<float>(tile->mapid[0]) * scale[0];
+                rect.coord[1] = static_cast<float>(tile->mapid[1]) * scale[1];
+
+                rect.texuv[0] = static_cast<float>(tile->texid[0] + 0) * (texuv[2] - texuv[0]);
+                rect.texuv[1] = static_cast<float>(tile->texid[1] + 0) * (texuv[3] - texuv[1]);
+                rect.texuv[2] = static_cast<float>(tile->texid[0] + 1) * (texuv[2] - texuv[0]);
+                rect.texuv[3] = static_cast<float>(tile->texid[1] + 1) * (texuv[3] - texuv[1]);
+
+                GT_CHECK(this->add_for_draw(rect), "failed to draw a tile!", return false);
+
+            }
 
             return true;
         }
@@ -151,9 +223,9 @@ namespace gt {
             this->set_viewport(this->state.viewport[0], this->state.viewport[1], this->state.viewport[2], this->state.viewport[3]);
 
             this->camera.coord = { 0.0f, 0.0f };
-            this->camera.rotat = { 0.0f };
+            this->camera.angle = { 0.0f };
+            this->camera.scale = { 10.0f };
             this->camera.ratio = this->state.viewport[2] / this->state.viewport[3];
-            this->camera.scale = 1.0f;
 
             return this->play();;
         }
@@ -193,24 +265,35 @@ namespace gt {
             if (event->has_kind<sys::cursor_t::event_coord_t>()) {
 
                 auto evt = static_cast<sys::cursor_t::event_coord_t*>(event);
-                
-                float cursor_x = static_cast<float>(evt->coord_x);
-                float cursor_y = static_cast<float>(evt->coord_y);
-                float window_w = static_cast<float>(this->state.viewport[2]);
-                float window_h = static_cast<float>(this->state.viewport[3]);
-
-                this->set_clearcol(
-                    this->state.clearcol[0],
-                    cursor_x / window_w, cursor_y / window_h,
-                    this->state.clearcol[3]
-                );
 
                 return true;
             }
 
-            if (event->has_kind<sys::cursor_t::event_coord_t>()) {
+            if (event->has_kind<sys::cursor_t::event_scrol_t>()) {
 
-                auto evt = static_cast<sys::cursor_t::event_coord_t*>(event);
+                auto evt = static_cast<sys::cursor_t::event_scrol_t*>(event);
+
+                auto scale = evt->scrol_y * app::engine_t::get()->get_timer()->get_delta();
+                camera.scale -= camera.scale / 2.5f * scale;
+                camera.scale = GT_CLAMP(camera.scale, 0.01f, 10.0f);
+
+                return true;
+            }
+
+            if (event->has_kind<sys::keybod_t::event_t>()) {
+
+                using enum sys::keybod_t::kcode_t;
+                using enum sys::keybod_t::state_t;
+                
+                auto evt = static_cast<sys::keybod_t::event_t*>(event);
+                
+                if (evt->state == STATE_PRESS == false) { return true; }
+                switch (evt->kcode) {
+                case KCODE_A: camera.coord[0] -= 0.5f * camera.scale; break;
+                case KCODE_D: camera.coord[0] += 0.5f * camera.scale; break;
+                case KCODE_S: camera.coord[1] -= 0.5f * camera.scale; break;
+                case KCODE_W: camera.coord[1] += 0.5f * camera.scale; break;
+                }
 
                 return true;
             }
@@ -219,7 +302,6 @@ namespace gt {
                 
                 auto evt = static_cast<sys::window_t::event_sized_t*>(event);
                 
-                /*return this->set_viewport(0, 0, evt->sized_x, evt->sized_y); */
                 return true;
             }
 
@@ -252,33 +334,33 @@ namespace gt {
             auto mapping = &materia->mapping;
             for (index_t index = 0; index < mapping->count; index++) {
                 auto element = &mapping->mdata[index];
-                if (strcmp(element->sname.sdata, "uni_tex_array[0]") == 0) {
+                if (strcmp(element->sname.sdata, "uni_texid[0]") == 0) {
                     
                     ::glUniform1iv(element->iname, element->count, index_array);
                     
                     continue;
                 }
-                if (strcmp(element->sname.sdata, "uni_cam_coord") == 0) {
+                if (strcmp(element->sname.sdata, "uni_coord") == 0) {
 
-                    ::glUniform2f(element->iname, this->camera.coord[0], this->camera.coord[1]);
-
-                    continue;
-                }
-                if (strcmp(element->sname.sdata, "uni_cam_rotat") == 0) {
-                    
-                    ::glUniform1f(element->iname, this->camera.rotat);
-                    
-                    continue;
-                }
-                if (strcmp(element->sname.sdata, "uni_cam_scale") == 0) {
-
-                    ::glUniform1f(element->iname, this->camera.scale);
+                    ::glUniform2f(element->iname, -this->camera.coord[0], -this->camera.coord[1]);
 
                     continue;
                 }
-                if (strcmp(element->sname.sdata, "uni_cam_ratio") == 0) {
+                if (strcmp(element->sname.sdata, "uni_angle") == 0) {
                     
-                    ::glUniform1f(element->iname, this->camera.ratio);
+                    ::glUniform1f(element->iname, -this->camera.angle);
+                    
+                    continue;
+                }
+                if (strcmp(element->sname.sdata, "uni_scale") == 0) {
+
+                    ::glUniform1f(element->iname, 1.0f / this->camera.scale);
+
+                    continue;
+                }
+                if (strcmp(element->sname.sdata, "uni_ratio") == 0) {
+                    
+                    ::glUniform1f(element->iname, 1.0f / this->camera.ratio);
                     
                     continue;
                 }
@@ -333,24 +415,13 @@ namespace gt {
             fmbuffer->viewport[3] = max(fmbuffer->viewport[3], 0x10);
 
             auto colorbuf = &fmbuffer->colorbuf;
-            do {
-                ::glCreateTextures(GL_TEXTURE_2D, 1u, &colorbuf->index);
-
-                ::glBindTexture(GL_TEXTURE_2D, colorbuf->index);
-
-                ::glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, fmbuffer->viewport[2], fmbuffer->viewport[3], 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
-
-                ::glTextureParameteri(colorbuf->index, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-                ::glTextureParameteri(colorbuf->index, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-                ::glTextureParameteri(colorbuf->index, GL_TEXTURE_WRAP_S, GL_CLAMP);
-                ::glTextureParameteri(colorbuf->index, GL_TEXTURE_WRAP_T, GL_CLAMP);
-
-                ::glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, colorbuf->index, 0);
-
-                ::glBindTexture(GL_TEXTURE_2D, 0u);
-
-            } while (colorbuf->index == 0);
-
+            colorbuf->sizes[0] = fmbuffer->viewport[2];
+            colorbuf->sizes[1] = fmbuffer->viewport[3];
+            colorbuf->pixel_bytes = 3u;
+            colorbuf->mbufr.msize = colorbuf->pixel_bytes * colorbuf->sizes[0] * colorbuf->sizes[1];
+            GT_CHECK(this->init_texture(colorbuf), "failed framebuffer attachment init!", return false);
+            ::glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, colorbuf->index, 0);
+            
             GT_CHECK(::glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE, "the frame buffer is not complete!", return false);
 
             ::glBindFramebuffer(GL_FRAMEBUFFER, 0u);
@@ -379,18 +450,18 @@ namespace gt {
             engine_t::init_drawtool(drawtool_t* drawtool)
         {
 
-            GT_CHECK(this->init_materia(&drawtool->materia), "failed materia construction!", return false);
-            GT_CHECK(this->init_ilayout(&drawtool->ilayout), "failed ilayout construction!", return false);
+            GT_CHECK(this->init_materia(drawtool, &drawtool->materia), "failed materia construction!", return false);
+            GT_CHECK(this->init_ilayout(drawtool, &drawtool->ilayout), "failed ilayout construction!", return false);
 
             return true;
         }
 
         bool
-            engine_t::init_ilayout(ilayout_t* ilayout)
+            engine_t::init_ilayout(drawtool_t* drawtool, ilayout_t* ilayout)
         {
             GT_CHECK(ilayout->index == 0, "cannot create ilayout!", return false);
 
-            GT_CHECK(this->init_vbuffer(&ilayout->vbuffer), "cannot vertex buffer!", return false);
+            GT_CHECK(this->init_vbuffer(ilayout, &ilayout->vbuffer), "cannot vertex buffer!", return false);
 
             ::glGenVertexArrays(1u, &ilayout->index);
             ::glBindVertexArray(ilayout->index);
@@ -416,17 +487,17 @@ namespace gt {
                 GLsizei name_size_max;
                 GLsizei name_size_use;
 
-                ::glGetProgramiv(this->drawtool.materia.index, GL_ACTIVE_ATTRIBUTE_MAX_LENGTH, &name_size_max);
+                ::glGetProgramiv(drawtool->materia.index, GL_ACTIVE_ATTRIBUTE_MAX_LENGTH, &name_size_max);
                 name_data = new GLchar[name_size_max];
 
-                ::glGetActiveAttrib(this->drawtool.materia.index, index, name_size_max, &name_size_use, &count, &dtype, name_data);
+                ::glGetActiveAttrib(drawtool->materia.index, index, name_size_max, &name_size_use, &count, &dtype, name_data);
 
                 element->sname.msize = ++name_size_use;
                 element->sname.sdata = new char[element->sname.msize];
                 ::strcpy_s(element->sname.sdata, element->sname.msize, name_data);
                 delete[] name_data;
                 
-                GLint iname = ::glGetAttribLocation(this->drawtool.materia.index, element->sname.sdata);
+                GLint iname = ::glGetAttribLocation(drawtool->materia.index, element->sname.sdata);
                 element->iname = iname == -1 ? index : iname;
                 element->count = get_dtype_count_item(dtype) * count;
                 element->malig = get_dtype_malig(dtype);
@@ -470,7 +541,7 @@ namespace gt {
             return true;
         }
         bool
-            engine_t::init_vbuffer(buffer_t* vbuffer)
+            engine_t::init_vbuffer(ilayout_t* ilayout, buffer_t* vbuffer)
         {
             GT_CHECK(vbuffer->index == 0, "cannot create the buffer!", return false);
             
@@ -485,20 +556,20 @@ namespace gt {
             vbuffer->mhead = vbuffer->mtail = vbuffer->mbufr.mdata;
 
             this->ginfo.vbuffer.vsize = sizeof(rect_t);
-            this->ginfo.vbuffer.store_bytes = this->drawtool.ilayout.vbuffer.mbufr.msize;
+            this->ginfo.vbuffer.store_bytes = ilayout->vbuffer.mbufr.msize;
             this->ginfo.drawable.store_count = this->ginfo.vbuffer.store_bytes / this->ginfo.vbuffer.vsize;
 
             return true;
         }
 
         bool
-            engine_t::init_materia(materia_t* materia)
+            engine_t::init_materia(drawtool_t* drawtool, materia_t* materia)
         {
             materia->index = ::glCreateProgram();
 
-            GT_CHECK(this->init_shader(&materia->vshader, SHTYPE_VERTEX), "failed vertex shader construction!", return false);
-            GT_CHECK(this->init_shader(&materia->gshader, SHTYPE_GEOMETRY), "failed geometry shader construction!", return false);
-            GT_CHECK(this->init_shader(&materia->pshader, SHTYPE_PIXEL), "failed pixel shader construction!", return false);
+            GT_CHECK(this->init_shader(materia, &materia->vshader, SHTYPE_VERTEX), "failed vertex shader construction!", return false);
+            GT_CHECK(this->init_shader(materia, &materia->gshader, SHTYPE_GEOMETRY), "failed geometry shader construction!", return false);
+            GT_CHECK(this->init_shader(materia, &materia->pshader, SHTYPE_PIXEL), "failed pixel shader construction!", return false);
 
             ::glLinkProgram(materia->index);
             GT_CHECK(check_shader(materia->index), "default materia is not linked!", return false);
@@ -533,7 +604,7 @@ namespace gt {
                 ::strcpy_s(element->sname.sdata, element->sname.msize, name_data);
                 delete[] name_data;
 
-                GLint iname = ::glGetUniformLocation(this->drawtool.materia.index, element->sname.sdata);
+                GLint iname = ::glGetUniformLocation(materia->index, element->sname.sdata);
                 element->iname = iname == -1 ? index : iname;
 
                 element->count = get_dtype_count_item(dtype) * count;
@@ -630,7 +701,7 @@ namespace gt {
             return true;
         }
         bool
-            engine_t::init_shader(shader_t* shader, shtype_e shtype)
+            engine_t::init_shader(materia_t* materia, shader_t* shader, shtype_e shtype)
         {
             GT_CHECK(shader->index == 0, "cannot create the shader!", return false);
 
@@ -670,7 +741,7 @@ namespace gt {
 
             ::glCompileShader(shader->index);
             GT_CHECK(check_shader(shader->index), "default shader is not compiled!", return false);
-            ::glAttachShader(this->drawtool.materia.index, shader->index);
+            ::glAttachShader(materia->index, shader->index);
 
             return true;
         }
@@ -678,20 +749,20 @@ namespace gt {
         bool
             engine_t::quit_drawtool(drawtool_t* drawtool)
         {
-            GT_CHECK(this->quit_materia(&drawtool->materia), "failed materia destruction!", return false);
-            GT_CHECK(this->quit_ilayout(&drawtool->ilayout), "failed ilayout destruction!", return false);
+            GT_CHECK(this->quit_materia(drawtool, &drawtool->materia), "failed materia destruction!", return false);
+            GT_CHECK(this->quit_ilayout(drawtool, &drawtool->ilayout), "failed ilayout destruction!", return false);
             
             return true;
         }
 
         bool
-            engine_t::quit_ilayout(ilayout_t* ilayout)
+            engine_t::quit_ilayout(drawtool_t* drawtool, ilayout_t* ilayout)
         {
             GT_CHECK(ilayout->index > 0, "cannot delete input layout!", return false);
             ::glDeleteVertexArrays(1u, &ilayout->index);
             ilayout->index = 0;
 
-            GT_CHECK(this->quit_vbuffer(&ilayout->vbuffer), "failed vertex buffer destruction!", return false);
+            GT_CHECK(this->quit_vbuffer(ilayout, &ilayout->vbuffer), "failed vertex buffer destruction!", return false);
             
             auto mapping = &ilayout->mapping;
             if (mapping->msize > 0ul) { delete[] ilayout->mapping.mdata; }
@@ -702,7 +773,7 @@ namespace gt {
             return true;
         }
         bool
-            engine_t::quit_vbuffer(buffer_t* vbuffer)
+            engine_t::quit_vbuffer(ilayout_t* ilayout, buffer_t* vbuffer)
         {
             GT_CHECK(vbuffer->index != 0, "cannot delete the buffer!", return false);
             
@@ -720,15 +791,15 @@ namespace gt {
         }
 
         bool
-            engine_t::quit_materia(materia_t* materia)
+            engine_t::quit_materia(drawtool_t* drawtool, materia_t* materia)
         {
             GT_CHECK(materia->index > 0, "cannot delete material!", return false);
             ::glDeleteProgram(materia->index);
             materia->index = 0;
 
-            GT_CHECK(this->quit_shader(&materia->vshader, SHTYPE_VERTEX), "failed vertex shader destruction", return false);
-            GT_CHECK(this->quit_shader(&materia->pshader, SHTYPE_PIXEL), "failed pixel shader destruction", return false);
-            GT_CHECK(this->quit_shader(&materia->gshader, SHTYPE_GEOMETRY), "failed geometry shader destruction", return false);
+            GT_CHECK(this->quit_shader(materia, &materia->vshader, SHTYPE_VERTEX), "failed vertex shader destruction", return false);
+            GT_CHECK(this->quit_shader(materia, &materia->pshader, SHTYPE_PIXEL), "failed pixel shader destruction", return false);
+            GT_CHECK(this->quit_shader(materia, &materia->gshader, SHTYPE_GEOMETRY), "failed geometry shader destruction", return false);
             
             auto mapping = &materia->mapping;
             if (mapping->count > 0ul) { delete[] mapping->mdata; }
@@ -773,7 +844,7 @@ namespace gt {
             return true;
         }
         bool
-            engine_t::quit_shader(shader_t* shader, shtype_e shtype)
+            engine_t::quit_shader(materia_t* materia, shader_t* shader, shtype_e shtype)
         {
             GT_CHECK(shader->index != 0, "cannot delete the shader!", return false);
 

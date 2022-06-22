@@ -17,75 +17,54 @@ namespace gt {
 static inline std::string gt::gfx::vshader_source = std::string(R"(
 #version 330 core
 
-layout(location=0) in vec2  vsi_vtx_coord;
-layout(location=1) in vec2  vsi_vtx_pivot;
-layout(location=2) in vec2  vsi_vtx_scale;
+layout(location=0) in vec2  vsi_pivot;
+layout(location=1) in vec2  vsi_scale;
+layout(location=2) in vec2  vsi_coord;
 
-layout(location=3) in vec4  vsi_tex_color;
-layout(location=4) in vec4  vsi_tex_coord;
-layout(location=5) in float vsi_tex_index;
+layout(location=3) in vec4  vsi_color;
+layout(location=4) in vec4  vsi_texuv;
+layout(location=5) in float vsi_texid;
 
 out vso_t {
 
-    out vec2        vtx_scale;
-    out vec4        tex_color;
-    out vec4        tex_coord;
-    out flat float  tex_index;
+    out vec2    scale;
+    out vec4    color;
+    out vec4    texuv;
+    out float   texid;
 
 } vso;
 
-uniform vec2    uni_cam_coord;
-uniform float   uni_cam_rotat;
-uniform float   uni_cam_scale;
-uniform float   uni_cam_ratio;
+uniform vec2    uni_coord;
+uniform float   uni_angle;
+uniform float   uni_scale;
+uniform float   uni_ratio;
 
 void main() {
-    /*
-    v1f_t scale = this->camera.scale;
-    v1f_t ratio = this->camera.ratio;
-                    
-    v1f_t lside = -scale * ratio / 2.0f;
-    v1f_t rside = +scale * ratio / 2.0f;
-    v1f_t bside = -scale / 2.0f;
-    v1f_t tside = +scale / 2.0f;
-    v1f_t nside = -10.0f;
-    v1f_t fside = +10.0f;
-    m4f_t ortho(0.0);
 
-    ortho[0][0] = +2.0f / (rside - lside);
-    ortho[1][1] = +2.0f / (tside - bside);
-    ortho[2][2] = -2.0f / (fside - nside);
-
-    ortho[3][0] = - (rside + lside) / (lside - rside);
-    ortho[3][1] = - (tside + bside) / (bside - tside);
-    ortho[3][2] = - (fside + nside) / (fside - nside);
-
-    ortho[3][3] = 1.0f;
-    */                
     vec4 coord = vec4(
-        vsi_vtx_coord.x - (vsi_vtx_pivot.x * vsi_vtx_scale.y),
-        vsi_vtx_coord.y - (vsi_vtx_pivot.y * vsi_vtx_scale.y),
+        vsi_coord.x - (vsi_pivot.x * vsi_scale.y),
+        vsi_coord.y - (vsi_pivot.y * vsi_scale.y),
         0.0, 1.0
     );
     
-    coord.x -= uni_cam_coord.x;
-    coord.y -= uni_cam_coord.y;
+    coord.x += uni_coord.x;
+    coord.y += uni_coord.y;
     
-    float rotat_cos = cos(radians(-uni_cam_rotat));
-    float rotat_sin = sin(radians(-uni_cam_rotat));
+    float angle_cos = cos(radians(uni_angle));
+    float angle_sin = sin(radians(uni_angle));
 
-    coord.x = coord.x * rotat_cos - coord.y * rotat_sin;
-    coord.y = coord.x * rotat_sin + coord.y * rotat_cos;
+    coord.x = coord.x * angle_cos - coord.y * angle_sin;
+    coord.y = coord.x * angle_sin + coord.y * angle_cos;
     
-    coord.x = coord.x / uni_cam_scale / uni_cam_ratio;
-    coord.y = coord.y / uni_cam_scale;
+    coord.x = coord.x * uni_scale * uni_ratio;
+    coord.y = coord.y * uni_scale;
 
     gl_Position = coord;
     
-    vso.vtx_scale = vsi_vtx_scale;
-    vso.tex_color = vsi_tex_color;
-    vso.tex_coord = vsi_tex_coord;
-    vso.tex_index = vsi_tex_index;
+    vso.scale = vsi_scale / 2.0f;
+    vso.color = vsi_color;
+    vso.texuv = vsi_texuv;
+    vso.texid = vsi_texid;
 
 }
 /* vertex */
@@ -98,27 +77,25 @@ layout(triangle_strip, max_vertices = 4) out;
 
 in vso_t {
 
-    vec2        vtx_scale;
-    vec4        tex_color;
-    vec4        tex_coord;
-    flat float  tex_index;
+    vec2    scale;
+    vec4    color;
+    vec4    texuv;
+    float   texid;
 
 } gsi[];
 
 out gso_t {
     
-    vec4        tex_color;
-    vec2        tex_coord;
-    flat float  tex_index;
+    vec4        color;
+    vec2        texuv;
+    flat float  texid;
 
 } gso;
 
-uniform vec2    uni_cam_coord;
-uniform float   uni_cam_rotat;
-uniform float   uni_cam_scale;
-uniform float   uni_cam_ratio;
-
-vec2 coord, signs;
+uniform vec2    uni_coord;
+uniform float   uni_angle;
+uniform float   uni_scale;
+uniform float   uni_ratio;
 
 void makev(int index);
 
@@ -134,29 +111,33 @@ void main() {
 
 void makev(int index) {
     
+    vec2 coord, signs;
+    
     if (index % 2 == 0)         { signs.x = -1.0; } else { signs.x = +1.0; }
     if ((index / 2) % 2 == 0)   { signs.y = +1.0; } else { signs.y = -1.0; }
-
-    coord.x = signs.x * gsi[0].vtx_scale.x / uni_cam_ratio;
-    coord.y = signs.y * gsi[0].vtx_scale.y;
     
-    float rotat_cos = cos(radians(-uni_cam_rotat));
-    float rotat_sin = sin(radians(-uni_cam_rotat));
+    coord.x = signs.x * gsi[0].scale.x * uni_ratio;
+    coord.y = signs.y * gsi[0].scale.y;
     
-    coord.x = coord.x * rotat_cos - coord.y * rotat_sin;
-    coord.y = coord.x * rotat_sin + coord.y * rotat_cos;
-
-    coord.x = coord.x / uni_cam_scale;
-    coord.y = coord.y / uni_cam_scale;
+    float angle_cos = cos(radians(uni_angle));
+    float angle_sin = sin(radians(uni_angle));
+    
+    coord.x = coord.x * angle_cos - coord.y * angle_sin;
+    coord.y = coord.x * angle_sin + coord.y * angle_cos;
+    
+    coord.x = coord.x * uni_scale;
+    coord.y = coord.y * uni_scale;
     
     gl_Position = (gl_in[0].gl_Position + vec4(coord.x, coord.y, 0.0, 0.0));
-
-    if (index % 2 == 0)         { coord.x = gsi[0].tex_coord.x; } else { coord.x = gsi[0].tex_coord.z; }
-    if ((index / 2) % 2 == 0)   { coord.y = gsi[0].tex_coord.y; } else { coord.y = gsi[0].tex_coord.w; }
-
-    gso.tex_color = gsi[0].tex_color;
-    gso.tex_coord = vec2(coord.x, coord.y);
-    gso.tex_index = gsi[0].tex_index;
+    
+    vec2 texuv;
+    
+    if (index % 2 == 0)         { texuv.x = gsi[0].texuv.x; } else { texuv.x = gsi[0].texuv.z; }
+    if ((index / 2) % 2 == 0)   { texuv.y = gsi[0].texuv.y; } else { texuv.y = gsi[0].texuv.w; }
+    
+    gso.color = gsi[0].color;
+    gso.texuv = texuv;
+    gso.texid = gsi[0].texid;
 
     EmitVertex();
 }
@@ -169,23 +150,23 @@ out vec4 pso_color;
 
 in gso_t {
 
-    vec4        tex_color;
-    vec2        tex_coord;
-    flat float  tex_index;
+    vec4        color;
+    vec2        texuv;
+    flat float  texid;
 
 } psi;
 
 #define TEX_COUNT )") + std::to_string(0x10) + std::string(R"(
 
-uniform sampler2D   uni_tex_array[TEX_COUNT];
+uniform sampler2D   uni_texid[TEX_COUNT];
 
 void main() {
     
-    int tex_index = int(psi.tex_index);
+    int texid = int(psi.texid);
 
-    vec4 tex_pixel = texture(uni_tex_array[tex_index], psi.tex_coord);
+    vec4 pixel = texture(uni_texid[texid], psi.texuv);
 
-    pso_color = tex_pixel * psi.tex_color;
+    pso_color = pixel * psi.color;
     
 }
 /* pixel */

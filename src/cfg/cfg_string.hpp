@@ -2,9 +2,11 @@
 
 #	define CFG_STRING_HPP
 
+#   include "cfg_memory.hpp"
+
 #   include "string.h"
 
-#   include "cfg_memory.hpp"
+#   include "string"
 
 #   ifndef GT_NAME_SIZE_USE
 #       define GT_NAME_SIZE_MIN 0x10
@@ -25,6 +27,8 @@ namespace gt {
         msize_t msize;
         sdata_t sdata;
     } sbufr_t;
+
+    using sname_t   = std::string;
 
 }
 

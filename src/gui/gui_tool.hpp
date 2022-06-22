@@ -13,7 +13,6 @@ namespace gt {
 	namespace app { class engine_t; }
 	namespace sys { class engine_t; }
 	namespace gfx { class engine_t; typedef struct fmbuffer_t fmbuffer_t; }
-	namespace fsx { class engine_t; }
 	namespace ecs { class engine_t; }
 
 	namespace gui {
@@ -169,35 +168,14 @@ namespace gt {
 			gfx::engine_t* gfx;
 			gfx::state_t state;
 
-			bool grid_flag;
-
-		};
-
-		class tool_fsx_t : public tool_t_t<tool_fsx_t> {
-
-		public:
-
-			using this_t = tool_fsx_t;
-			using base_t = tool_t_t<this_t>;
-
-		public:
-
-			tool_fsx_t() :
-				base_t("fsx", "ctrl+f"),
-				fsx(nullptr)
-			{
-			}
-
-			virtual bool
-				init() override;
-			virtual bool
-				work() override;
-			virtual bool
-				quit() override;
-
-		private:
-
-			fsx::engine_t* fsx;
+			struct {
+				bool	flag;
+				v1f_t	width;
+				struct {
+					v1u_t	count;
+					v2f_t	sizes;
+				} tiles;
+			} grid;
 
 		};
 
@@ -226,9 +204,9 @@ namespace gt {
 		private:
 
 			inline bool
-				draw(const ecs::entity_t& entity);
+				draw(ecs::entity_t* entity, ecs::ebase_t* compon);
 			template<typename type_t> inline bool
-				draw(const ecs::entity_t& entity);
+				draw(ecs::entity_t* entity, type_t* compon);
 
 		private:
 

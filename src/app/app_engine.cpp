@@ -106,7 +106,7 @@ namespace gt {
 
             }
             
-            if (this->get_flag() ^ flag) { this->stop(); }
+            if (this->get_flag() && flag == false) { this->stop(); }
 
             return true;
         }

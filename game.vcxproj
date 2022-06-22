@@ -77,13 +77,13 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='work|x64'">
     <ClCompile>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
-      <WarningLevel>Level3</WarningLevel>
+      <WarningLevel>TurnOffAllWarnings</WarningLevel>
       <PreprocessorDefinitions>_GLFW_WIN32;GLFW_EXPOSE_NATIVE_WIN32;DEBUG;GT_WORK;GT_BUILD_EXE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <Optimization>Disabled</Optimization>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <RuntimeTypeInfo>false</RuntimeTypeInfo>
-      <AdditionalOptions>/permissive /MDd %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions>/permissive /MDd /w %(AdditionalOptions)</AdditionalOptions>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <ExternalWarningLevel>Level3</ExternalWarningLevel>
     </ClCompile>
@@ -96,13 +96,13 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='test|x64'">
     <ClCompile>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
-      <WarningLevel>Level3</WarningLevel>
+      <WarningLevel>TurnOffAllWarnings</WarningLevel>
       <PreprocessorDefinitions>_GLFW_WIN32;GLFW_EXPOSE_NATIVE_WIN32;DEBUG;GT_TEST;GT_BUILD_EXE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <Optimization>Disabled</Optimization>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <RuntimeTypeInfo>false</RuntimeTypeInfo>
-      <AdditionalOptions>/permissive /MDd %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions>/permissive /MDd /w %(AdditionalOptions)</AdditionalOptions>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <ExternalWarningLevel>Level3</ExternalWarningLevel>
     </ClCompile>
@@ -115,7 +115,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='play|x64'">
     <ClCompile>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
-      <WarningLevel>Level3</WarningLevel>
+      <WarningLevel>TurnOffAllWarnings</WarningLevel>
       <PreprocessorDefinitions>_GLFW_WIN32;GLFW_EXPOSE_NATIVE_WIN32;NDEBUG;GT_PLAY;GT_BUILD_EXE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <Optimization>Full</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
@@ -124,7 +124,7 @@
       <StringPooling>true</StringPooling>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <RuntimeTypeInfo>false</RuntimeTypeInfo>
-      <AdditionalOptions>/permissive /MDd %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions>/permissive /MDd /w %(AdditionalOptions)</AdditionalOptions>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <ExternalWarningLevel>Level3</ExternalWarningLevel>
     </ClCompile>
@@ -138,8 +138,8 @@
   <ItemGroup>
     <ClInclude Include="src\app.hpp" />
     <ClInclude Include="src\app\app_engine.hpp" />
-    <ClInclude Include="src\app\app_hotkey.hpp" />
     <ClInclude Include="src\app\app_estate.hpp" />
+    <ClInclude Include="src\app\app_hotkey.hpp" />
     <ClInclude Include="src\cfg.hpp" />
     <ClInclude Include="src\cfg\cfg_debug.hpp" />
     <ClInclude Include="src\cfg\cfg_gfx.hpp" />
@@ -147,67 +147,118 @@
     <ClInclude Include="src\cfg\cfg_number.hpp" />
     <ClInclude Include="src\cfg\cfg_string.hpp" />
     <ClInclude Include="src\cfg\cfg_tools.hpp" />
-    <ClInclude Include="src\ecs\ecs_lib.hpp" />
+    <ClInclude Include="src\ecs.hpp" />
     <ClInclude Include="src\ecs\ecs_engine.hpp" />
-    <ClInclude Include="src\fsx\fsx_engine.hpp" />
-    <ClInclude Include="src\fsx\fsx_lib.hpp" />
-    <ClInclude Include="src\gfx\gfx_lib.hpp" />
-    <ClInclude Include="src\gfx\gfx_data.hpp" />
-    <ClInclude Include="src\gui\gui_engine.hpp" />
-    <ClInclude Include="src\fsx.hpp" />
-    <ClInclude Include="src\gui\gui_tool.hpp" />
-    <ClInclude Include="src\lib\lib_file.hpp" />
-    <ClInclude Include="src\lib\lib_time.hpp" />
-    <ClInclude Include="src\lib\lib_event.hpp" />
-    <ClInclude Include="src\lib\lib_engine.hpp" />
+    <ClInclude Include="src\ecs\ecs_fsx.hpp" />
+    <ClInclude Include="src\ecs\ecs_gfx.hpp" />
+    <ClInclude Include="src\ecs\ecs_lib.hpp" />
     <ClInclude Include="src\gametool.hpp" />
     <ClInclude Include="src\gfx.hpp" />
+    <ClInclude Include="src\gfx\gfx_data.hpp" />
+    <ClInclude Include="src\gfx\gfx_drawtool.hpp" />
     <ClInclude Include="src\gfx\gfx_engine.hpp" />
+    <ClInclude Include="src\gfx\gfx_lib.hpp" />
+    <ClInclude Include="src\gui.hpp" />
+    <ClInclude Include="src\gui\gui_engine.hpp" />
+    <ClInclude Include="src\gui\gui_tool.hpp" />
     <ClInclude Include="src\lib.hpp" />
+    <ClInclude Include="src\lib\lib_engine.hpp" />
+    <ClInclude Include="src\lib\lib_event.hpp" />
+    <ClInclude Include="src\lib\lib_file.hpp" />
     <ClInclude Include="src\lib\lib_matrix.hpp" />
     <ClInclude Include="src\lib\lib_single.hpp" />
+    <ClInclude Include="src\lib\lib_time.hpp" />
     <ClInclude Include="src\lib\lib_type.hpp" />
     <ClInclude Include="src\lib\lib_vector.hpp" />
     <ClInclude Include="src\sys.hpp" />
-    <ClInclude Include="src\gui.hpp" />
-    <ClInclude Include="src\ecs.hpp" />
     <ClInclude Include="src\sys\sys_cursor.hpp" />
     <ClInclude Include="src\sys\sys_engine.hpp" />
     <ClInclude Include="src\sys\sys_keybod.hpp" />
     <ClInclude Include="src\sys\sys_window.hpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\app\app_engine.cpp" />
-    <ClCompile Include="src\app\app_hotkey.cpp" />
-    <ClCompile Include="src\app\app_estate.cpp" />
-    <ClCompile Include="src\cfg\cfg_gfx.cpp" />
-    <ClCompile Include="src\ecs\ecs_engine.cpp" />
-    <ClCompile Include="src\fsx\fsx_engine.cpp" />
-    <ClCompile Include="src\fsx\fsx_lib.cpp" />
+    <ClCompile Include="src\app\app_engine.cpp">
+      <ExternalWarningLevel>Level3</ExternalWarningLevel>
+      <ExternalWarningLevel>Level3</ExternalWarningLevel>
+      <ExternalWarningLevel>Level3</ExternalWarningLevel>
+    </ClCompile>
+    <ClCompile Include="src\app\app_estate.cpp">
+      <ExternalWarningLevel>Level3</ExternalWarningLevel>
+      <ExternalWarningLevel>Level3</ExternalWarningLevel>
+      <ExternalWarningLevel>Level3</ExternalWarningLevel>
+    </ClCompile>
+    <ClCompile Include="src\app\app_hotkey.cpp">
+      <ExternalWarningLevel>Level3</ExternalWarningLevel>
+      <ExternalWarningLevel>Level3</ExternalWarningLevel>
+      <ExternalWarningLevel>Level3</ExternalWarningLevel>
+    </ClCompile>
+    <ClCompile Include="src\cfg\cfg_gfx.cpp">
+      <ExternalWarningLevel>Level3</ExternalWarningLevel>
+      <ExternalWarningLevel>Level3</ExternalWarningLevel>
+      <ExternalWarningLevel>Level3</ExternalWarningLevel>
+    </ClCompile>
+    <ClCompile Include="src\ecs\ecs_engine.cpp">
+      <ExternalWarningLevel>Level3</ExternalWarningLevel>
+      <ExternalWarningLevel>Level3</ExternalWarningLevel>
+      <ExternalWarningLevel>Level3</ExternalWarningLevel>
+    </ClCompile>
     <ClCompile Include="src\gametool.cpp">
       <ExternalWarningLevel>Level3</ExternalWarningLevel>
       <ExternalWarningLevel>Level3</ExternalWarningLevel>
       <ExternalWarningLevel>Level3</ExternalWarningLevel>
     </ClCompile>
-    <ClCompile Include="src\gfx\gfx_engine.cpp" />
-    <ClCompile Include="src\gfx\gfx_lib.cpp" />
-    <ClCompile Include="src\gui\gui_engine.cpp" />
-    <ClCompile Include="src\gui\gui_tool.cpp" />
-    <ClCompile Include="src\sys\sys_cursor.cpp" />
-    <ClCompile Include="src\sys\sys_engine.cpp" />
-    <ClCompile Include="src\sys\sys_keybod.cpp" />
-    <ClCompile Include="src\sys\sys_window.cpp" />
+    <ClCompile Include="src\gfx\gfx_drawtool.cpp">
+      <ExternalWarningLevel>Level3</ExternalWarningLevel>
+      <ExternalWarningLevel>Level3</ExternalWarningLevel>
+      <ExternalWarningLevel>Level3</ExternalWarningLevel>
+    </ClCompile>
+    <ClCompile Include="src\gfx\gfx_engine.cpp">
+      <ExternalWarningLevel>Level3</ExternalWarningLevel>
+      <ExternalWarningLevel>Level3</ExternalWarningLevel>
+      <ExternalWarningLevel>Level3</ExternalWarningLevel>
+    </ClCompile>
+    <ClCompile Include="src\gfx\gfx_lib.cpp">
+      <ExternalWarningLevel>Level3</ExternalWarningLevel>
+      <ExternalWarningLevel>Level3</ExternalWarningLevel>
+      <ExternalWarningLevel>Level3</ExternalWarningLevel>
+    </ClCompile>
+    <ClCompile Include="src\gui\gui_engine.cpp">
+      <ExternalWarningLevel>Level3</ExternalWarningLevel>
+      <ExternalWarningLevel>Level3</ExternalWarningLevel>
+      <ExternalWarningLevel>Level3</ExternalWarningLevel>
+    </ClCompile>
+    <ClCompile Include="src\gui\gui_tool.cpp">
+      <ExternalWarningLevel>Level3</ExternalWarningLevel>
+      <ExternalWarningLevel>Level3</ExternalWarningLevel>
+      <ExternalWarningLevel>Level3</ExternalWarningLevel>
+    </ClCompile>
+    <ClCompile Include="src\sys\sys_cursor.cpp">
+      <ExternalWarningLevel>Level3</ExternalWarningLevel>
+      <ExternalWarningLevel>Level3</ExternalWarningLevel>
+      <ExternalWarningLevel>Level3</ExternalWarningLevel>
+    </ClCompile>
+    <ClCompile Include="src\sys\sys_engine.cpp">
+      <ExternalWarningLevel>Level3</ExternalWarningLevel>
+      <ExternalWarningLevel>Level3</ExternalWarningLevel>
+      <ExternalWarningLevel>Level3</ExternalWarningLevel>
+    </ClCompile>
+    <ClCompile Include="src\sys\sys_keybod.cpp">
+      <ExternalWarningLevel>Level3</ExternalWarningLevel>
+      <ExternalWarningLevel>Level3</ExternalWarningLevel>
+      <ExternalWarningLevel>Level3</ExternalWarningLevel>
+    </ClCompile>
+    <ClCompile Include="src\sys\sys_window.cpp">
+      <ExternalWarningLevel>Level3</ExternalWarningLevel>
+      <ExternalWarningLevel>Level3</ExternalWarningLevel>
+      <ExternalWarningLevel>Level3</ExternalWarningLevel>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="rsc\glsl\sprites_vtx.glsl" />
-    <None Include="rsc\glsl\sprites_gmt.glsl" />
     <None Include="src\.keep" />
     <None Include="src\app\.keep" />
     <None Include="src\cfg\.keep" />
-    <None Include="src\fsx\.keep" />
     <None Include="src\gfx\.keep" />
     <None Include="src\lib\.keep" />
-    <None Include="rsc\glsl\sprites_pxl.glsl" />
     <None Include="src\sys\.keep" />
   </ItemGroup>
   <ItemGroup>

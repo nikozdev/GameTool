@@ -27,43 +27,43 @@ namespace gt {
 			constexpr int files_count = 8;
 			const char* files[files_count] = {
 				
+				"../rsc/imag/bit1tile8.png",
 				"../rsc/imag/bit1nc16.bmp",
 				"../rsc/imag/bit1nikochir32.png",
 				"../rsc/imag/bit1font8.png",
-				"../rsc/imag/bit1tile8.png",
 
 				"../rsc/imag/bit1ring16.png",
 				"../rsc/imag/bit1bone16.png",
 				"../rsc/imag/bit1necro16.png",
 				"../rsc/imag/bit2tile16.png",
 			};
+			gfx->load_texture(files[0], 1);
+			gfx->load_texture(files[7], 2);
 
-			for (index_t index = 0; index < binding->count; index++) {
-				gfx->load_texture(files[index % files_count], index);
-			}
+			ecs::drawgrid_t drawgrid;
 
-			int index = 0;
-			for (float iterx = -1.0f; iterx <= +1.0f; iterx += 0.5f) {
+			drawgrid.scale = v2f_t{ 1.0f, 1.0f };
+			
+			drawgrid.visio.texid = v1s_t{ 0 };
+			drawgrid.visio.texuv = v4f_t{ 0.0f, 0.0f, 0.125f, 0.125f };
+			drawgrid.visio.color = v4f_t{ 1.0f, 1.0f, 1.0f, 1.0f };
 
-				for (float itery = -1.0f; itery <= +1.0f; itery += 0.5f, index++) {
+			gfx::tile_t tile;
 
-					ecs::sprite_t sprite;
-
-					sprite.vtx_coord = { iterx, itery };
-					sprite.vtx_pivot = { 0.0f, 0.0f };
-					sprite.vtx_scale = { 0.25f, 0.25f };
-					sprite.tex_color = { 1.0f, 1.0f, 1.0f, 1.0f };
-					sprite.tex_coord = { 0.0f, 0.0f, 1.0f, 1.0f };
-					sprite.tex_index = { static_cast<v1f_t>(index % GT_GFX_TEXTURE_COUNT_USE) };
-
-					ecs::entity_t entity;
-					ecs->create_entity(&entity);
-					ecs->create_compon<ecs::sprite_t>(&entity, sprite);
+			for (index_t iterx = 0; iterx < 8; iterx++) {
+				for (index_t itery = 0; itery < 8; itery++) {
+					
+					tile.mapid = { iterx, itery };
+					tile.texid = { iterx, itery };
+					drawgrid.tiles.push_back(tile);
 
 				}
-			
 			}
-			
+
+			ecs::entity_t entity;
+			ecs->create_entity(&entity);
+			ecs->create_compon<ecs::drawgrid_t>(&entity, drawgrid);
+
 			return true;
 		}
 		bool
