@@ -10,6 +10,8 @@
 
 #	include "../../lib/entt/src/entt.hpp"
 
+class b2World;
+
 namespace gt {
 
 	namespace gui { class tool_ecs_t; }
@@ -26,29 +28,31 @@ namespace gt {
 
 		public:
 
+			entity_t
+				ecreate();
 			bool
-				create_entity(entity_t* entity);
-			bool
-				remove_entity(entity_t* entity);
+				eremove(entity_t entity);
 
-			template<typename compon_t, typename ... args_t> bool
-				create_compon(entity_t* entity, args_t&& ... args)
+			template<typename compon_t, typename ... args_t> compon_t&
+				ccreate(entity_t entity, args_t&& ... args)
 			{
-				if (this->reg.any_of<compon_t>(*entity) == true) { return false; }
-				this->reg.emplace<compon_t>(*entity, std::forward<args_t>(args)...);
-				
-				return true;
+				return this->reg.emplace_or_replace<compon_t>(entity, std::forward<args_t>(args)...);
 			}
 			template<typename compon_t> bool
-				remove_compon(entity_t* entity)
+				cremove(entity_t entity)
 			{
-				if (this->reg.any_of<compon_t>(*entity) == false) { return false; }
-				this->reg.remove<compon_t>(*entity);
+				if (this->reg.any_of<compon_t>(entity) == false) { return false; }
+				this->reg.remove<compon_t>(entity);
 
 				return true;
 			}
 
 		public:
+
+			bool
+				fsx_play();
+			bool
+				fsx_stop();
 
 			virtual bool
 				init() override;
@@ -62,7 +66,8 @@ namespace gt {
 
 		private:
 
-			entt::registry reg;
+			entt::registry	reg;
+			b2World*		fsx;
 
 		};
 

@@ -67,5 +67,26 @@ namespace gt {
 	using v4f_t = v4f32_t;
 
 }
+namespace gt {
+	/* just a position */
+	using coord_t	= v2f_t;
+	/* relative center point */
+	using pivot_t	= v2f_t;
+	/* size multiplier */
+	using scale_t	= v2f_t;
+	/* acceleration - velocity changing value */
+	using accel_t	= v2f_t;
+	/* velocity - position changing value */
+	using veloc_t	= v2f_t;
+	/* texture id */
+	using texid_t	= v1s_t;
+	using texuv_t	= v4f_t;
+	using color_t	= v4f_t;
+	/* relation between numbers */
+	using ratio_t	= v1f_t;
+	/* value change over time */
+	using speed_t	= v1f_t;
+
+}
 
 #endif /* LIB_VECTOR_HPP */

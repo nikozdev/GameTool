@@ -56,8 +56,8 @@ namespace gt {
             {
                 return &this->drawtool;
             }
-            inline const camera_t*
-                get_camera() const
+            inline camera_t*
+                get_camera()
             {
                 return &this->camera;
             }
@@ -85,13 +85,15 @@ namespace gt {
 
             bool
                 add_for_draw(
-                    const v2f_t& pivot, const v2f_t& scale, const v2f_t& coord,
-                    v1f_t texid, const v4f_t& texuv, const v4f_t& color
+                    const pivot_t& pivot, const scale_t& scale, const coord_t& coord,
+                    const texid_t& texid, const texuv_t& texuv, const color_t& color
                 );
             bool
                 add_for_draw(
-                    const v2f_t& scale,
-                    v1f_t texid, const v4f_t& texuv, const v4f_t& color,
+                    const scale_t& scale,
+                    const texid_t& texid,
+                    const texuv_t& texuv,
+                    const color_t& color,
                     const tiles_t& tiles
                 );
 

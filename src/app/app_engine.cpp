@@ -3,7 +3,6 @@
 #   define APP_ENGINE_CPP
 
 #   include "app_engine.hpp"
-#   include "app_estate.hpp"
 
 #   include "app_hotkey.hpp"
 
@@ -41,23 +40,6 @@ namespace gt {
 
             }
 
-            this->estate_array = {
-                new estate_game_t()
-            };
-
-            for (index_t index = 0; index < this->estate_array.size(); index++) {
-
-                auto estate = this->estate_array[index];
-
-                GT_CHECK(estate->init(), "failed estate init!", {
-
-                    GT_ELOGF("[index]=(%d)", index);
-
-                    return false;
-                });
-
-            }
-
             sys::engine_t::get()->get_window()->set_title("gametool");
             
             return this->play();
@@ -72,19 +54,6 @@ namespace gt {
             for (auto iter : hotkey_table) {
 
                 if (keybod->vet_button_held(iter.mode) && keybod->vet_button_press(iter.code)) { iter.func(iter.args); }
-
-            }
-
-            for (index_t index = 0; index < this->estate_array.size(); index++) {
-
-                auto estate = this->estate_array[index];
-
-                GT_CHECK(estate->work(), "failed estate work!", {
-
-                    GT_ELOGF("[index]=(%d)", index);
-
-                    return false;
-                });
 
             }
 
@@ -113,21 +82,6 @@ namespace gt {
         bool
         engine_t::quit()
         {
-            
-            for (index_t count = this->estate_array.size(); count > 0; count--) {
-
-                index_t index = count - 1;
-                auto estate = this->estate_array[index];
-
-                GT_CHECK(estate->quit(), "failed estate quit!", {
-
-                    GT_ELOGF("[index]=(%d)", index);
-
-                    return false;
-                });
-
-                delete estate;
-            }
 
             for (index_t count = this->engine_array.size(); count > 0; count--) {
 

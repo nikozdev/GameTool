@@ -28,9 +28,6 @@
     <ClInclude Include="src\app\app_engine.hpp">
       <Filter>app</Filter>
     </ClInclude>
-    <ClInclude Include="src\app\app_estate.hpp">
-      <Filter>app</Filter>
-    </ClInclude>
     <ClInclude Include="src\app\app_hotkey.hpp">
       <Filter>app</Filter>
     </ClInclude>
@@ -55,12 +52,6 @@
     </ClInclude>
     <ClInclude Include="src\ecs.hpp" />
     <ClInclude Include="src\ecs\ecs_engine.hpp">
-      <Filter>ecs</Filter>
-    </ClInclude>
-    <ClInclude Include="src\ecs\ecs_fsx.hpp">
-      <Filter>ecs</Filter>
-    </ClInclude>
-    <ClInclude Include="src\ecs\ecs_gfx.hpp">
       <Filter>ecs</Filter>
     </ClInclude>
     <ClInclude Include="src\ecs\ecs_lib.hpp">
@@ -128,9 +119,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\app\app_engine.cpp">
-      <Filter>app</Filter>
-    </ClCompile>
-    <ClCompile Include="src\app\app_estate.cpp">
       <Filter>app</Filter>
     </ClCompile>
     <ClCompile Include="src\app\app_hotkey.cpp">

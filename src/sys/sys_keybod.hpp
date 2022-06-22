@@ -151,8 +151,8 @@ namespace gt {
                 STATE_RAISE = 0b00,
                 STATE_PRESS = 0b01,
                 /* continous */
-                STATE_FREE  = 0b10,
-                STATE_HELD  = 0b11,
+                STATE_FREE  = 0b11,
+                STATE_HELD  = 0b10,
                 /* the last state == count */
                 STATE_LAST  = 0b100,
                 STATE_COUNT = STATE_LAST,

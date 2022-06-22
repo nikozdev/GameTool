@@ -1,3 +1,4 @@
 ﻿cl : command line warning D9025: overriding '/MT' with '/MDd'
-  gfx_engine.cpp
+  ecs_engine.cpp
+glad.lib(glad.obj) : warning LNK4075: ignoring '/EDITANDCONTINUE' due to '/OPT:ICF' specification
   game.vcxproj -> C:\Users\nicko\Projects\gametool\bin\game.exe

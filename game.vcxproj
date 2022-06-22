@@ -138,7 +138,6 @@
   <ItemGroup>
     <ClInclude Include="src\app.hpp" />
     <ClInclude Include="src\app\app_engine.hpp" />
-    <ClInclude Include="src\app\app_estate.hpp" />
     <ClInclude Include="src\app\app_hotkey.hpp" />
     <ClInclude Include="src\cfg.hpp" />
     <ClInclude Include="src\cfg\cfg_debug.hpp" />
@@ -149,8 +148,6 @@
     <ClInclude Include="src\cfg\cfg_tools.hpp" />
     <ClInclude Include="src\ecs.hpp" />
     <ClInclude Include="src\ecs\ecs_engine.hpp" />
-    <ClInclude Include="src\ecs\ecs_fsx.hpp" />
-    <ClInclude Include="src\ecs\ecs_gfx.hpp" />
     <ClInclude Include="src\ecs\ecs_lib.hpp" />
     <ClInclude Include="src\gametool.hpp" />
     <ClInclude Include="src\gfx.hpp" />
@@ -178,11 +175,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\app\app_engine.cpp">
-      <ExternalWarningLevel>Level3</ExternalWarningLevel>
-      <ExternalWarningLevel>Level3</ExternalWarningLevel>
-      <ExternalWarningLevel>Level3</ExternalWarningLevel>
-    </ClCompile>
-    <ClCompile Include="src\app\app_estate.cpp">
       <ExternalWarningLevel>Level3</ExternalWarningLevel>
       <ExternalWarningLevel>Level3</ExternalWarningLevel>
       <ExternalWarningLevel>Level3</ExternalWarningLevel>
@@ -273,6 +265,9 @@
     </ProjectReference>
     <ProjectReference Include="lib\imgui\imgui.vcxproj">
       <Project>{0098A80F-6CAC-D0C0-352E-7420A101CDF1}</Project>
+    </ProjectReference>
+    <ProjectReference Include="env\Box2D.vcxproj">
+      <Project>{A434E80C-1049-10BE-D9CA-B31D459E0CEF}</Project>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

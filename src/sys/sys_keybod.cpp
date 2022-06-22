@@ -43,7 +43,7 @@ namespace gt {
         {
             
             button_t* button = &button_array[event->kcode];
-            if (button->state != event->state) {
+            if (button->state != event->state && event->state != STATE_HELD) {
                 
                 button->times = 0;
                 button->state = event->state;

@@ -53,7 +53,7 @@ project             (name)
     includedirs     (dlib.."**/src")
     --[[linking]]--
     targetdir       (dbin)
-    links           {"opengl32","gdi32","Dwmapi","lua","glad","glfw","imgui"}
+    links           {"opengl32","gdi32","Dwmapi","lua","glad","glfw","imgui","box2d"}
     --[[filters]]--
     filter          ("kind:consoleapp")
         defines     {"GT_BUILD_EXE"}
@@ -66,3 +66,4 @@ include(dlib .. "/lua/env/pmake")
 include(dlib .. "/glad/env/pmake")
 include(dlib .. "/glfw/env/pmake")
 include(dlib .. "/imgui/env/pmake")
+include(dlib .. "/box2d")

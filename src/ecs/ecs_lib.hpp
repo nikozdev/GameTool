@@ -1,6 +1,6 @@
-#ifndef ECS_COMPON_HPP
+#ifndef ECS_LIB_HPP
 
-#	define ECS_COMPON_HPP
+#	define ECS_LIB_HPP
 
 #	include "../cfg.hpp"
 
@@ -10,44 +10,6 @@
 
 #	include "../../lib/entt/src/entt.hpp"
 
-#	define ECS_TYPEDEF(type_t, base_t)	\
-	struct type_t {						\
-		type_t() :						\
-			base()						\
-		{								\
-		}								\
-		type_t(const base_t& base) :	\
-			base(base)					\
-		{								\
-		}								\
-		base_t base;					\
-		inline operator					\
-			base_t&()					\
-		{								\
-			return this->base;			\
-		}								\
-		inline operator const			\
-			base_t&() const				\
-		{								\
-			return this->base;			\
-		}								\
-		template<						\
-			typename r_t, typename i_t	\
-		> r_t&							\
-			operator[](i_t i)			\
-		{								\
-			return this->base[i];		\
-		}								\
-		template<						\
-			typename r_t, typename i_t	\
-		> const r_t&					\
-			operator[](i_t i) const		\
-		{								\
-			return this->base[i];		\
-		}								\
-	};									\
-/* ECS_TYPEDEF */
-
 namespace gt {
 	/* alias */
 	namespace ecs {
@@ -55,8 +17,10 @@ namespace gt {
 		using entity_t = entt::entity;
 		using holder_t = entt::registry;
 
+		using tiles_t = std::vector<gfx::tile_t>;
+
 	}
-	/* components */
+	/* general */
 	namespace ecs {
 
 		typedef struct ebase_t {
@@ -70,22 +34,81 @@ namespace gt {
 			entity_t next;
 			entity_t prev;
 
-			bool need_draw;
-			bool need_work;
-
 		} ebase_t;
 		/* the origin for sprites and collision boxes */
 		typedef v2f_t pivot_t;
 
+		typedef struct player_t {
+			
+			bool	controlled;
+			bool	camera_target;
+			bool	grounded;
+
+			v1f_t	speed;
+
+		};
+
 	}
-	/* functions */
+	/* physics */
 	namespace ecs {
-		/* entity component processing */
-		template<typename ... args_t> inline void
-			ecproc(entity_t& entity, args_t&& ... args);
+		/* collection of position, rotation and scale */
+		typedef struct tform_t {
+			
+			coord_t coord = { 0.0f, 0.0f };
+			scale_t	scale = { 1.0f, 1.0f };
+
+		} tform_t;
+		/**/
+		typedef struct mover_t {
+			
+			veloc_t veloc;
+
+		} mover_t;
+		/* box2d body */
+		typedef struct b2body_t {
+			
+			bool	isdynamic;
+			mptr_t	rigidbody;
+			mptr_t	collision;
+			
+		} b2body_t;
+
+	}
+	/* graphics */
+	namespace ecs {
+
+		typedef struct visio_t {
+
+			texid_t texid = v1s_t{ 0 };
+			texuv_t texuv = v4f_t{ 0.0f, 0.0f, 1.0f, 1.0f };
+			color_t color = v4f_t{ 1.0f, 1.0f, 1.0f, 1.0f };
+
+		} visual_t;
+
+		typedef struct drawrect_t {
+
+			visio_t visio = {
+				.texid = { 0 },
+				.texuv = v4f_t{ 0.0f, 0.0f, 1.0f, 1.0f },
+				.color = v4f_t{ 1.0f, 1.0f, 1.0f, 1.0f },
+			};
+
+		} drawrect_t;
+
+		typedef struct drawgrid_t {
+
+			visio_t visio = {
+				.texid = { 0 },
+				.texuv = v4f_t{ 0.0f, 0.0f, 0.125f, 0.125f },
+				.color = v4f_t{ 1.0f, 1.0f, 1.0f, 1.0f },
+			};
+
+			tiles_t tiles = {};
+
+		} drawgrid_t;
 
 	}
 
 }
 
-#endif /* ECS_COMPON_HPP */
+#endif /* ECS_LIB_HPP */

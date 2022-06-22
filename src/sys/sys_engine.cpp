@@ -54,15 +54,6 @@ namespace gt {
         bool
             engine_t::proc(lib::event_a_t* event)
         {
-            if (event->get_kind() == event->get_kind<keybod_t::event_t>()) {
-
-                this->get_keybod()->proc(static_cast<keybod_t::event_t*>(event));
-            }
-
-            if (event->get_kind() == event->get_kind<cursor_t::event_coord_t>()) {
-                
-                return this->get_cursor()->proc(static_cast<cursor_t::event_coord_t*>(event));
-            }
 
             return true;
         }

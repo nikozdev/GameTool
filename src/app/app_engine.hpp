@@ -4,8 +4,6 @@
 
 #	include "../cfg.hpp"
 
-#	include "app_estate.hpp"
-
 #	include "../lib/lib_engine.hpp"
 
 #	include "../lib/lib_time.hpp"
@@ -25,12 +23,6 @@ namespace gt {
 			using this_t = engine_t;
 
 		public:
-
-			inline estate_a_t*
-				get_estate(index_t index)
-			{
-				return this->estate_array[index];
-			}
 
 			inline const lib::timer_t*
 				get_timer() const
@@ -53,8 +45,6 @@ namespace gt {
 		private:
 
 			lib::timer_t timer;
-
-			std::vector<estate_a_t*> estate_array;
 
 			std::vector<lib::engine_a_t*> engine_array;
 

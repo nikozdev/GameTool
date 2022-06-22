@@ -32,8 +32,8 @@
 #	define PIVOT_UPTO +1.0f
 
 #	define COORD_TEXT "coord"
-#	define COORD_FROM -10.0f
-#	define COORD_UPTO +10.0f
+#	define COORD_FROM -GT_MAP_SIZES_USE
+#	define COORD_UPTO +GT_MAP_SIZES_USE
 
 #	define SCALE_TEXT "scale"
 #	define SCALE_FROM 0.01f
@@ -46,10 +46,6 @@
 #	define COLOR_TEXT "color"
 #	define COLOR_FROM 0.0f
 #	define COLOR_UPTO 1.0f
-
-#	define ANGLE_TEXT "rotat"
-#	define ANGLE_FROM 0.000f
-#	define ANGLE_UPTO 360.0f
 
 #	define INDEX_TEXT "index"
 #	define INDEX_FROM 0
@@ -85,150 +81,6 @@ namespace gt {
 		{
 			return ImVec4{ myvec[0], myvec[1], myvec[2], myvec[3] };
 		}
-
-		template<typename type_t>
-		inline bool
-			set_center(const type_t& align)
-		{
-			auto coord = get_myvec2(ImGui::GetCursorPos());
-			auto sizes = ImGui::GetWindowSize().x;
-			auto pos_x = (sizes - static_cast<float>(align)) * 0.5f;
-			
-			ImGui::SetCursorPos({ pos_x, coord.y });
-			
-			return true;
-		}
-
-	}
-
-	namespace gui {
-
-		inline bool
-			input_slide_v1f(const char* text, v1f_t* data, v1f_t from, v1f_t upto)
-		{
-			if (ImGui::SliderFloat(text, data, from, upto, "%.2f")) { return true;  }
-			/*
-			ImGui::PushID(data);
-			if (ImGui::InputFloat(text, data, 1.0f, 0.0f, "%.2f")) {
-				data[0] = data[0] <= from ? from : data[0] >= upto ? upto : data[0];
-				return true;
-			}
-			ImGui::PopID();
-			*/
-			return false;
-		}
-		inline bool
-			input_slide_v2f(const char* text, v1f_t* data, v1f_t from, v1f_t upto)
-		{
-			if (ImGui::SliderFloat2(text, data, from, upto, "%.2f")) { return true; }
-			/*
-			ImGui::PushID(data);
-			if (ImGui::InputFloat2(text, data, "%.2f")) {
-				data[0] = data[0] <= from ? from : data[0] >= upto ? upto : data[0];
-				data[1] = data[1] <= from ? from : data[1] >= upto ? upto : data[1];
-				return true;
-			}
-			ImGui::PopID();
-			*/
-			return false;
-		}
-		inline bool
-			input_slide_v3f(const char* text, v1f_t* data, v1f_t from, v1f_t upto)
-		{
-			if (ImGui::SliderFloat3(text, data, from, upto, "%.2f")) { return true; }
-			/*
-			ImGui::PushID(data);
-			if (ImGui::InputFloat3(text, data, "%d")) {
-				data[0] = data[0] <= from ? from : data[0] >= upto ? upto : data[0];
-				data[1] = data[1] <= from ? from : data[1] >= upto ? upto : data[1];
-				data[2] = data[2] <= from ? from : data[2] >= upto ? upto : data[2];
-				return true;
-			}
-			ImGui::PopID();
-			*/
-			return false;
-		}
-		inline bool
-			input_slide_v4f(const char* text, v1f_t* data, v1f_t from, v1f_t upto)
-		{
-			if (ImGui::SliderFloat4(text, data, from, upto, "%.2f")) { return true; }
-			/*
-			ImGui::PushID(data);
-			if (ImGui::InputFloat4(text, data, "%d")) {
-				data[0] = data[0] <= from ? from : data[0] >= upto ? upto : data[0];
-				data[1] = data[1] <= from ? from : data[1] >= upto ? upto : data[1];
-				data[2] = data[2] <= from ? from : data[2] >= upto ? upto : data[2];
-				data[3] = data[3] <= from ? from : data[3] >= upto ? upto : data[3];
-				return true;
-			}
-			ImGui::PopID();
-			*/
-			return false;
-		}
-
-		inline bool
-			input_slide_v1s(const char* text, v1s_t* data, v1s_t from, v1s_t upto)
-		{
-			if (ImGui::SliderInt(text, data, from, upto, "%d")) { return true; }
-			/*
-			ImGui::PushID(data);
-			if (ImGui::InputInt(text, data, 0.1f, INPUT_FLAGS)) {
-				data[0] = data[0] <= from ? from : data[0] >= upto ? upto : data[0];
-				return true;
-			}
-			ImGui::PopID();
-			*/
-			return false;
-		}
-		inline bool
-			input_slide_v2s(const char* text, v1s_t* data, v1s_t from, v1s_t upto)
-		{
-			if (ImGui::SliderInt2(text, data, from, upto, "%d")) { return true; }
-			/*
-			ImGui::PushID(data);
-			if (ImGui::InputInt2(text, data, INPUT_FLAGS)) {
-				data[0] = data[0] <= from ? from : data[0] >= upto ? upto : data[0];
-				data[1] = data[1] <= from ? from : data[1] >= upto ? upto : data[1];
-				return true;
-			}
-			ImGui::PopID();
-			*/
-			return false;
-		}
-		inline bool
-			input_slide_v3s(const char* text, v1s_t* data, v1s_t from, v1s_t upto)
-		{
-			if (ImGui::SliderInt3(text, data, from, upto, "%d")) { return true; }
-			/*
-			ImGui::PushID(data);
-			if (ImGui::InputInt3(text, data, INPUT_FLAGS)) {
-				data[0] = data[0] <= from ? from : data[0] >= upto ? upto : data[0];
-				data[1] = data[1] <= from ? from : data[1] >= upto ? upto : data[1];
-				data[2] = data[2] <= from ? from : data[2] >= upto ? upto : data[2];
-				return true;
-			}
-			ImGui::PopID();
-			*/
-			return false;
-		}
-		inline bool
-			input_slide_v4s(const char* text, v1s_t* data, v1s_t from, v1s_t upto)
-		{
-			if (ImGui::SliderInt4(text, data, from, upto, "%d")) { return true; }
-			/*
-			ImGui::PushID(data);
-			if (ImGui::InputInt4(text, data, INPUT_FLAGS)) {
-				data[0] = data[0] <= from ? from : data[0] >= upto ? upto : data[0];
-				data[1] = data[1] <= from ? from : data[1] >= upto ? upto : data[1];
-				data[2] = data[2] <= from ? from : data[2] >= upto ? upto : data[2];
-				data[3] = data[3] <= from ? from : data[3] >= upto ? upto : data[3];
-				return true;
-			}
-			ImGui::PopID();
-			*/
-			return false;
-		}
-
 
 	}
 
@@ -295,7 +147,7 @@ namespace gt {
 			
 			this->grid.width = 0.05f;
 
-			this->grid.tiles.count = { 100u };
+			this->grid.tiles.count = { static_cast<count_t>(GT_MAP_SIZES_USE*2) };
 			this->grid.tiles.sizes = { 1.0f, 1.0f };
 
 			return this->show();;
@@ -327,11 +179,13 @@ namespace gt {
 
 				auto camera = &gfx->camera;
 
-				input_slide_v2f(COORD_TEXT, &camera->coord[0], COORD_FROM, COORD_UPTO);
-				input_slide_v1f(ANGLE_TEXT, &camera->angle, ANGLE_FROM, ANGLE_UPTO);
-				input_slide_v1f(SCALE_TEXT, &camera->scale, SCALE_FROM, SCALE_UPTO);
+				ImGui::SliderFloat2(COORD_TEXT, &camera->coord[0], COORD_FROM, COORD_UPTO);
+				ImGui::SliderFloat(SCALE_TEXT, &camera->scale, SCALE_FROM, SCALE_UPTO, "%.2f");
 
-				ImGui::Text("ratio=(%dw/h)", &camera->ratio);
+				ImGui::InputFloat("ratio", &camera->ratio, 0.0f, 0.0f, "%.2f", ImGuiInputTextFlags_ReadOnly);
+				
+				ImGui::SliderFloat("speed", &camera->speed, 0.0f, 10.0f, "%.2f");
+				ImGui::InputFloat3("velocity", &camera->veloc[0], "%.2f", ImGuiInputTextFlags_ReadOnly);
 				
 				ImGui::TreePop();
 			}
@@ -408,7 +262,7 @@ namespace gt {
 
 					if (ImGui::TreeNodeEx("textures", TREE_FLAGS)) {
 
-						for (index_t iter = 0; iter < binding->count; iter++) {
+						for (index_t iter = 0; iter < GT_GFX_TEXTURE_COUNT_LAST; iter++) {
 							
 							char buffer[GT_GFX_TEXTURE_COUNT_MAX] = { '\0' };
 							::itoa(iter + 1, buffer, 10);
@@ -423,7 +277,11 @@ namespace gt {
 							auto index = reinterpret_cast<ImTextureID>(texture->index);
 							auto ratio = static_cast<float>(texture->sizes[0]) / static_cast<float>(texture->sizes[1]);
 							ImVec2 sizes = { IMAGE_SIZE * ratio, IMAGE_SIZE * 1.0f };
-							if (ImGui::ImageButton(index, sizes)) { }
+							if (ImGui::ImageButton(index, sizes)) {
+								
+								
+
+							}
 
 							ImGui::TreePop();
 						}
@@ -441,25 +299,28 @@ namespace gt {
 
 				auto fmbuffer = gfx->get_fmbuffer();
 				
-				ImGui::Text("index=(%d)", fmbuffer->index);
-
+				int index = fmbuffer->index;
+				ImGui::InputInt("index", &index, 0, 0, ImGuiInputTextFlags_ReadOnly);
+				
 				auto viewport = fmbuffer->viewport;
-				ImGui::Text("viewport=([x]%d[y]%d[w]%d[h]%d)", viewport[0], viewport[1], viewport[2], viewport[3]);
+				ImGui::InputInt4("viewport", &viewport[0], ImGuiInputTextFlags_ReadOnly);
 
 				if (ImGui::TreeNodeEx("color attachment", TREE_FLAGS)) {
 					
 					auto colorbuf = &fmbuffer->colorbuf;
 					
-					ImGui::Text("index=(%d)", colorbuf->index);
-					
-					ImGui::Text("sizes=(%dx%dy)", colorbuf->sizes[0], colorbuf->sizes[1]);
+					int index = colorbuf->index;
+					ImGui::InputInt("index", &index, 0, 0, ImGuiInputTextFlags_ReadOnly);
+
+					v2s_t sizes = { colorbuf->sizes[0], colorbuf->sizes[1] };
+					ImGui::InputInt2("sizes", &sizes[0], ImGuiInputTextFlags_ReadOnly);
 					ImGui::Text("pixel bytes=(%zu)", colorbuf->pixel_bytes);
 					ImGui::Text("memory size=(%zu)", colorbuf->mbufr.msize);
 
-					auto index = reinterpret_cast<ImTextureID>(colorbuf->index);
 					float ratio = static_cast<float>(colorbuf->sizes[0]) / static_cast<float>(colorbuf->sizes[1]);
-					ImVec2 sizes = { IMAGE_SIZE * ratio, IMAGE_SIZE * 1.0f };
-					ImGui::Image(index, sizes);
+					auto imindex = reinterpret_cast<ImTextureID>(colorbuf->index);
+					ImVec2 imsizes = { IMAGE_SIZE * ratio, IMAGE_SIZE * 1.0f };
+					ImGui::Image(imindex, imsizes);
 					
 					ImGui::TreePop();
 				}
@@ -483,8 +344,8 @@ namespace gt {
 
 				ImGui::Checkbox("visible", &this->grid.flag);
 				
-				input_slide_v1f(WIDTH_TEXT, &this->grid.width, WIDTH_FROM, WIDTH_UPTO);
-				input_slide_v2f(SCALE_TEXT, &this->grid.tiles.sizes[0], WIDTH_FROM, WIDTH_UPTO);
+				ImGui::SliderFloat(WIDTH_TEXT, &this->grid.width, WIDTH_FROM, WIDTH_UPTO, "%.2f");
+				ImGui::SliderFloat2(SCALE_TEXT, &this->grid.tiles.sizes[0], SCALE_FROM, SCALE_UPTO);
 
 				ImGui::TreePop();
 			}
@@ -492,9 +353,9 @@ namespace gt {
 
 				gfx::rect_t tile;
 				tile.pivot = { 0.0f, 0.0f };
-				tile.texid = { 0 };
-				tile.texuv = { 0.0f, 0.0f, 1.0f, 1.0f };
 				tile.color = { 0.0f, 0.0f, 0.0f, 1.0f };
+				tile.texuv = { 0.0f, 0.0f, 1.0f, 1.0f };
+				tile.texid = { GT_GFX_TEXTURE_COUNT_LAST };
 
 				v2f_t grid_sizes = {
 					this->grid.tiles.sizes.y * static_cast<float>(this->grid.tiles.count),
@@ -507,14 +368,14 @@ namespace gt {
 				auto tiles_count_side = tiles_count / 2.0f;
 
 				tile.scale = { this->grid.width, this->grid.tiles.sizes.y * tiles_count };
-				for (iter = -tiles_count_side; iter < +tiles_count_side; iter += step) {
+				for (iter = -tiles_count_side; iter <= +tiles_count_side; iter += step) {
 
 					tile.coord = { iter * this->grid.tiles.sizes.x - this->grid.tiles.sizes.x / 2.0f, 0.0f };
 
 					this->gfx->add_for_draw(tile);
 				}
 				tile.scale = { this->grid.tiles.sizes.x * tiles_count, this->grid.width };
-				for (iter = -tiles_count_side; iter < +tiles_count_side; iter += step) {
+				for (iter = -tiles_count_side; iter <= +tiles_count_side; iter += step) {
 
 					tile.coord = { 0.0f, iter * this->grid.tiles.sizes.y - this->grid.tiles.sizes.y / 2.0f };
 
@@ -522,6 +383,26 @@ namespace gt {
 				}
 
 			}
+			
+			gfx::rect_t frame;
+			frame.color = { 0.0f, 0.0f, 0.0f, 1.0f };
+			frame.scale = { 1000.0f, 1000.0f };
+			
+			frame.texid = { GT_GFX_TEXTURE_COUNT_LAST };
+			frame.texuv = { 0.0f, 0.0f, 1.0f, 1.0f };
+			
+			frame.pivot = { +0.5f, 0.0f };
+			frame.coord = { -GT_MAP_SIZES_USE, 0.0f };
+			gfx->add_for_draw(frame);
+			frame.pivot = { -0.5f, 0.0f };
+			frame.coord = { +GT_MAP_SIZES_USE, 0.0f };
+			gfx->add_for_draw(frame);
+			frame.pivot = { 0.0f, +0.5f };
+			frame.coord = { 0.0f, -GT_MAP_SIZES_USE };
+			gfx->add_for_draw(frame);
+			frame.pivot = { 0.0f, -0.5f };
+			frame.coord = { 0.0f, +GT_MAP_SIZES_USE };
+			gfx->add_for_draw(frame);
 
 			return true;
 		}
@@ -552,12 +433,17 @@ namespace gt {
 		bool
 			tool_ecs_t::work()
 		{
+			bool fsx_playing = ecs->fsx != nullptr;
+			if (ImGui::Checkbox("physics simulation", &fsx_playing)) {
+				if (!fsx_playing) { this->ecs->fsx_stop(); }
+				else { this->ecs->fsx_play(); }
+			}
+
 			if (ImGui::BeginPopupContextWindow("actions", POPUP_FLAGS, false)) {
 
 				if (ImGui::MenuItem("create entity")) {
 
-					ecs::entity_t entity_to_create = { };
-					GT_CHECK(ecs->create_entity(&entity_to_create), "failed entity creation!", return false);
+					ecs->ecreate();
 
 				}
 				static int count = 0;
@@ -565,8 +451,7 @@ namespace gt {
 					
 					for (int index = 0; index < count; index++) {
 
-						ecs::entity_t entity_to_create = { };
-						GT_CHECK(ecs->create_entity(&entity_to_create), "failed entity creation!", return false);
+						ecs->ecreate();
 					
 					}
 
@@ -575,19 +460,21 @@ namespace gt {
 				ImGui::EndPopup();
 			}
 
+			ImGui::Separator();
+
 			auto view = this->reg->view<ecs::ebase_t>();
 			for (auto [entity, ebase] : view.each()) {
 
 				if (ImGui::TreeNodeEx(&ebase.sname[0], TREE_FLAGS)) {
 					
-					GT_CHECK(this->draw(&entity, &ebase), "failed entity draw!", return false);
+					GT_CHECK(this->draw(entity, &ebase), "failed entity draw!", return false);
 
 					ImGui::TreePop();
 				}
 
 			}
 
-			if (reg->valid(entity_to_remove)) { return ecs->remove_entity(&entity_to_remove); }
+			if (reg->valid(entity_to_remove)) { return ecs->eremove(entity_to_remove); }
 
 			return true;
 		}
@@ -604,64 +491,85 @@ namespace gt {
 		}
 
 		template<> inline bool
-			tool_ecs_t::draw(ecs::entity_t*, ecs::mover_t* mover)
+			tool_ecs_t::draw(ecs::entity_t entity, ecs::player_t* player)
 		{
+			ImGui::SliderFloat("speed", &player->speed, 0.0f, 5.0f, "%.2f", INPUT_FLAGS);
+			ImGui::Checkbox("cammera target", &player->camera_target);
+			ImGui::Checkbox("is controlled", &player->controlled);
+			ImGui::Checkbox("grounded", &player->grounded);
+
 			return true;
 		}
 
 		template<> inline bool
-			tool_ecs_t::draw<ecs::drawrect_t>(ecs::entity_t* entity, ecs::drawrect_t* drawrect)
+			tool_ecs_t::draw(ecs::entity_t entity, ecs::tform_t* tform)
 		{
-			auto visio = &drawrect->visio;
-
-			input_slide_v2f(PIVOT_TEXT, &static_cast<v2f_t&>(drawrect->pivot)[0], PIVOT_FROM, PIVOT_UPTO);
-			input_slide_v2f(SCALE_TEXT, &static_cast<v2f_t&>(drawrect->scale)[0], SCALE_FROM, SCALE_UPTO);
-			input_slide_v2f(COORD_TEXT, &static_cast<v2f_t&>(drawrect->coord)[0], COORD_FROM, COORD_UPTO);
-			input_slide_v2f("texture " COORD_TEXT, &static_cast<v4f_t&>(visio->texuv)[2], COORD_FROM, COORD_UPTO);
-			input_slide_v4f("texture " COLOR_TEXT, &static_cast<v4f_t&>(visio->color)[0], COLOR_FROM, COLOR_UPTO);
-
-			auto binding = &gfx::engine_t::get()->get_drawtool()->materia.binding;
-			int texid = static_cast<int>(visio->texid);
-			if (input_slide_v1s("texture " INDEX_TEXT, &texid, 0u, binding->count)) {
-				
-				visio->texid = static_cast<float>(texid);
+			ImGui::SliderFloat2(SCALE_TEXT, &tform->scale[0], SCALE_FROM, SCALE_UPTO);
+			ImGui::SliderFloat2(COORD_TEXT, &tform->coord[0], COORD_FROM, COORD_UPTO);
+			
+			return true;
+		}
+		template<> inline bool
+			tool_ecs_t::draw(ecs::entity_t entity, ecs::b2body_t* b2body)
+		{
+			if (ImGui::Checkbox("isdynamic", &b2body->isdynamic)) {
+				if (this->ecs->fsx != nullptr) {
+					this->ecs->fsx_stop();
+					this->ecs->fsx_play();
+				}
 			}
 
-			auto texture = &binding->texture_array[texid];
+			return true;
+		}
+
+		template<> inline bool
+			tool_ecs_t::draw<ecs::drawrect_t>(ecs::entity_t entity, ecs::drawrect_t* drawrect)
+		{
+			auto visio = &drawrect->visio;
+			
+			auto binding = &gfx::engine_t::get()->get_drawtool()->materia.binding;
+			auto texture = &binding->texture_array[(visio->texid + 1) % binding->count];
+			
 			auto imtexid = reinterpret_cast<ImTextureID>(texture->index);
 			auto ratio = static_cast<float>(texture->sizes[0]) / static_cast<float>(texture->sizes[1]);
 			ImVec2 sizes = { IMAGE_SIZE * ratio, IMAGE_SIZE * 1.0f };
 			ImGui::Image(imtexid, sizes, {0.0f, 0.0f}, {1.0f, 1.0f}, get_imvec4(visio->color));
 			
+			if (ImGui::InputInt("texture " INDEX_TEXT, &visio->texid, 1, 4, INPUT_FLAGS)) {
+				
+				visio->texid %= binding->count;
+
+			}
+			ImGui::SliderFloat4("texture " COORD_TEXT, &visio->texuv[0], COORD_FROM, COORD_UPTO);
+			ImGui::SliderFloat4("texture " COLOR_TEXT, &visio->color[0], COLOR_FROM, COLOR_UPTO);
+
 			return true;
 		}
 		template<> inline bool
-			tool_ecs_t::draw<ecs::drawgrid_t>(ecs::entity_t* entity, ecs::drawgrid_t* drawgrid)
+			tool_ecs_t::draw<ecs::drawgrid_t>(ecs::entity_t entity, ecs::drawgrid_t* drawgrid)
 		{
-			input_slide_v2f("scale" SCALE_TEXT, &static_cast<v2f_t>(drawgrid->scale)[0], SCALE_FROM, SCALE_UPTO);
-			
 			auto visio = &drawgrid->visio;
 
-			auto gfx = gfx::engine_t::get();
-			auto drawtool = gfx->get_drawtool();
-			auto binding = &drawtool->materia.binding;
-			auto texture = &binding->texture_array[visio->texid % binding->count];
+			auto binding = &gfx::engine_t::get()->get_drawtool()->materia.binding;
+			auto texture = &binding->texture_array[(visio->texid + 1) % binding->count];
 
-			auto texid = reinterpret_cast<ImTextureID>(texture->index);
+			auto imtexid = reinterpret_cast<ImTextureID>(texture->index);
 			auto ratio = static_cast<float>(texture->sizes[0]) / static_cast<float>(texture->sizes[1]);
 			ImVec2 sizes = { IMAGE_SIZE * ratio, IMAGE_SIZE * 1.0f };
-			ImGui::Image(texid, sizes, { 0.0f, 0.0f }, { 1.0f, 1.0f }, { get_imvec4(visio->color) });
-			if (ImGui::InputInt("texture " INDEX_TEXT, &static_cast<v1s_t&>(visio->texid), 1, 4, INPUT_FLAGS)) {
-				
-				drawgrid->visio.texid = GT_CLAMP(visio->texid, 0, GT_GFX_TEXTURE_COUNT_USE - 1);
-			}
-			if (ImGui::InputFloat2("texture " COORD_TEXT, &static_cast<v4f_t&>(visio->texuv)[2], "%.3f", INPUT_FLAGS)) {
-				
-				static_cast<v4f_t&>(drawgrid->visio.texuv)[2] = GT_CLAMP(static_cast<v4f_t&>(visio->texuv)[2], 0.0f, 1.0f);
-				static_cast<v4f_t&>(drawgrid->visio.texuv)[3] = GT_CLAMP(static_cast<v4f_t&>(visio->texuv)[3], 0.0f, 1.0f);
-			}
+			ImGui::Image(imtexid, sizes, { 0.0f, 0.0f }, { 1.0f, 1.0f }, { get_imvec4(visio->color) });
+			if (ImGui::InputInt("texture " INDEX_TEXT, &visio->texid, 1, 4, INPUT_FLAGS)) {
+
+				visio->texid %= binding->count;
 			
-			input_slide_v4f("texture " COLOR_TEXT, &static_cast<v4f_t&>(visio->color)[0], COLOR_FROM, COLOR_UPTO);
+			}	
+			if (ImGui::InputFloat4("texture " COORD_TEXT, &visio->texuv[2], "%.3f", INPUT_FLAGS)) {
+				
+				visio->texuv[0] = GT_CLAMP(visio->texuv[0], 0.0f, 1.0f);
+				visio->texuv[1] = GT_CLAMP(visio->texuv[1], 0.0f, 1.0f);
+				visio->texuv[2] = GT_CLAMP(visio->texuv[2], 0.0f, 1.0f);
+				visio->texuv[3] = GT_CLAMP(visio->texuv[3], 0.0f, 1.0f);
+			}
+			ImGui::SliderFloat4("texture " COLOR_TEXT, &visio->color[0], COLOR_FROM, COLOR_UPTO);
 
 			v2s_t tex_count;
 			tex_count[0] = 1.0f / static_cast<v4f_t&>(visio->texuv)[2];
@@ -670,15 +578,12 @@ namespace gt {
 
 			if (ImGui::TreeNodeEx("tiles", TREE_FLAGS)) {
 
-				ImGui::Text("count=(%d)", drawgrid->tiles.size());
+				int count = drawgrid->tiles.size();
+				ImGui::InputInt("count", &count, 0, 0, ImGuiInputTextFlags_ReadOnly);
 
 				if (ImGui::Button("add tile")) { drawgrid->tiles.push_back(gfx::tile_t{}); }
 
 				ImGui::Separator();
-
-				v2s_t tex_count;
-				tex_count[0] = static_cast<int>(1.0f / (static_cast<v4f_t&>(visio->texuv)[2] - static_cast<v4f_t&>(visio->texuv)[0]));
-				tex_count[1] = static_cast<int>(1.0f / (static_cast<v4f_t&>(visio->texuv)[3] - static_cast<v4f_t&>(visio->texuv)[1]));
 
 				for (index_t iter = 0; iter < drawgrid->tiles.size(); iter++) {
 					
@@ -705,7 +610,7 @@ namespace gt {
 						static_cast<v4f_t&>(visio->texuv)[2] * tile->texid[0] + 1,
 						static_cast<v4f_t&>(visio->texuv)[3] * tile->texid[1] + 1
 					};
-					ImGui::Image(texid, sizes, coord_lb, coord_rt, get_imvec4(visio->color));
+					ImGui::Image(imtexid, sizes, coord_lb, coord_rt, get_imvec4(visio->color));
 
 					if (ImGui::Button("remove")) {
 						
@@ -725,7 +630,7 @@ namespace gt {
 		}
 
 		inline bool
-			tool_ecs_t::draw(ecs::entity_t* entity, ecs::ebase_t* ebase)
+			tool_ecs_t::draw(ecs::entity_t entity, ecs::ebase_t* ebase)
 		{
 			int index = ebase->iname;
 			ImGui::InputInt(INDEX_TEXT, &index, 0, 0, ImGuiInputTextFlags_ReadOnly);
@@ -736,35 +641,39 @@ namespace gt {
 
 			ImGui::Separator();
 
-			if (ImGui::Button("remove")) { this->entity_to_remove = *entity; }
+			if (ImGui::Button("remove")) { this->entity_to_remove = entity; }
 			
 			if (this->reg->all_of<
-				ecs::mover_t,
-				ecs::drawrect_t, ecs::drawgrid_t
-			>(*entity) == false) {
+				ecs::player_t,
+				ecs::tform_t,
+				ecs::b2body_t,
+				ecs::drawrect_t,
+				ecs::drawgrid_t
+			>(entity) == false) {
 				if (ImGui::Button("create component")) { ImGui::OpenPopup("create component menu"); }
 			}
 			if (this->reg->any_of<
-				ecs::mover_t,
-				ecs::drawrect_t, ecs::drawgrid_t
-			>(*entity) == true) {
+				ecs::player_t,
+				ecs::tform_t,
+				ecs::b2body_t,
+				ecs::drawrect_t,
+				ecs::drawgrid_t
+			>(entity) == true) {
 				if (ImGui::Button("remove component")) { ImGui::OpenPopup("remove component menu"); }
 			}
 
 #			define CREATE_COMPON_ITEM(type, label)				\
-				if (reg->any_of<type>(*entity) == false) {		\
+				if (reg->any_of<type>(entity) == false) {		\
 					if (ImGui::MenuItem(label)) {				\
-						GT_CHECK(								\
-							ecs->create_compon<type>(entity),	\
-							"failed component interaction!",	\
-							{ return false; }					\
-						);										\
+						ecs->ccreate<type>(entity);				\
 					}											\
 				}												\
 			/* CREATE_COMPON_ITEM */
 			if (ImGui::BeginPopup("create component menu")) {
 
-				CREATE_COMPON_ITEM(ecs::mover_t, "mover");
+				CREATE_COMPON_ITEM(ecs::player_t, "player");
+				CREATE_COMPON_ITEM(ecs::tform_t, "transform");
+				CREATE_COMPON_ITEM(ecs::b2body_t, "rigid body");
 				CREATE_COMPON_ITEM(ecs::drawrect_t, "sprite");
 				CREATE_COMPON_ITEM(ecs::drawgrid_t, "tilemap");
 
@@ -773,10 +682,10 @@ namespace gt {
 #			undef CREATE_COMPON
 
 #			define REMOVE_COMPON_ITEM(type, label)				\
-				if (reg->any_of<type>(*entity) == true) {		\
+				if (reg->any_of<type>(entity) == true) {		\
 					if (ImGui::MenuItem(label)) {				\
 						GT_CHECK(								\
-							ecs->remove_compon<type>(entity),	\
+							ecs->cremove<type>(entity),			\
 							"failed component interaction!",	\
 							{ return false; }					\
 						);										\
@@ -785,21 +694,24 @@ namespace gt {
 			/* REMOVE_COMPON_ITEM */
 			if (ImGui::BeginPopup("remove component menu")) {
 
-				REMOVE_COMPON_ITEM(ecs::mover_t, "mover");
+				REMOVE_COMPON_ITEM(ecs::player_t, "player");
+				REMOVE_COMPON_ITEM(ecs::tform_t, "transform");
+				REMOVE_COMPON_ITEM(ecs::b2body_t, "rigidbody");
 				REMOVE_COMPON_ITEM(ecs::drawrect_t, "sprite");
 				REMOVE_COMPON_ITEM(ecs::drawgrid_t, "tilemap");
 
 				ImGui::EndPopup();
 			}
 #			undef REMOVE_COMPON
+			
 			ImGui::Separator();
 
 #			define DRAW_COMPON(type, label)					\
-			if (reg->any_of<type>(*entity)) {				\
+			if (reg->any_of<type>(entity)) {				\
 															\
 				if (ImGui::TreeNodeEx(label, TREE_FLAGS)) {	\
 															\
-					auto& compon = reg->get<type>(*entity);	\
+					auto& compon = reg->get<type>(entity);	\
 					this->draw<type>(entity, &compon);		\
 															\
 					ImGui::TreePop();						\
@@ -808,7 +720,9 @@ namespace gt {
 			}												\
 			/* DRAW_COMPON */
 
-			DRAW_COMPON(ecs::drawrect_t, "mover");
+			DRAW_COMPON(ecs::player_t, "player");
+			DRAW_COMPON(ecs::tform_t, "transform");
+			DRAW_COMPON(ecs::b2body_t, "rigid body");
 			DRAW_COMPON(ecs::drawrect_t, "sprite");
 			DRAW_COMPON(ecs::drawgrid_t, "tilemap");
 

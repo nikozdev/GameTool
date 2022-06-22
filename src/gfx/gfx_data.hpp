@@ -21,23 +21,22 @@ layout(location=0) in vec2  vsi_pivot;
 layout(location=1) in vec2  vsi_scale;
 layout(location=2) in vec2  vsi_coord;
 
-layout(location=3) in vec4  vsi_color;
+layout(location=3) in float vsi_texid;
 layout(location=4) in vec4  vsi_texuv;
-layout(location=5) in float vsi_texid;
+layout(location=5) in vec4  vsi_color;
 
 out vso_t {
 
     out vec2    scale;
-    out vec4    color;
+    out int     texid;
     out vec4    texuv;
-    out float   texid;
+    out vec4    color;
 
 } vso;
 
-uniform vec2    uni_coord;
-uniform float   uni_angle;
 uniform float   uni_scale;
 uniform float   uni_ratio;
+uniform vec2    uni_coord;
 
 void main() {
 
@@ -49,22 +48,16 @@ void main() {
     
     coord.x += uni_coord.x;
     coord.y += uni_coord.y;
-    
-    float angle_cos = cos(radians(uni_angle));
-    float angle_sin = sin(radians(uni_angle));
 
-    coord.x = coord.x * angle_cos - coord.y * angle_sin;
-    coord.y = coord.x * angle_sin + coord.y * angle_cos;
-    
     coord.x = coord.x * uni_scale * uni_ratio;
     coord.y = coord.y * uni_scale;
 
     gl_Position = coord;
     
     vso.scale = vsi_scale / 2.0f;
-    vso.color = vsi_color;
+    vso.texid = int(floor(vsi_texid));
     vso.texuv = vsi_texuv;
-    vso.texid = vsi_texid;
+    vso.color = vsi_color;
 
 }
 /* vertex */
@@ -78,24 +71,23 @@ layout(triangle_strip, max_vertices = 4) out;
 in vso_t {
 
     vec2    scale;
-    vec4    color;
+    int     texid;
     vec4    texuv;
-    float   texid;
+    vec4    color;
 
 } gsi[];
 
 out gso_t {
     
-    vec4        color;
+    flat int    texid;
     vec2        texuv;
-    flat float  texid;
+    vec4        color;
 
 } gso;
 
-uniform vec2    uni_coord;
-uniform float   uni_angle;
 uniform float   uni_scale;
 uniform float   uni_ratio;
+uniform vec2    uni_coord;
 
 void makev(int index);
 
@@ -119,12 +111,6 @@ void makev(int index) {
     coord.x = signs.x * gsi[0].scale.x * uni_ratio;
     coord.y = signs.y * gsi[0].scale.y;
     
-    float angle_cos = cos(radians(uni_angle));
-    float angle_sin = sin(radians(uni_angle));
-    
-    coord.x = coord.x * angle_cos - coord.y * angle_sin;
-    coord.y = coord.x * angle_sin + coord.y * angle_cos;
-    
     coord.x = coord.x * uni_scale;
     coord.y = coord.y * uni_scale;
     
@@ -135,9 +121,9 @@ void makev(int index) {
     if (index % 2 == 0)         { texuv.x = gsi[0].texuv.x; } else { texuv.x = gsi[0].texuv.z; }
     if ((index / 2) % 2 == 0)   { texuv.y = gsi[0].texuv.y; } else { texuv.y = gsi[0].texuv.w; }
     
-    gso.color = gsi[0].color;
-    gso.texuv = texuv;
     gso.texid = gsi[0].texid;
+    gso.texuv = texuv;
+    gso.color = gsi[0].color;
 
     EmitVertex();
 }
@@ -150,9 +136,9 @@ out vec4 pso_color;
 
 in gso_t {
 
-    vec4        color;
+    flat int    texid;
     vec2        texuv;
-    flat float  texid;
+    vec4        color;
 
 } psi;
 
@@ -161,10 +147,8 @@ in gso_t {
 uniform sampler2D   uni_texid[TEX_COUNT];
 
 void main() {
-    
-    int texid = int(psi.texid);
 
-    vec4 pixel = texture(uni_texid[texid], psi.texuv);
+    vec4 pixel = texture(uni_texid[psi.texid], psi.texuv);
 
     pso_color = pixel * psi.color;
     

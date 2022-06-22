@@ -85,62 +85,6 @@ namespace gt {
 
 	namespace gui {
 
-		class tool_app_t : public tool_t_t<tool_app_t> {
-		
-		public:
-
-			using this_t = tool_app_t;
-			using base_t = tool_t_t<this_t>;
-
-		public:
-
-			tool_app_t() :
-				base_t("app", "ctrl+a"),
-				app(nullptr)
-			{
-			}
-
-			virtual bool
-				init() override;
-			virtual bool
-				work() override;
-			virtual bool
-				quit() override;
-
-		private:
-
-			app::engine_t* app;
-
-		};
-
-		class tool_sys_t : public tool_t_t<tool_sys_t> {
-
-		public:
-
-			using this_t = tool_sys_t;
-			using base_t = tool_t_t<this_t>;
-
-		public:
-
-			tool_sys_t() :
-				base_t("sys","ctrl+y"),
-				sys(nullptr)
-			{
-			}
-
-			virtual bool
-				init() override;
-			virtual bool
-				work() override;
-			virtual bool
-				quit() override;
-
-		private:
-
-			sys::engine_t* sys;
-
-		};
-
 		class tool_gfx_t : public tool_t_t<tool_gfx_t> {
 
 		public:
@@ -151,7 +95,7 @@ namespace gt {
 		public:
 
 			tool_gfx_t() :
-				base_t("gfx", "ctrl+g"),
+				base_t("graphics", "ctrl+g"),
 				gfx(nullptr)
 			{
 			}
@@ -189,7 +133,7 @@ namespace gt {
 		public:
 
 			tool_ecs_t() :
-				base_t("ecs", "ctrl+e"),
+				base_t("entities", "ctrl+e"),
 				ecs(nullptr)
 			{
 			}
@@ -204,9 +148,9 @@ namespace gt {
 		private:
 
 			inline bool
-				draw(ecs::entity_t* entity, ecs::ebase_t* compon);
+				draw(ecs::entity_t entity, ecs::ebase_t* compon);
 			template<typename type_t> inline bool
-				draw(ecs::entity_t* entity, type_t* compon);
+				draw(ecs::entity_t entity, type_t* compon);
 
 		private:
 

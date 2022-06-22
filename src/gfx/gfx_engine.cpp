@@ -114,8 +114,8 @@ namespace gt {
 
         bool
             engine_t::add_for_draw(
-                const v2f_t& pivot, const v2f_t& scale, const v2f_t& coord,
-                v1f_t texid, const v4f_t& texuv, const v4f_t& color
+                const pivot_t& pivot, const scale_t& scale, const coord_t& coord,
+                const texid_t& texid, const texuv_t& texuv, const color_t& color
             ) {
             auto vbuffer = &this->drawtool.ilayout.vbuffer;
 
@@ -124,27 +124,21 @@ namespace gt {
             msize_next = (vbuffer->mtail - vbuffer->mhead) + sizeof(rect_t);
             GT_CHECK(vbuffer->mbufr.msize > msize_next, "not enough memory to draw!", return false);
 
-            ::memcpy(vbuffer->mtail, &pivot, sizeof(v2f_t));
-            vbuffer->mtail += sizeof(v2f_t);
-            ::memcpy(vbuffer->mtail, &scale, sizeof(v2f_t));
-            vbuffer->mtail += sizeof(v2f_t);
-            ::memcpy(vbuffer->mtail, &coord, sizeof(v2f_t));
-            vbuffer->mtail += sizeof(v2f_t);
-
-            ::memcpy(vbuffer->mtail, &texuv, sizeof(v4f_t));
-            vbuffer->mtail += sizeof(v4f_t);
-            ::memcpy(vbuffer->mtail, &color, sizeof(v4f_t));
-            vbuffer->mtail += sizeof(v4f_t);
-            ::memcpy(vbuffer->mtail, &texid, sizeof(v1f_t));
-            vbuffer->mtail += sizeof(v1f_t);
+            ::memcpy(vbuffer->mtail, &pivot, sizeof(v2f_t)); vbuffer->mtail += sizeof(v2f_t);
+            ::memcpy(vbuffer->mtail, &scale, sizeof(v2f_t)); vbuffer->mtail += sizeof(v2f_t);
+            ::memcpy(vbuffer->mtail, &coord, sizeof(v2f_t)); vbuffer->mtail += sizeof(v2f_t);
+            
+            ::memcpy(vbuffer->mtail, &texid, sizeof(v1f_t)); vbuffer->mtail += sizeof(v1f_t);
+            ::memcpy(vbuffer->mtail, &texuv, sizeof(v4f_t)); vbuffer->mtail += sizeof(v4f_t);
+            ::memcpy(vbuffer->mtail, &color, sizeof(v4f_t)); vbuffer->mtail += sizeof(v4f_t);
 
             return true;
         }
 
         bool
             engine_t::add_for_draw(
-                const v2f_t& scale,
-                v1f_t texid, const v4f_t& texuv, const v4f_t& color,
+                const scale_t& scale,
+                const texid_t& texid, const texuv_t& texuv, const color_t& color,
                 const tiles_t& tiles
             ) {
 
@@ -157,7 +151,7 @@ namespace gt {
             rect.scale = scale;
 
             rect.color = color;
-            rect.texid = texture->index;
+            rect.texid = texid;
 
             for (index_t index = 0; index < tiles.size(); index++) {
 
@@ -222,10 +216,12 @@ namespace gt {
             this->set_clearcol(0.125,0.250,0.500,1.000);
             this->set_viewport(this->state.viewport[0], this->state.viewport[1], this->state.viewport[2], this->state.viewport[3]);
 
-            this->camera.coord = { 0.0f, 0.0f };
-            this->camera.angle = { 0.0f };
-            this->camera.scale = { 10.0f };
+            this->camera.scale = { 5.0f };
             this->camera.ratio = this->state.viewport[2] / this->state.viewport[3];
+            this->camera.coord = { 0.0f, 0.0f };
+
+            this->camera.speed = { 4.0f };
+            this->camera.veloc = { 0.0f, 0.0f, 0.0f };
 
             return this->play();;
         }
@@ -235,6 +231,21 @@ namespace gt {
             this->ginfo.drawcall.count = 0;
             this->ginfo.drawable.drawn_count = 0;
             this->ginfo.vbuffer.drawn_bytes = 0;
+
+            auto timer = app::engine_t::get()->get_timer();
+            auto timer_delta = timer->get_delta();
+
+            auto keybod = sys::engine_t::get()->get_keybod();
+
+            using enum sys::keybod_t::kcode_t;
+
+            camera.coord[0] += camera.veloc[0] * timer_delta;
+            camera.coord[1] += camera.veloc[1] * timer_delta;
+            camera.scale += camera.veloc[2] * timer_delta;
+
+            camera.scale = GT_CLAMP(camera.scale, 0.01f, 10.0f);
+            camera.coord[0] = GT_CLAMP(camera.coord[0], -GT_MAP_SIZES_USE, +GT_MAP_SIZES_USE);
+            camera.coord[1] = GT_CLAMP(camera.coord[1], -GT_MAP_SIZES_USE, +GT_MAP_SIZES_USE);
 
             GT_CHECK(this->draw(), "failed graphics engine drawing!", return false);
 
@@ -274,8 +285,7 @@ namespace gt {
                 auto evt = static_cast<sys::cursor_t::event_scrol_t*>(event);
 
                 auto scale = evt->scrol_y * app::engine_t::get()->get_timer()->get_delta();
-                camera.scale -= camera.scale / 2.5f * scale;
-                camera.scale = GT_CLAMP(camera.scale, 0.01f, 10.0f);
+                camera.scale -= scale * camera.speed * camera.scale;
 
                 return true;
             }
@@ -287,17 +297,28 @@ namespace gt {
                 
                 auto evt = static_cast<sys::keybod_t::event_t*>(event);
                 
-                if (evt->state == STATE_PRESS == false) { return true; }
-                switch (evt->kcode) {
-                case KCODE_A: camera.coord[0] -= 0.5f * camera.scale; break;
-                case KCODE_D: camera.coord[0] += 0.5f * camera.scale; break;
-                case KCODE_S: camera.coord[1] -= 0.5f * camera.scale; break;
-                case KCODE_W: camera.coord[1] += 0.5f * camera.scale; break;
-                }
+                if (evt->state == STATE_PRESS || evt->state == STATE_HELD) {
+                    
+                    if (evt->kcode == KCODE_C) {}
+                    else if (evt->kcode == KCODE_A) { camera.veloc[0] = -camera.speed; }
+                    else if (evt->kcode == KCODE_D) { camera.veloc[0] = +camera.speed; }
+                    else if (evt->kcode == KCODE_S) { camera.veloc[1] = -camera.speed; }
+                    else if (evt->kcode == KCODE_W) { camera.veloc[1] = +camera.speed; }
+                    else if (evt->kcode == KCODE_Q) { camera.veloc[2] = -camera.speed; }
+                    else if (evt->kcode == KCODE_E) { camera.veloc[2] = +camera.speed; }
+                    
+                } else {
+                    
+                    if (evt->kcode == KCODE_C) {}
+                    else if (evt->kcode == KCODE_A || evt->kcode == KCODE_D) { camera.veloc[0] = 0.0f; }
+                    else if (evt->kcode == KCODE_S || evt->kcode == KCODE_W) { camera.veloc[1] = 0.0f; }
+                    else if (evt->kcode == KCODE_Q || evt->kcode == KCODE_E) { camera.veloc[2] = 0.0f; }
 
+                }
+                
                 return true;
             }
-
+            
             if (event->has_kind<sys::window_t::event_sized_t>()) {
                 
                 auto evt = static_cast<sys::window_t::event_sized_t*>(event);
@@ -344,12 +365,6 @@ namespace gt {
 
                     ::glUniform2f(element->iname, -this->camera.coord[0], -this->camera.coord[1]);
 
-                    continue;
-                }
-                if (strcmp(element->sname.sdata, "uni_angle") == 0) {
-                    
-                    ::glUniform1f(element->iname, -this->camera.angle);
-                    
                     continue;
                 }
                 if (strcmp(element->sname.sdata, "uni_scale") == 0) {
@@ -675,16 +690,19 @@ namespace gt {
 
             if (texture->mbufr.msize == 0) {
 
+                /*
                 unsigned char pixel_data[] = {
                     0x00,   0x00,   0x77,   0xff,
                     0x00,   0x77,   0x00,   0xff,
                     0x77,   0x00,   0x77,   0xff,
                     0x77,   0x77,   0x00,   0xff,
                 };
+                */
+                unsigned char pixel_data[] = { 0xff, 0xff, 0xff, 0xff };
 
                 texture->mbufr.msize = sizeof(pixel_data);
                 texture->mbufr.mdata = new mbyte_t[texture->mbufr.msize];
-                texture->sizes = { 2u, 2u };
+                texture->sizes = { 1, 1 };
                 memcpy(texture->mbufr.mdata, pixel_data, texture->mbufr.msize);
             
             }

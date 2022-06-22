@@ -9,8 +9,9 @@
 #   ifndef GT_GFX_TEXTURE_COUNT_USE
 #       define GT_GFX_TEXTURE_COUNT_MIN 0x01
 #       define GT_GFX_TEXTURE_COUNT_MED 0x10
-#       define GT_GFX_TEXTURE_COUNT_MAX 0x20
-#       define GT_GFX_TEXTURE_COUNT_USE GT_GFX_TEXTURE_COUNT_MED
+#       define GT_GFX_TEXTURE_COUNT_MAX 0x10
+#       define GT_GFX_TEXTURE_COUNT_USE     GT_GFX_TEXTURE_COUNT_MED
+#       define GT_GFX_TEXTURE_COUNT_LAST    GT_GFX_TEXTURE_COUNT_USE - 1
 #   endif /* GT_GFX_TEXTURE_COUNT_USE */
 #   ifndef GT_GFX_TEXTURE_SIZES_USE
 #       define GT_GFX_TEXTURE_SIZES_MIN 0x10
@@ -25,6 +26,13 @@
 #       define GT_GFX_RECT_COUNT_MAX    0x10000
 #       define GT_GTX_RECT_COUNT_USE    GT_GFX_RECT_COUNT_MAX
 #   endif /* GT_GFX_RECT_COUNT_USE */
+
+#   ifndef GT_MAP_SIZES_USE
+#       define GT_MAP_SIZES_MIN 10.000f
+#       define GT_MAP_SIZES_MID 100.00f
+#       define GT_MAP_SIZES_MAX 1000.0f
+#       define GT_MAP_SIZES_USE GT_MAP_SIZES_MIN
+#   endif /* GT_MAP_SIZES_USE */
 
 namespace gt {
 
