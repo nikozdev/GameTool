@@ -61,8 +61,6 @@ namespace gt {
 			GT_CHECK(::ImGui_ImplGlfw_InitForOpenGL(glfw_window, true), "failed imgui opengl backend init!", return false);
 
 			/* engines */
-			this->tool_array.push_back(new tool_app_t());
-			this->tool_array.push_back(new tool_sys_t());
 			this->tool_array.push_back(new tool_gfx_t());
 			this->tool_array.push_back(new tool_ecs_t());
 			/* others */

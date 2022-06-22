@@ -87,58 +87,6 @@ namespace gt {
 	namespace gui {
 
 		bool
-			tool_app_t::init()
-		{
-			this->app = app::engine_t::get();
-
-			return this->hide();
-		}
-
-		bool
-			tool_app_t::work()
-		{
-			return true;
-		}
-
-		bool
-			tool_app_t::quit()
-		{
-			this->app = nullptr;
-
-			return true;
-		}
-
-	}
-
-	namespace gui {
-		
-		bool
-			tool_sys_t::init()
-		{
-			this->sys = sys::engine_t::get();
-
-			return this->hide();
-		}
-
-		bool
-			tool_sys_t::work()
-		{
-			return true;
-		}
-
-		bool
-			tool_sys_t::quit()
-		{
-			this->sys = nullptr;
-
-			return true;
-		}
-
-	}
-
-	namespace gui {
-
-		bool
 			tool_gfx_t::init()
 		{
 			this->gfx = gfx::engine_t::get();

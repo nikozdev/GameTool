@@ -2,7 +2,7 @@
 <Project>
   <ProjectOutputs>
     <ProjectOutput>
-      <FullPath>C:\Users\nicko\Projects\gametool\bin\game.exe</FullPath>
+      <FullPath>C:\Users\nicko\Projects\gt\bin\game.exe</FullPath>
     </ProjectOutput>
   </ProjectOutputs>
   <ContentFiles />

@@ -35,4 +35,4 @@
   lvm.c
   lzio.c
   Generating Code...
-  lua.vcxproj -> C:\Users\nicko\Projects\gametool\lib\lua\bin\lua.lib
+  lua.vcxproj -> C:\Users\nicko\Projects\gt\lib\lua\bin\lua.lib

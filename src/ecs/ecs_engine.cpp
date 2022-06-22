@@ -138,6 +138,10 @@ namespace gt {
 
 			gfx->load_texture("../rsc/imag/bit2tile16.png", 1);
 			gfx->load_texture("../rsc/imag/bit2char16.png", 2);
+			gfx->load_texture("../rsc/imag/bit1nikochir32.png", 3);
+			gfx->load_texture("../rsc/imag/bit1bone16.png", 4);
+			gfx->load_texture("../rsc/imag/bit1cursemark16.png", 5);
+			gfx->load_texture("../rsc/imag/bit1necro16.png", 6);
 
 			this->fsx = nullptr;
 
@@ -183,7 +187,7 @@ namespace gt {
 				auto& player = this->ccreate<ecs::player_t>(entity);
 				player.camera_target = true;
 				player.controlled = true;
-				player.speed = 5.0f;
+				player.speed = 2.0f;
 
 				auto& mover = this->ccreate<ecs::mover_t>(entity);
 
@@ -279,11 +283,19 @@ namespace gt {
 					using enum sys::keybod_t::kcode_t;
 					using enum sys::keybod_t::state_t;
 
-					b2Body* ridigbody = (b2Body*)b2body.rigidbody;
-					if (keybod->vet_button_held(KCODE_A)) { ridigbody->ApplyForce({ -player.speed,0.0f },{0.0f, 0.0f},true); }
-					if (keybod->vet_button_held(KCODE_D)) { ridigbody->ApplyForce({ +player.speed,0.0f },{0.0f, 0.0f},true); }
-					if (keybod->vet_button_held(KCODE_S)) { ridigbody->ApplyForce({ 0.0f, -player.speed },{0.0f, 0.0f},true); }
-					if (keybod->vet_button_held(KCODE_W)) { ridigbody->ApplyForce({ 0.0f, +player.speed },{0.0f, 0.0f},true); }
+					b2Body* rigidbody = (b2Body*)b2body.rigidbody;
+					if (rigidbody != nullptr) {
+
+						if (keybod->vet_button_held(KCODE_A)) { rigidbody->ApplyForce({ -player.speed,0.0f }, { 0.0f, 0.0f }, true); }
+						if (keybod->vet_button_held(KCODE_D)) { rigidbody->ApplyForce({ +player.speed,0.0f }, { 0.0f, 0.0f }, true); }
+						if (keybod->vet_button_press(KCODE_W)) {
+							if (rigidbody->GetLinearVelocity().y < 0.05f) {
+
+								rigidbody->ApplyForce({ 0.0f, +player.speed * 50.0f }, { 0.0f, 0.0f }, true);
+							}
+						}
+						
+					}
 
 				}
 

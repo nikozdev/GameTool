@@ -152,7 +152,6 @@
     <ClInclude Include="src\gametool.hpp" />
     <ClInclude Include="src\gfx.hpp" />
     <ClInclude Include="src\gfx\gfx_data.hpp" />
-    <ClInclude Include="src\gfx\gfx_drawtool.hpp" />
     <ClInclude Include="src\gfx\gfx_engine.hpp" />
     <ClInclude Include="src\gfx\gfx_lib.hpp" />
     <ClInclude Include="src\gui.hpp" />
@@ -195,11 +194,6 @@
       <ExternalWarningLevel>Level3</ExternalWarningLevel>
     </ClCompile>
     <ClCompile Include="src\gametool.cpp">
-      <ExternalWarningLevel>Level3</ExternalWarningLevel>
-      <ExternalWarningLevel>Level3</ExternalWarningLevel>
-      <ExternalWarningLevel>Level3</ExternalWarningLevel>
-    </ClCompile>
-    <ClCompile Include="src\gfx\gfx_drawtool.cpp">
       <ExternalWarningLevel>Level3</ExternalWarningLevel>
       <ExternalWarningLevel>Level3</ExternalWarningLevel>
       <ExternalWarningLevel>Level3</ExternalWarningLevel>
